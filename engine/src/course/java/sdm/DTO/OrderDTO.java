@@ -1,30 +1,30 @@
-package course.java.sdm.order;
+package course.java.sdm.DTO;
 
 import java.util.Date;
 
-public class Order {
-    static private int id = 0;
+public class OrderDTO {
+    int id;
     final private Date date;
-    final private int storeId;
-    final private String storeName;
+    int storeId;
+    String storeName;
     final private int numOfItems;
-    final private double itemsPrice;
-    final private double deliveryPrice;
-    final private double totalOrderPrice;
+    double itemsPrice;
+    double deliveryPrice;
+    double totalPrice;
 
-    public Order(Date date, int storeId, String storeName, int numOfItems,
-                 double itemsPrice, double deliveryPrice, double totalOrderPrice) {
-        id++;
+    public OrderDTO(int id, Date date, int storeId, String storeName, int numOfItems,
+                    double itemsPrice, double deliveryPrice, double totalPrice) {
+        this.id = id;
         this.date = date;
         this.storeId = storeId;
         this.storeName = storeName;
         this.numOfItems = numOfItems;
         this.itemsPrice = itemsPrice;
         this.deliveryPrice = deliveryPrice;
-        this.totalOrderPrice = totalOrderPrice;
+        this.totalPrice = totalPrice;
     }
 
-    public static int getId() {
+    public int getId() {
         return id;
     }
 
@@ -48,11 +48,11 @@ public class Order {
         return itemsPrice;
     }
 
-    public double getTotalOrderPrice() {
-        return totalOrderPrice;
-    }
-
     public double getDeliveryPrice() {
         return deliveryPrice;
+    }
+
+    public double getTotalPrice() {
+        return totalPrice;
     }
 }

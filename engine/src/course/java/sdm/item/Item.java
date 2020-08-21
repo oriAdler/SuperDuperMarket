@@ -1,20 +1,31 @@
 package course.java.sdm.item;
 
 public class Item {
-    private int id;
-    private String name;
-    private String purchaseCategory;
-    private double price;
+    final private int id;
+    final private String name;
+    final private PurchaseCategory category;
+    final private int numberOfSales;
 
     public Item(int id, String name, String purchaseCategory) {
         this.id = id;
         this.name = name;
-        this.purchaseCategory = purchaseCategory;
+        this.category = PurchaseCategory.valueOf(purchaseCategory.toUpperCase());
+        this.numberOfSales = 0;
     }
 
+    public int getId() {
+        return id;
+    }
 
+    public String getName() {
+        return name;
+    }
 
-    public void setPrice(double price) {
-        this.price = price;
+    public PurchaseCategory getPurchaseCategory() {
+        return category;
+    }
+
+    public int getNumberOfSales() {
+        return numberOfSales;
     }
 }

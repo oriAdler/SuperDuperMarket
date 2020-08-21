@@ -1,5 +1,6 @@
 package course.java.sdm.engine;
 
+import course.java.sdm.exception.*;
 import course.java.sdm.jaxb.schema.generated.SDMItem;
 import course.java.sdm.jaxb.schema.generated.SDMSell;
 import course.java.sdm.jaxb.schema.generated.SDMStore;
@@ -13,9 +14,8 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
-import java.util.HashSet;
+import java.util.*;
 import java.util.List;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 public class XmlFileHandler {
@@ -25,32 +25,10 @@ public class XmlFileHandler {
         try {
             InputStream inputStream = new FileInputStream(new File(pathName));
             return deserializeFrom(inputStream);
-        } catch (JAXBException | FileNotFoundException e) {
-            e.printStackTrace();
-        }
-        return null;    //note: exception revise
-    }
-
-    static public void checkValidXmlFile(SuperDuperMarketDescriptor SDMDescriptor){
-        if(twoItemsWithIdenticalId(SDMDescriptor.getSDMItems().getSDMItem())){
-            System.out.println("Two items with identical ids");
-        }
-        if(twoStoresWithIdenticalId((SDMDescriptor.getSDMStores().getSDMStore()))){
-            System.out.println("Two items with stores ids");
-        }
-        if(!allReferencedItemsExist(SDMDescriptor.getSDMItems().getSDMItem(),
-                SDMDescriptor.getSDMStores().getSDMStore())){
-            System.out.println("A reference to an item that doesn't exist");
-        }
-        if(!everyItemIsReferencedByStore(SDMDescriptor.getSDMItems().getSDMItem(),
-                SDMDescriptor.getSDMStores().getSDMStore())){
-            System.out.println("There is an item which not sold by any store");
-        }
-        if(itemIsDefinedTwiceInStore(SDMDescriptor.getSDMStores().getSDMStore())){
-            System.out.println("There is a store with an item defined twice");
-        }
-        if(!allStoresInRange(SDMDescriptor.getSDMStores().getSDMStore())){
-            System.out.println("Not all stores are in range [1,50]");
+        } catch (FileNotFoundException e) {
+            throw new XmlFileException("File not loaded successfully: file was not found");
+        } catch (JAXBException e){
+            throw new XmlFileException("File not loaded successfully: A JAXB error was occurred");
         }
     }
 
@@ -60,53 +38,86 @@ public class XmlFileHandler {
         return (SuperDuperMarketDescriptor) u.unmarshal(in);
     }
 
-    static private Boolean allStoresInRange(List<SDMStore> storesList){
+    static public void checkValidXmlFile(SuperDuperMarketDescriptor SDMDescriptor){
+        twoItemsWithIdenticalId(SDMDescriptor.getSDMItems().getSDMItem());
+        twoStoresWithIdenticalId((SDMDescriptor.getSDMStores().getSDMStore()));
+        allReferencedItemsExist(SDMDescriptor.getSDMItems().getSDMItem(),
+                SDMDescriptor.getSDMStores().getSDMStore());
+        everyItemIsReferencedByStore(SDMDescriptor.getSDMItems().getSDMItem(),
+                SDMDescriptor.getSDMStores().getSDMStore());
+        itemIsDefinedTwiceInStore(SDMDescriptor.getSDMStores().getSDMStore());
+        checkAllStoresInRange(SDMDescriptor.getSDMStores().getSDMStore());
+    }
+
+    static private Boolean checkAllStoresInRange(List<SDMStore> storesList){
         for(SDMStore store : storesList){
             if(!inRange(new Point(store.getLocation().getX(), store.getLocation().getY()))){
-                return false;
+                throw new StoreNotInRangeException(store.getName(),
+                        new Point(store.getLocation().getX(), store.getLocation().getY()));
             }
         }
         return true;
     }
 
-    static private Boolean inRange(Point location){
-        return location.x >= 1 && location.y <= 50;
+    //Checks that a given coordinates (x,y) are between (MIN,MAX) range.
+    static public Boolean inRange(Point location){
+        return location.x >= EngineImpl.MIN_RANGE && location.x <= EngineImpl.MAX_RANGE
+                && location.y>= EngineImpl.MIN_RANGE && location.y <= EngineImpl.MAX_RANGE;
     }
 
-    static private Boolean twoItemsWithIdenticalId(List<SDMItem> itemsList){
+    static private void twoItemsWithIdenticalId(List<SDMItem> itemsList){
+        Set<Integer> dummySet  = new HashSet<>();
+        Set<SDMItem> duplicateSet = itemsList
+                .stream()
+                .filter(i -> !dummySet.add(i.getId()))
+                .collect(Collectors.toSet());
+        if(!duplicateSet.isEmpty()){
+            int duplicatedId = duplicateSet.iterator().next().getId();
+            List<SDMItem> duplicatedList = itemsList
+                    .stream()
+                    .filter(i->i.getId()==duplicatedId)
+                    .collect(Collectors.toList());
+            throw new twoObjectsWithSameIdException(
+                    "items", duplicatedList.get(0).getName(), duplicatedList.get(1).getName(), duplicatedId);
+        }
+    }
+
+    static private void twoStoresWithIdenticalId(List<SDMStore> storesList){
+        Set<Integer> dummySet  = new HashSet<>();
+        Set<SDMStore> duplicateSet = storesList
+                .stream()
+                .filter(i -> !dummySet.add(i.getId()))
+                .collect(Collectors.toSet());
+        if(!duplicateSet.isEmpty()){
+            int duplicatedId = duplicateSet.iterator().next().getId();
+            List<SDMStore> duplicatedList = storesList
+                    .stream()
+                    .filter(i->i.getId()==duplicatedId)
+                    .collect(Collectors.toList());
+            throw new twoObjectsWithSameIdException(
+                    "stores", duplicatedList.get(0).getName(), duplicatedList.get(1).getName(), duplicatedId);
+        }
+    }
+
+    static private void allReferencedItemsExist(List<SDMItem> itemsList, List<SDMStore> storesList){
         Set<Integer> itemsIdSet = itemsList
                 .stream()
                 .map(SDMItem::getId)
                 .collect(Collectors.toSet());
-        return itemsIdSet.size() < itemsList.size();
-    }
-
-    static private Boolean twoStoresWithIdenticalId(List<SDMStore> storesList){
-        Set<Integer> storesIdSet = storesList
-                .stream()
-                .map(SDMStore::getId)
-                .collect(Collectors.toSet());
-        return storesIdSet.size() < storesList.size();
-    }
-
-    static private Boolean allReferencedItemsExist(List<SDMItem> itemsList, List<SDMStore> storesList){
-        List<Integer> itemsIdList = itemsList
-                .stream()
-                .map(SDMItem::getId)
-                .collect(Collectors.toList());
-        for(SDMStore store : storesList){
-            List<Integer> storeItemsIdList = store.getSDMPrices().getSDMSell()
-                    .stream()
-                    .map(SDMSell::getItemId)
-                    .collect(Collectors.toList());
-            if(!itemsIdList.containsAll(storeItemsIdList)){
-                return false;
+        for(SDMStore store : storesList) {
+            List<SDMSell> sellList = store.getSDMPrices().getSDMSell();
+            for(SDMSell sell : sellList){
+                if(!itemsIdSet.contains(sell.getItemId())){
+                            throw new invalidItemException(String.format(
+                                    "File not loaded successfully: " +
+                                            "item with id '%d' referenced in store '%s' does not exist",
+                                    sell.getItemId(), store.getName()));
+                    }
+                }
             }
-        }
-        return true;
     }
 
-    static private Boolean everyItemIsReferencedByStore(List<SDMItem> itemsList, List<SDMStore> storesList){
+    static private void everyItemIsReferencedByStore(List<SDMItem> itemsList, List<SDMStore> storesList){
         Set<Integer> storesItemsIdsSet = new HashSet<>();
         for(SDMStore store : storesList) {
             storesItemsIdsSet.addAll(store.getSDMPrices().getSDMSell()
@@ -114,23 +125,30 @@ public class XmlFileHandler {
                     .map(SDMSell::getItemId)
                     .collect(Collectors.toSet()));
         }
-        Set<Integer> itemsIdSet = itemsList
-                .stream()
-                .map(SDMItem::getId)
-                .collect(Collectors.toSet());
-        return storesItemsIdsSet.containsAll(itemsIdSet);
-    }
-
-    static private Boolean itemIsDefinedTwiceInStore(List<SDMStore> storesList){
-        for(SDMStore store : storesList){
-            Set<Integer> storeItemsIdsSet = store.getSDMPrices().getSDMSell()
-                    .stream()
-                    .map(SDMSell::getItemId)
-                    .collect(Collectors.toSet());
-            if(storeItemsIdsSet.size()<store.getSDMPrices().getSDMSell().size()){
-                return true;
+        for(SDMItem item : itemsList){
+            if(!storesItemsIdsSet.contains(item.getId())){
+                throw new invalidItemException(
+                        String.format(
+                                "File not loaded successfully: item '%s' with id '%d' was not referenced in any store",
+                                item.getName(), item.getId()));
             }
         }
-        return false;
+    }
+
+    static private void itemIsDefinedTwiceInStore(List<SDMStore> storesList){
+        for(SDMStore store : storesList){
+            Set<Integer> dummySet  = new HashSet<>();
+            Set<SDMSell> duplicateSet = store.getSDMPrices().getSDMSell()
+                    .stream()
+                    .filter(s -> !dummySet.add(s.getItemId()))
+                    .collect(Collectors.toSet());
+            if(!duplicateSet.isEmpty()){
+                int duplicatedId = duplicateSet.iterator().next().getItemId();
+                throw new invalidItemException(String.format(
+                        "File not loaded successfully: " +
+                                "item with id '%d' is defined twice in store %s",
+                        duplicatedId, store.getName()));
+            }
+        }
     }
 }
