@@ -51,14 +51,15 @@ public class EngineImpl implements Engine{
 
     private List<OrderDTO> getStoreOrdersList(int storeId){
         List<OrderDTO> orderDTOList = new ArrayList<>();
-        superDuperMarket.getStores().get(storeId)
+        superDuperMarket.getStores()
+                .get(storeId)
                 .getOrders()
-                .forEach((id)-> {
-                    Order order =  superDuperMarket.getOrders().get(id);
-                    orderDTOList.add(new OrderDTO(id,
+                .forEach((orderId)-> {
+                    Order order =  superDuperMarket.getOrders().get(orderId);
+                    orderDTOList.add(new OrderDTO(orderId,
                             order.getDate(),
-                            order.getStoreId(),
-                            superDuperMarket.getStores().get(id).getName(),
+                            storeId,
+                            superDuperMarket.getStores().get(storeId).getName(),
                             order.getNumOfItems(),
                             order.getItemsPrice(),
                             order.getDeliveryPrice(),

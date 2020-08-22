@@ -12,6 +12,8 @@ import course.java.sdm.item.PurchaseCategory;
 import course.java.sdm.message.Messenger;
 
 import java.awt.*;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -79,10 +81,8 @@ public class UI {
     static private void makeOrder(Engine engine){
         if(!engine.isValidFileLoaded()){
             System.out.println(Messenger.VALID_FILE_NOT_LOADED + "make an order");
-            System.out.println(Messenger.LINE_SEPARATOR_NEW_LINE);
         }
         else{
-            //note: check file was loaded before this action
             displayStoresMinimalData(engine.getAllStoreList());
             int storeId = chooseStore(engine);
 
@@ -115,8 +115,8 @@ public class UI {
                     System.out.println("You chose to renounce to order.. hope to see you again soon");
                 }
             }
-            System.out.println(Messenger.LINE_SEPARATOR_NEW_LINE);
         }
+        System.out.println(Messenger.LINE_SEPARATOR_NEW_LINE);
     }
 
     static private void displayOrderSummary(CartDTO cart){
@@ -177,7 +177,7 @@ public class UI {
                     }
                 }
             }
-            System.out.println(Messenger.LINE_SEPARATOR);
+            System.out.println(Messenger.LINE_SEPARATOR_NEW_LINE);
         } while(true);  //A return statement is inside the do-while loop
     }
 
@@ -282,7 +282,7 @@ public class UI {
         return "{" +
                 "Id: " + item.getId() +
                 ", Name: '" + item.getName() + '\'' +
-                ", Purchase category: '" + item.getPurchaseCategory() + '\'' +
+                ", Purchase category: " + item.getPurchaseCategory() +
                 (inStore ? "" : ", Number of sellers: " + item.getNumOfSellers()) +
                 ", Price: " + String.format("%.2f", item.getPrice()) +
                 ", Number of sales: " + (item.getPurchaseCategory().equals(PurchaseCategory.QUANTITY) ?
@@ -325,12 +325,13 @@ public class UI {
     }
 
     static private String orderDTOToString(OrderDTO order, boolean inStore){
+        DateFormat dateFormat = new SimpleDateFormat(Input.DATE_FORMAT);
         return "{" +
                 (inStore ? "" : "id: " + order.getId() + ", ") +
-                "date: " + order.getDate() +
+                "date: " + dateFormat.format(order.getDate()) +
                 (inStore ? "" :", store id: " + order.getStoreId()) +
-                (inStore ? "" : ", store name: " + order.getStoreName()) +
-                ", numOfItems: " + order.getNumOfItems() +
+                (inStore ? "" : ", store name: " + order.getStoreName()) + "\n" +
+                "numOfItems: " + order.getNumOfItems() +
                 String.format(", itemsPrice: %.2f", order.getItemsPrice()) +
                 String.format(", deliveryPrice: %.2f", order.getDeliveryPrice()) +
                 String.format(", totalPrice: %.2f", order.getTotalPrice()) +
@@ -348,6 +349,7 @@ public class UI {
         }
         catch (Exception exception){
             System.out.println(exception.getMessage());
+            System.out.println(Messenger.LINE_SEPARATOR_NEW_LINE);
         }
     }
 }

@@ -27,7 +27,7 @@ public class Messenger {
     static public final String CHOOSE_STORE = "Please choose a store from the list above\n" +
             "[Id]";
     static public final String CHOOSE_DATE = "Please enter order's desired date\n" +
-            "[dd/mm-hh:mm]";
+            "[dd/mm-hh:mm] (Day/Month-Hour:Minutes)";
     static public final String CHOOSE_LOCATION = "Please enter your location (two numbers)\n"+
             "each number between [1,50] (e.g: 1 5)";
     static public final String CONTINUE_ORDER = "Please chose one of the options:\n" +
@@ -45,7 +45,7 @@ public class Messenger {
 
     static public final String[] ORDER_MENU ={
             "Approve order",
-            "Renounce order"
+            "Cancel order"
     };
 
     public static String[] getMainMenu() {

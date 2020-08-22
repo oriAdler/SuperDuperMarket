@@ -6,6 +6,8 @@ import java.util.*;
 
 public class Input<DATE> {
 
+    public static String DATE_FORMAT = "dd/MM-HH:mm";
+
     static public int[] getTwoIntegers() {
         String inputString;
         int[] inputArray = new int[2];
@@ -26,7 +28,8 @@ public class Input<DATE> {
                     isValid = true;
                 }
                 catch (NumberFormatException exception){
-                    System.out.println("Invalid input: please enter a number");
+                    System.out.println(
+                            "Invalid input: input must be a two whole numbers (excluding 0)");
                     isValid = false;
                 }
             }
@@ -59,7 +62,7 @@ public class Input<DATE> {
                     }
                 }
                 catch (NumberFormatException exception){
-                    System.out.println("Invalid input: please enter a whole number (excluding 0)");
+                    System.out.println("Invalid input: input must be a whole number (excluding 0)");
                     isValid = false;
                 }
             }
@@ -114,7 +117,7 @@ public class Input<DATE> {
                     }
                 }
                 catch (NumberFormatException exception){
-                    System.out.println("Invalid input: please enter a number");
+                    System.out.println("Invalid input: input must be a number");
                     isValid = false;
                 }
             }
@@ -134,7 +137,9 @@ public class Input<DATE> {
 
     // note: how to parse a string to a date?
     static public Date getDate(){
-        SimpleDateFormat formatter = new SimpleDateFormat("dd/mm-hh:mm");
+        SimpleDateFormat formatter = new SimpleDateFormat();
+        formatter.applyPattern(DATE_FORMAT);
+        formatter.setLenient(false);
         Scanner scanner = new Scanner(System.in);
 
         Date date = new Date(); //note: is there another way?
@@ -175,7 +180,7 @@ public class Input<DATE> {
                 }
             }
             catch (NumberFormatException exception) {
-                System.out.println("Invalid input: please enter a whole number (excluding 0)");
+                System.out.println("Invalid input: input must be a whole number (excluding 0)");
                 isPositiveInteger = false;
             }
         }
