@@ -4,11 +4,11 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
-public class Input<DATE> {
+public class Input {
 
     public static String DATE_FORMAT = "dd/MM-HH:mm";
 
-    static public int[] getTwoIntegers() {
+    public static int[] getTwoIntegers() {
         String inputString;
         int[] inputArray = new int[2];
         Scanner scanner = new Scanner(System.in);
@@ -38,7 +38,7 @@ public class Input<DATE> {
         return inputArray;
     }
 
-    static public int getOnePositiveInteger() {
+    public static int getOnePositiveInteger() {
         String inputString;
         int inputInt = 0;
         Scanner scanner = new Scanner(System.in);
@@ -71,7 +71,7 @@ public class Input<DATE> {
         return inputInt;
     }
 
-    static public int getOnePositiveIntegerInRange(int min, int max, String errorMessage){
+    public static int getOnePositiveIntegerInRange(int min, int max, String errorMessage){
         boolean isValidChoice;
         int userChoice = 0;
 
@@ -89,11 +89,7 @@ public class Input<DATE> {
         return userChoice;
     }
 
-    static private boolean inRange(int number, int min, int max){
-        return number>=min && number<=max;
-    }
-
-    static public double getOnePositiveDouble() {
+    public static double getOnePositiveDouble() {
         String inputString;
         double inputDouble = 0;
         Scanner scanner = new Scanner(System.in);
@@ -135,14 +131,13 @@ public class Input<DATE> {
         }
     }
 
-    // note: how to parse a string to a date?
-    static public Date getDate(){
+    public static Date getDate(){
         SimpleDateFormat formatter = new SimpleDateFormat();
         formatter.applyPattern(DATE_FORMAT);
         formatter.setLenient(false);
         Scanner scanner = new Scanner(System.in);
 
-        Date date = new Date(); //note: is there another way?
+        Date date = new Date();
         boolean validInput;
 
         do {
@@ -161,7 +156,7 @@ public class Input<DATE> {
         return date;
     }
 
-    static public boolean isPositiveInteger(String input) {
+    public static boolean isPositiveInteger(String input) {
         boolean isPositiveInteger;
 
         if (Input.countWordsUsingSplit(input) != 1) {
@@ -186,5 +181,9 @@ public class Input<DATE> {
         }
 
         return isPositiveInteger;
+    }
+
+    private static boolean inRange(int number, int min, int max){
+        return number>=min && number<=max;
     }
 }

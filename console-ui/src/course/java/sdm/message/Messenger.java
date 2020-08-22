@@ -2,7 +2,7 @@ package course.java.sdm.message;
 
 public class Messenger {
 
-    static public final String WELCOME_MESSAGE =
+    public static final String WELCOME_MESSAGE =
                     "******************************\n" +
                     "******************************\n" +
                     "**                          **\n" +
@@ -13,28 +13,28 @@ public class Messenger {
                     "******************************\n" +
                     "******************************\n";
 
-    static public final String LINE_SEPARATOR_NEW_LINE = "----------------------------------------\n";
-    static public final String LINE_SEPARATOR = "----------------------------------------";
-    static public final String SUPER_DUPER_MARKET = "----Super Duper Market----";
+    public static final String LINE_SEPARATOR_NEW_LINE = "----------------------------------------\n";
+    public static final String LINE_SEPARATOR = "----------------------------------------";
+    public static final String SUPER_DUPER_MARKET = "----Super Duper Market----";
 
-    static public final String ENTER_FILE_PATH = "Please enter the file's full path";
-    static public final String EXIT = "Thank you for buying Super Duper Market!";
-    static public final String UNKNOWN_ERROR = "Unknown error has occurred";
-    static public final String FILE_LOADED_SUCCESSFULLY = "File was loaded successfully";
-    static public final String VALID_FILE_NOT_LOADED =
+    public static final String ENTER_FILE_PATH = "Please enter the file's full path";
+    public static final String EXIT = "Thank you for buying Super Duper Market!";
+    public static final String UNKNOWN_ERROR = "Unknown error has occurred";
+    public static final String FILE_LOADED_SUCCESSFULLY = "File was loaded successfully";
+    public static final String VALID_FILE_NOT_LOADED =
             "Can't complete operation: Please load a valid file before attempting to ";
 
-    static public final String CHOOSE_STORE = "Please choose a store from the list above\n" +
+    public static final String CHOOSE_STORE = "Please choose a store from the list above\n" +
             "[Id]";
-    static public final String CHOOSE_DATE = "Please enter order's desired date\n" +
+    public static final String CHOOSE_DATE = "Please enter order's desired date\n" +
             "[dd/mm-hh:mm] (Day/Month-Hour:Minutes)";
-    static public final String CHOOSE_LOCATION = "Please enter your location (two numbers)\n"+
+    public static final String CHOOSE_LOCATION = "Please enter your location (two numbers)\n"+
             "each number between [1,50] (e.g: 1 5)";
-    static public final String CONTINUE_ORDER = "Please chose one of the options:\n" +
+    public static final String CONTINUE_ORDER = "Please chose one of the options:\n" +
             "* Enter item's id to add item to cart [id]\n" +
             "* Enter 'q'/'Q' to proceed to checkout ['q'/'Q']";
 
-    static public final String[] MAIN_MENU ={
+    public static final String[] MAIN_MENU ={
             "Load file",
             "Display stores",
             "Display all items",
@@ -43,21 +43,29 @@ public class Messenger {
             "Exit"
     };
 
-    static public final String[] ORDER_MENU ={
+    public static final String[] COMPLETE_ORDER_MENU ={
             "Approve order",
             "Cancel order"
     };
+
+    public static final String[] CHOOSE_ORDER_METHOD_MENU={
+            "Static order: make order from a specific store",
+            "Dynamic order: let 'Super Duper Market' find the cheapest cart for you!"
+    };
+
+    public static String[] getChooseOrderMethodMenu() {
+        return CHOOSE_ORDER_METHOD_MENU;
+    }
 
     public static String[] getMainMenu() {
         return MAIN_MENU;
     }
 
-    public static String[] getOrderMenu() {
-        return ORDER_MENU;
+    public static String[] getCompleteOrderMenu() {
+        return COMPLETE_ORDER_MENU;
     }
 
-    //question: how to print a menu?
-    static public String generateMenu(String[] strings){
+    public static String generateMenu(String[] strings){
         StringBuilder menu = new StringBuilder();
         menu.append("Please choose an option:\n");
         for(int i = 0; i < strings.length; i++){
@@ -65,10 +73,4 @@ public class Messenger {
         }
         return menu.toString();
     }
-//    static public final String LOAD_FILE = "Load file";
-//    static public final String SHOW_STORES = "Show stores";
-//    static public final String SHOW_ALL_ITEMS = "Show all items";
-//    static public final String MAKE_ORDER = "Make order";
-//    static public final String SHOW_ORDERS_HISTORY = "Show orders history";
-//    static public final String Exit = "Exit";
 }

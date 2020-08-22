@@ -20,25 +20,25 @@ import java.util.stream.Collectors;
 
 public class XmlFileHandler {
     private final static String JAXB_XML_SDM_PACKAGE_NAME = "course.java.sdm.jaxb.schema.generated";
-
-    static public SuperDuperMarketDescriptor generateJaxbClasses(String pathName){
-        try {
-            InputStream inputStream = new FileInputStream(new File(pathName));
-            return deserializeFrom(inputStream);
-        } catch (FileNotFoundException e) {
-            throw new XmlFileException("File not loaded successfully: file was not found");
-        } catch (JAXBException e){
-            throw new XmlFileException("File not loaded successfully: A JAXB error was occurred");
+    private final static String XML_FILE_SUFFIX = ".xml";
+    
+    public static SuperDuperMarketDescriptor generateJaxbClasses(String pathName){
+        if(!pathName.toUpperCase().endsWith(XML_FILE_SUFFIX.toUpperCase())){
+            throw new XmlFileException("File not loaded successfully: file is not a valid xml file");
+        }
+        else{
+            try {
+                InputStream inputStream = new FileInputStream(new File(pathName));
+                return deserializeFrom(inputStream);
+            } catch (FileNotFoundException e) {
+                throw new XmlFileException("File not loaded successfully: file was not found");
+            } catch (JAXBException e){
+                throw new XmlFileException("File not loaded successfully: A JAXB error was occurred");
+            }
         }
     }
 
-    private static SuperDuperMarketDescriptor deserializeFrom(InputStream in) throws JAXBException {
-        JAXBContext jc = JAXBContext.newInstance(JAXB_XML_SDM_PACKAGE_NAME);
-        Unmarshaller u = jc.createUnmarshaller();
-        return (SuperDuperMarketDescriptor) u.unmarshal(in);
-    }
-
-    static public void checkValidXmlFile(SuperDuperMarketDescriptor SDMDescriptor){
+    public static void checkValidXmlFile(SuperDuperMarketDescriptor SDMDescriptor){
         twoItemsWithIdenticalId(SDMDescriptor.getSDMItems().getSDMItem());
         twoStoresWithIdenticalId((SDMDescriptor.getSDMStores().getSDMStore()));
         allReferencedItemsExist(SDMDescriptor.getSDMItems().getSDMItem(),
@@ -49,23 +49,28 @@ public class XmlFileHandler {
         checkAllStoresInRange(SDMDescriptor.getSDMStores().getSDMStore());
     }
 
-    static private Boolean checkAllStoresInRange(List<SDMStore> storesList){
+    //Checks that a given coordinates (x,y) are between (MIN,MAX) range.
+    public static Boolean inRange(Point location){
+        return location.x >= EngineImpl.MIN_RANGE && location.x <= EngineImpl.MAX_RANGE
+                && location.y>= EngineImpl.MIN_RANGE && location.y <= EngineImpl.MAX_RANGE;
+    }
+
+    private static SuperDuperMarketDescriptor deserializeFrom(InputStream in) throws JAXBException {
+        JAXBContext jc = JAXBContext.newInstance(JAXB_XML_SDM_PACKAGE_NAME);
+        Unmarshaller u = jc.createUnmarshaller();
+        return (SuperDuperMarketDescriptor) u.unmarshal(in);
+    }
+
+    private static void checkAllStoresInRange(List<SDMStore> storesList){
         for(SDMStore store : storesList){
             if(!inRange(new Point(store.getLocation().getX(), store.getLocation().getY()))){
                 throw new StoreNotInRangeException(store.getName(),
                         new Point(store.getLocation().getX(), store.getLocation().getY()));
             }
         }
-        return true;
     }
 
-    //Checks that a given coordinates (x,y) are between (MIN,MAX) range.
-    static public Boolean inRange(Point location){
-        return location.x >= EngineImpl.MIN_RANGE && location.x <= EngineImpl.MAX_RANGE
-                && location.y>= EngineImpl.MIN_RANGE && location.y <= EngineImpl.MAX_RANGE;
-    }
-
-    static private void twoItemsWithIdenticalId(List<SDMItem> itemsList){
+    private static void twoItemsWithIdenticalId(List<SDMItem> itemsList){
         Set<Integer> dummySet  = new HashSet<>();
         Set<SDMItem> duplicateSet = itemsList
                 .stream()
@@ -82,7 +87,7 @@ public class XmlFileHandler {
         }
     }
 
-    static private void twoStoresWithIdenticalId(List<SDMStore> storesList){
+    private static void twoStoresWithIdenticalId(List<SDMStore> storesList){
         Set<Integer> dummySet  = new HashSet<>();
         Set<SDMStore> duplicateSet = storesList
                 .stream()
@@ -99,7 +104,7 @@ public class XmlFileHandler {
         }
     }
 
-    static private void allReferencedItemsExist(List<SDMItem> itemsList, List<SDMStore> storesList){
+    private static void allReferencedItemsExist(List<SDMItem> itemsList, List<SDMStore> storesList){
         Set<Integer> itemsIdSet = itemsList
                 .stream()
                 .map(SDMItem::getId)
@@ -117,7 +122,7 @@ public class XmlFileHandler {
             }
     }
 
-    static private void everyItemIsReferencedByStore(List<SDMItem> itemsList, List<SDMStore> storesList){
+    private static void everyItemIsReferencedByStore(List<SDMItem> itemsList, List<SDMStore> storesList){
         Set<Integer> storesItemsIdsSet = new HashSet<>();
         for(SDMStore store : storesList) {
             storesItemsIdsSet.addAll(store.getSDMPrices().getSDMSell()
@@ -135,7 +140,7 @@ public class XmlFileHandler {
         }
     }
 
-    static private void itemIsDefinedTwiceInStore(List<SDMStore> storesList){
+    private static void itemIsDefinedTwiceInStore(List<SDMStore> storesList){
         for(SDMStore store : storesList){
             Set<Integer> dummySet  = new HashSet<>();
             Set<SDMSell> duplicateSet = store.getSDMPrices().getSDMSell()

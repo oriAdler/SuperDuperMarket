@@ -18,10 +18,11 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public class EngineImpl implements Engine{
-    private SuperDuperMarket superDuperMarket;
-    private boolean validFileLoaded;
+
     static public final int MIN_RANGE = 1;
     static public final int MAX_RANGE = 50;
+    private SuperDuperMarket superDuperMarket;
+    private boolean validFileLoaded;
 
     public EngineImpl() {
         this.validFileLoaded = false;
@@ -49,17 +50,39 @@ public class EngineImpl implements Engine{
         return storesDTOList;
     }
 
+    @Override
+    public List<ItemDTO> getAllItemList() {
+        List<ItemDTO> itemsDTOList = new ArrayList<>();
+        superDuperMarket.getItems()
+                .forEach((id, item) -> itemsDTOList.add(new ItemDTO(id,
+                        item.getName(),
+                        item.getPurchaseCategory(),
+                        getNumOfSellersById(id),
+                        getAveragePriceById(id),
+                        getNumOfSalesById(id))));
+        return itemsDTOList;
+    }
+
+    @Override
+    public List<OrderDTO> getOrdersHistory() {
+        List<OrderDTO> orderDTOList = new ArrayList<>();
+        superDuperMarket.getStores()
+                .keySet()
+                .forEach((storeId)->orderDTOList.addAll(getStoreOrdersList(storeId)));
+        return orderDTOList;
+    }
+
     private List<OrderDTO> getStoreOrdersList(int storeId){
         List<OrderDTO> orderDTOList = new ArrayList<>();
         superDuperMarket.getStores()
                 .get(storeId)
                 .getOrders()
-                .forEach((orderId)-> {
-                    Order order =  superDuperMarket.getOrders().get(orderId);
-                    orderDTOList.add(new OrderDTO(orderId,
+                .forEach((id)-> {
+                    Order order =  superDuperMarket.getOrders().get(id);
+                    orderDTOList.add(new OrderDTO(id,
                             order.getDate(),
-                            storeId,
-                            superDuperMarket.getStores().get(storeId).getName(),
+                            order.getStoreId(),
+                            superDuperMarket.getStores().get(id).getName(),
                             order.getNumOfItems(),
                             order.getItemsPrice(),
                             order.getDeliveryPrice(),
@@ -77,19 +100,6 @@ public class EngineImpl implements Engine{
                 -1, //note: update, inside store num of sellers is irrelevant
                 price,
                 store.getSalesCounter().get(id))));
-        return itemsDTOList;
-    }
-
-    @Override
-    public List<ItemDTO> getAllItemList() {
-        List<ItemDTO> itemsDTOList = new ArrayList<>();
-        superDuperMarket.getItems()
-                .forEach((id, item) -> itemsDTOList.add(new ItemDTO(id,
-                        item.getName(),
-                        item.getPurchaseCategory(),
-                        getNumOfSellersById(id),
-                        getAveragePriceById(id),
-                        getNumOfSalesById(id))));
         return itemsDTOList;
     }
 
@@ -118,15 +128,6 @@ public class EngineImpl implements Engine{
                 .mapToDouble(store -> store.getItems().get(id))
                 .average();
         return averagePrice.isPresent() ? averagePrice.getAsDouble() : -1;
-    }
-
-    @Override
-    public List<OrderDTO> getOrdersHistory() {
-        List<OrderDTO> orderDTOList = new ArrayList<>();
-        superDuperMarket.getStores()
-                .keySet()
-                .forEach((storeId)->orderDTOList.addAll(getStoreOrdersList(storeId)));
-        return orderDTOList;
     }
 
     @Override
@@ -176,17 +177,25 @@ public class EngineImpl implements Engine{
     @Override
     public CartDTO summarizeStaticOrder(Map<Integer, Double> itemsToAddToCart, int storeId, Point customerLocation) {
         List<ItemExtendedDTO> itemExtendedDTOList = new ArrayList<>();
-        Map<Integer, Item> itemsSDM = superDuperMarket.getItems();
-        itemsToAddToCart.forEach((id, amount)->itemExtendedDTOList.add(new ItemExtendedDTO(id,
-                itemsSDM.get(id).getName(),
-                itemsSDM.get(id).getPurchaseCategory(),
+        Map<Integer, Item> itemsMap = superDuperMarket.getItems();
+        Store store = superDuperMarket.getStores().get(storeId);
+
+        itemsToAddToCart.forEach((itemId, amount)->itemExtendedDTOList.add(new ItemExtendedDTO(
+                itemId,
+                itemsMap.get(itemId).getName(),
+                itemsMap.get(itemId).getPurchaseCategory(),
                 -1, //note: putting -1 to say value has no meaning
-                superDuperMarket.getStores().get(storeId).getItems().get(id),
-                amount)));
+                store.getItems().get(itemId),
+                amount,
+                store.getName(),
+                storeId)));
+
+        double distanceFromStoreToCustomer = calculateDistanceFromStoreToCustomer(
+                store.getLocation(), customerLocation);
         return new CartDTO(itemExtendedDTOList,
-                calculateDistanceFromStoreToCustomer(
-                        superDuperMarket.getStores().get(storeId).getLocation(), customerLocation),
-                superDuperMarket.getStores().get(storeId).getPPK());
+                distanceFromStoreToCustomer,
+                store.getPPK(),
+                store.getPPK() * distanceFromStoreToCustomer);
     }
 
     @Override
@@ -206,6 +215,42 @@ public class EngineImpl implements Engine{
                 .forEach((item)->store.getSalesCounter()
                         .replace(item.getId(),
                                 store.getSalesCounter().get(item.getId()) + item.getNumOfSales()));
+    }
+
+    @Override
+    public CartDTO summarizeDynamicOrder(Map<Integer, Double> itemsToAddToCart, Point customerLocation) {
+        List<ItemExtendedDTO> itemExtendedDTOList = new ArrayList<>();
+        Map<Integer, Store> storesMap = superDuperMarket.getStores();
+
+        itemsToAddToCart.forEach((itemId, amount)->{
+            double itemMinPrice = Double.MAX_VALUE;
+            Integer storeId = -1;   //note: fix
+
+            for(Map.Entry<Integer,Store> entry : storesMap.entrySet()){
+                Store currentStore = entry.getValue();
+                if(currentStore.getItems().containsKey(itemId) &&
+                        currentStore.getItems().get(itemId)<itemMinPrice){
+                    itemMinPrice = currentStore.getItems().get(itemId);
+                    storeId = entry.getKey();
+                }
+            }
+
+            itemExtendedDTOList.add(new ItemExtendedDTO(itemId,
+                    superDuperMarket.getItems().get(itemId).getName(),
+                    superDuperMarket.getItems().get(itemId).getPurchaseCategory(),
+                    -1,
+                    superDuperMarket.getStores().get(storeId).getItems().get(itemId),
+                    amount,
+                    superDuperMarket.getStores().get(storeId).getName(),
+                    storeId));
+        });
+        //note: calculate total delivery price.
+        return new CartDTO(itemExtendedDTOList, 0, 0, 0);
+    }
+
+    @Override
+    public void executeDynamicOrder(CartDTO cart, Date orderDate) {
+
     }
 
     //Calculate distance via pythagoras theorem [D = SQRT( (|X1-X2|)^2 + (|Y1-Y2|)^2)]

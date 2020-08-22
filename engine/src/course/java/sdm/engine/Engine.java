@@ -29,4 +29,8 @@ public interface Engine {
 
     CartDTO summarizeStaticOrder(Map<Integer, Double> itemsMap, int storeId, Point customerLocation);
     void executeStaticOrder(CartDTO cart, Date date, int storeId);
+
+    CartDTO summarizeDynamicOrder(Map<Integer, Double> itemsMap, Point customerLocation);
+
+    void executeDynamicOrder(CartDTO cart, Date orderDate);
 }

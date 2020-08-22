@@ -10,11 +10,12 @@ public class CartDTO {
     final private double totalItemsPrice;
     final private double totalOrderPrice;
 
-    public CartDTO(List<ItemExtendedDTO> items, double distanceFromStoreToCustomer, double PPK) {
+    public CartDTO(List<ItemExtendedDTO> items, double distanceFromStoreToCustomer,
+                   double PPK, double deliveryPrice) {
         this.items = items;
         this.distanceFromStoreToCustomer = distanceFromStoreToCustomer;
         this.PPK = PPK;
-        this.deliveryPrice = PPK * distanceFromStoreToCustomer;
+        this.deliveryPrice = deliveryPrice;
         this.totalItemsPrice = calculateTotalItemsPrice();
         this.totalOrderPrice = this.totalItemsPrice + this.deliveryPrice;
     }

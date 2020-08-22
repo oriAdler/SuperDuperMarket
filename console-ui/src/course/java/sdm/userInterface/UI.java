@@ -20,7 +20,7 @@ import java.util.stream.Collectors;
 
 public class UI {
     static private final int MIN_CHOICE = 1;
-    //note: instead of passing engine all the time make it a member of class.
+
     static public void run(){
         boolean superDuperMarketIsOpen = true;
         Engine engine = new EngineImpl();
@@ -62,6 +62,133 @@ public class UI {
                         MIN_CHOICE, Messenger.getMainMenu().length));
     }
 
+    static private void loadDataFromFile(Engine engine){
+        System.out.println(Messenger.ENTER_FILE_PATH);
+        Scanner scanner = new Scanner(System.in);
+        String filePath = scanner.nextLine();
+        try{
+            engine.loadDataFromFile(filePath);
+            System.out.println(Messenger.FILE_LOADED_SUCCESSFULLY);
+            System.out.println(Messenger.LINE_SEPARATOR_NEW_LINE);
+        }
+        catch (Exception exception){
+            System.out.println(exception.getMessage());
+            System.out.println(Messenger.LINE_SEPARATOR_NEW_LINE);
+        }
+    }
+
+    static private void displayStores(Engine engine){
+        if(!engine.isValidFileLoaded()){
+            System.out.println(Messenger.VALID_FILE_NOT_LOADED + "display stores");
+            System.out.println(Messenger.LINE_SEPARATOR_NEW_LINE);
+        }
+        else{
+            List<StoreDTO> storesList = engine.getAllStoreList();
+            storesList.stream()
+                    .map(UI::storeDTOToString)
+                    .forEach(System.out::println);
+        }
+    }
+
+    static private void displayAllItems(Engine engine){
+        if(!engine.isValidFileLoaded()){
+            System.out.println(Messenger.VALID_FILE_NOT_LOADED + "display all items");
+            System.out.println(Messenger.LINE_SEPARATOR_NEW_LINE);
+        }
+        else {
+            List<ItemDTO> itemsList = engine.getAllItemList();
+            System.out.println(Messenger.SUPER_DUPER_MARKET);
+            itemsList.stream()
+                    .map((ItemDTO item) -> itemDTOToString(item,false))
+                    .forEach(System.out::println);
+            System.out.println(Messenger.LINE_SEPARATOR_NEW_LINE);
+        }
+    }
+
+    static private void makeOrder(Engine engine){
+        if(!engine.isValidFileLoaded()){
+            System.out.println(Messenger.VALID_FILE_NOT_LOADED + "make an order");
+        }
+        else {
+            System.out.println(Messenger.generateMenu(Messenger.getChooseOrderMethodMenu()));
+            Integer Choice = Input.getOnePositiveIntegerInRange(MIN_CHOICE, Messenger.getCompleteOrderMenu().length,
+                    String.format("Invalid input: number must be between %d-%d",
+                            MIN_CHOICE, Messenger.getCompleteOrderMenu().length));
+            if(Choice.equals(1)){
+                makeStaticOrder(engine);
+            }
+            else{   //Choice.equals(2)
+                makeDynamicOrder(engine);
+            }
+        }
+        System.out.println(Messenger.LINE_SEPARATOR_NEW_LINE);
+    }
+
+    static private void makeStaticOrder(Engine engine){
+        displayStoresMinimalData(engine.getAllStoreList());
+        int storeId = chooseStore(engine);
+
+        System.out.println(Messenger.CHOOSE_DATE);
+        Date orderDate = Input.getDate();   //note: get date is buggy
+
+        Point customerLocation = getUserLocation(engine);
+
+        //note: show store name, maybe should get back DTO map
+        System.out.println("---" + engine.getStoreNameById(storeId) + "---");
+        displayAllItemInStore(engine, storeId);
+        System.out.println(Messenger.LINE_SEPARATOR_NEW_LINE);
+
+        Map<Integer, Double> itemsMap = chooseItems(engine, storeId, true);
+        if(itemsMap.isEmpty()){
+            System.out.println("No items were chosen");
+        }
+        else{
+            CartDTO cart = engine.summarizeStaticOrder(itemsMap, storeId, customerLocation);
+            displayOrderSummary(cart);
+            System.out.println(Messenger.generateMenu(Messenger.getCompleteOrderMenu()));
+            Integer Choice = Input.getOnePositiveIntegerInRange(MIN_CHOICE, Messenger.getCompleteOrderMenu().length,
+                    String.format("Invalid input: number must be between %d-%d",
+                            MIN_CHOICE, Messenger.getCompleteOrderMenu().length));
+            if(Choice.equals(1)){
+                engine.executeStaticOrder(cart, orderDate, storeId);
+                System.out.println("Thank you for buying " + engine.getStoreNameById(storeId) + "!");
+            }
+            else{
+                System.out.println("You chose to cancel to order.. hope to see you again soon");
+            }
+        }
+    }
+
+    static private void makeDynamicOrder(Engine engine){
+        System.out.println(Messenger.CHOOSE_DATE);
+        Date orderDate = Input.getDate();   //note: get date is buggy
+
+        Point customerLocation = getUserLocation(engine);
+
+        displayAllItems(engine);
+
+        Map<Integer, Double> itemsMap = chooseItems(engine, -1, false);
+
+        if(itemsMap.isEmpty()){
+            System.out.println("No items were chosen");
+        }
+        else{
+            CartDTO cart = engine.summarizeDynamicOrder(itemsMap, customerLocation);
+            displayOrderSummary(cart);
+            System.out.println(Messenger.generateMenu(Messenger.getCompleteOrderMenu()));
+            Integer Choice = Input.getOnePositiveIntegerInRange(MIN_CHOICE, Messenger.getCompleteOrderMenu().length,
+                    String.format("Invalid input: number must be between %d-%d",
+                            MIN_CHOICE, Messenger.getCompleteOrderMenu().length));
+            if(Choice.equals(1)){
+                engine.executeDynamicOrder(cart, orderDate);
+                System.out.println("Thank you for buying Super Duper Market!");
+            }
+            else{
+                System.out.println("You chose to cancel to order.. hope to see you again soon");
+            }
+        }
+    }
+
     static private void showOrdersHistory(Engine engine){
         if(!engine.isValidFileLoaded()){
             System.out.println(Messenger.VALID_FILE_NOT_LOADED + "see orders history");
@@ -74,47 +201,6 @@ public class UI {
                             .stream()
                             .map(order->orderDTOToString(order, false))
                             .collect(Collectors.joining("\n")));
-        }
-        System.out.println(Messenger.LINE_SEPARATOR_NEW_LINE);
-    }
-
-    static private void makeOrder(Engine engine){
-        if(!engine.isValidFileLoaded()){
-            System.out.println(Messenger.VALID_FILE_NOT_LOADED + "make an order");
-        }
-        else{
-            displayStoresMinimalData(engine.getAllStoreList());
-            int storeId = chooseStore(engine);
-
-            System.out.println(Messenger.CHOOSE_DATE);
-            Date orderDate = Input.getDate();   //note: get date is buggy
-
-            Point customerLocation = getUserLocation(engine);
-
-            //note: show store name, maybe should get back DTO map
-            System.out.println("---" + engine.getStoreNameById(storeId) + "---");
-            displayAllItemInStore(engine, storeId);
-            System.out.println(Messenger.LINE_SEPARATOR_NEW_LINE);
-
-            Map<Integer, Double> itemsMap = chooseItems(engine, storeId);
-            if(itemsMap.isEmpty()){
-                System.out.println("No items were chosen");
-            }
-            else{
-                CartDTO cart = engine.summarizeStaticOrder(itemsMap, storeId, customerLocation);
-                displayOrderSummary(cart);
-                System.out.println(Messenger.generateMenu(Messenger.getOrderMenu()));
-                Integer Choice = Input.getOnePositiveIntegerInRange(MIN_CHOICE, Messenger.getOrderMenu().length,
-                        String.format("Invalid input: number must be between %d-%d",
-                                MIN_CHOICE, Messenger.getOrderMenu().length));
-                if(Choice.equals(1)){
-                    engine.executeStaticOrder(cart, orderDate, storeId);
-                    System.out.println("Thank you for buying " + engine.getStoreNameById(storeId) + "!");
-                }
-                else{
-                    System.out.println("You chose to renounce to order.. hope to see you again soon");
-                }
-            }
         }
         System.out.println(Messenger.LINE_SEPARATOR_NEW_LINE);
     }
@@ -140,7 +226,7 @@ public class UI {
         System.out.println(Messenger.LINE_SEPARATOR_NEW_LINE);
     }
 
-    static private Map<Integer, Double> chooseItems(Engine engine, int storeId){
+    static private Map<Integer, Double> chooseItems(Engine engine, int storeId, boolean insideStore){
         Scanner scanner = new Scanner(System.in);
         Map<Integer, Double> itemsMap = new HashMap<>();
 
@@ -155,11 +241,13 @@ public class UI {
                 if(Input.isPositiveInteger(userInputString)){
                     int itemId = Integer.parseInt(userInputString);
 
-                    if(!engine.isItemExistInSystem(itemId)){
+                    if(!engine.isItemExistInSystem(itemId)) {
                         System.out.println("Invalid input: item is not exist in the system");
                     }
-                    else if(!engine.isItemSoldByStore(storeId, itemId)) {
-                            System.out.println("Invalid input: item is not sold by this store");
+                    else if(insideStore){    //Check next condition only if choosing items from store
+                        if(!engine.isItemSoldByStore(storeId, itemId)) {
+                                System.out.println("Invalid input: item is not sold by this store");
+                        }
                     }
                     else{   //User entered a valid item ID, continue to chose amount
                         PurchaseCategory category = engine.getItemPurchaseCategory(itemId);
@@ -231,7 +319,6 @@ public class UI {
         return customerLocation;
     }
 
-    //note: consider a generic function for choosing a store/item
     static private int chooseStore(Engine engine){
         System.out.println(Messenger.CHOOSE_STORE);
         boolean isValidChoice;
@@ -263,21 +350,6 @@ public class UI {
         System.out.println(Messenger.LINE_SEPARATOR_NEW_LINE);
     }
 
-    static private void displayAllItems(Engine engine){
-        if(!engine.isValidFileLoaded()){
-            System.out.println(Messenger.VALID_FILE_NOT_LOADED + "display all items");
-            System.out.println(Messenger.LINE_SEPARATOR_NEW_LINE);
-        }
-        else {
-            List<ItemDTO> itemsList = engine.getAllItemList();
-            System.out.println(Messenger.SUPER_DUPER_MARKET);
-            itemsList.stream()
-                    .map((ItemDTO item) -> itemDTOToString(item,false))
-                    .forEach(System.out::println);
-            System.out.println(Messenger.LINE_SEPARATOR_NEW_LINE);
-        }
-    }
-
     static private String itemDTOToString(ItemDTO item, boolean inStore){
         return "{" +
                 "Id: " + item.getId() +
@@ -288,19 +360,6 @@ public class UI {
                 ", Number of sales: " + (item.getPurchaseCategory().equals(PurchaseCategory.QUANTITY) ?
                 String.format("%.0f", item.getNumOfSales()) + " Units" : String.format("%.2f", item.getNumOfSales()) + " Kg") +
                 '}';
-    }
-
-    static private void displayStores(Engine engine){
-        if(!engine.isValidFileLoaded()){
-            System.out.println(Messenger.VALID_FILE_NOT_LOADED + "display stores");
-            System.out.println(Messenger.LINE_SEPARATOR_NEW_LINE);
-        }
-        else{
-            List<StoreDTO> storesList = engine.getAllStoreList();
-            storesList.stream()
-                    .map(UI::storeDTOToString)
-                    .forEach(System.out::println);
-        }
     }
 
     static private String storeDTOToString(StoreDTO store){
@@ -336,20 +395,5 @@ public class UI {
                 String.format(", deliveryPrice: %.2f", order.getDeliveryPrice()) +
                 String.format(", totalPrice: %.2f", order.getTotalPrice()) +
                 '}';
-    }
-
-    static private void loadDataFromFile(Engine engine){
-        System.out.println(Messenger.ENTER_FILE_PATH);
-        Scanner scanner = new Scanner(System.in);
-        String filePath = scanner.nextLine();
-        try{
-            engine.loadDataFromFile(filePath);
-            System.out.println(Messenger.FILE_LOADED_SUCCESSFULLY);
-            System.out.println(Messenger.LINE_SEPARATOR_NEW_LINE);
-        }
-        catch (Exception exception){
-            System.out.println(exception.getMessage());
-            System.out.println(Messenger.LINE_SEPARATOR_NEW_LINE);
-        }
     }
 }
