@@ -1,5 +1,7 @@
 package course.java.sdm.item;
 
+import java.util.Objects;
+
 public class Item {
     final private int id;
     final private String name;

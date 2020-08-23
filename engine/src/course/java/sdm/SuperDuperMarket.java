@@ -1,35 +1,26 @@
 package course.java.sdm;
 
-import course.java.sdm.order.Order;
-import course.java.sdm.item.Item;
-import course.java.sdm.store.Store;
+import course.java.sdm.DTO.CartDTO;
+import course.java.sdm.item.PurchaseCategory;
 
 import java.awt.*;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.Date;
 
-public class SuperDuperMarket {
-    private Map<Integer, Store> stores;
-    private Map<Integer, Item> items;
-    private Map<Integer, Order> orders;
+public interface SuperDuperMarket {
+    void checkCustomerLocationIsValid(Point location);
+    boolean isStoreExistById(int id);
+    boolean isItemSoldByStore(int storeId, int itemId);
+    boolean itemNotExistInSystem(int itemId);
 
-    public SuperDuperMarket(Map<Integer, Store> stores, Map<Integer, Item> items) {
-        this.stores = stores;
-        this.items = items;
-        this.orders = new HashMap<>();
-    }
+    int getItemPriceInStore(int storeId, int itemId);
+    PurchaseCategory getItemPurchaseCategory(int itemId);
+    String getStoreNameById(int storeId);
+    String getItemNameById(int itemId);
 
-    public Map<Integer, Store> getStores() {
-        return stores;
-    }
+    void removeItemFromStore(int storeId, int itemId);
+    void addItemToStore(int storeId, int itemId, int itemNewPrice);
+    void updateItemPriceInStore(int storeId, int itemId, int itemNewPrice);
 
-    public Map<Integer, Item> getItems() {
-        return items;
-    }
-
-    public Map<Integer, Order> getOrders() {
-        return orders;
-    }
+    void executeStaticOrder(CartDTO cart, Date date, int storeId);
+    void executeDynamicOrder(CartDTO cart, Date orderDate, Point customerLocation);
 }

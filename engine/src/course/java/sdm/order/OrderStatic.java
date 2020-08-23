@@ -2,7 +2,7 @@ package course.java.sdm.order;
 
 import java.util.Date;
 
-public class Order {
+public class OrderStatic {
     static private int id = 0;
     final private Date date;
     final private int storeId;
@@ -12,9 +12,11 @@ public class Order {
     final private double deliveryPrice;
     final private double totalOrderPrice;
 
-    public Order(Date date, int storeId, String storeName, int numOfItems,
-                 double itemsPrice, double deliveryPrice, double totalOrderPrice) {
-        id++;
+    public OrderStatic(Date date, int storeId, String storeName, int numOfItems, double itemsPrice,
+                       double deliveryPrice, double totalOrderPrice, boolean advanceId) {
+        if(advanceId){
+            id++;
+        }
         this.date = date;
         this.storeId = storeId;
         this.storeName = storeName;

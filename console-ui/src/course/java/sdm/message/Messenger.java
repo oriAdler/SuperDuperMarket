@@ -33,6 +33,9 @@ public class Messenger {
     public static final String CONTINUE_ORDER = "Please chose one of the options:\n" +
             "* Enter item's id to add item to cart [id]\n" +
             "* Enter 'q'/'Q' to proceed to checkout ['q'/'Q']";
+    public static final String ITEM_NOT_EXIST_SYSTEM = "Invalid input: item is not exist in the system";
+    public static final String ITEM_NOT_SOLD_BY_STORE ="Invalid input: item is not sold by this store";
+    public static final String ITEM_SOLD_BY_STORE ="Invalid input: item is already sold by this store";
 
     public static final String[] MAIN_MENU ={
             "Load file",
@@ -40,7 +43,14 @@ public class Messenger {
             "Display all items",
             "Make order",
             "Show orders history",
+            "Update store's Prices/Items",
             "Exit"
+    };
+
+    public static final String[] UPDATE_STORE_MENU ={
+            "Remove item from store",
+            "Add item to store",
+            "Update item price in store"
     };
 
     public static final String[] COMPLETE_ORDER_MENU ={
@@ -63,6 +73,10 @@ public class Messenger {
 
     public static String[] getCompleteOrderMenu() {
         return COMPLETE_ORDER_MENU;
+    }
+
+    public static String[] getUpdateStoreMenu() {
+        return UPDATE_STORE_MENU;
     }
 
     public static String generateMenu(String[] strings){

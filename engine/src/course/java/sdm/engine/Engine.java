@@ -4,6 +4,7 @@ import course.java.sdm.DTO.ItemDTO;
 import course.java.sdm.DTO.CartDTO;
 import course.java.sdm.DTO.OrderDTO;
 import course.java.sdm.DTO.StoreDTO;
+import course.java.sdm.SuperDuperMarket;
 import course.java.sdm.item.PurchaseCategory;
 
 import java.awt.*;
@@ -13,24 +14,13 @@ import java.util.Map;
 
 public interface Engine {
     void loadDataFromFile(String pathName);
+    boolean validFileIsNotLoaded();
+
+    SuperDuperMarket getSDM();
     List<StoreDTO> getAllStoreList();
     List<ItemDTO> getAllItemList();
     List<OrderDTO> getOrdersHistory();
 
-    boolean storeExistById(int id);
-    void checkCustomerLocationIsValid(Point location);
-    boolean isItemSoldByStore(int storeId, int itemId);
-    boolean isValidFileLoaded();
-    boolean isItemExistInSystem(int itemId);
-
-    int getItemPriceInStore(int storeId, int itemId);
-    PurchaseCategory getItemPurchaseCategory(int itemId);
-    String getStoreNameById(int storeId);
-
     CartDTO summarizeStaticOrder(Map<Integer, Double> itemsMap, int storeId, Point customerLocation);
-    void executeStaticOrder(CartDTO cart, Date date, int storeId);
-
     CartDTO summarizeDynamicOrder(Map<Integer, Double> itemsMap, Point customerLocation);
-
-    void executeDynamicOrder(CartDTO cart, Date orderDate);
 }

@@ -7,6 +7,7 @@ import course.java.sdm.DTO.StoreDTO;
 import course.java.sdm.engine.Engine;
 import course.java.sdm.engine.EngineImpl;
 import course.java.sdm.exception.invalidCustomerLocationException;
+import course.java.sdm.exception.invalidItemException;
 import course.java.sdm.input.Input;
 import course.java.sdm.item.PurchaseCategory;
 import course.java.sdm.message.Messenger;
@@ -45,6 +46,9 @@ public class UI {
                     showOrdersHistory(engine);
                     break;
                 case 6:
+                    updateStoreItems(engine);
+                    break;
+                case 7:
                     System.out.println(Messenger.EXIT);
                     System.out.println(Messenger.LINE_SEPARATOR_NEW_LINE);
                     superDuperMarketIsOpen = false;
@@ -78,7 +82,7 @@ public class UI {
     }
 
     static private void displayStores(Engine engine){
-        if(!engine.isValidFileLoaded()){
+        if(engine.validFileIsNotLoaded()){
             System.out.println(Messenger.VALID_FILE_NOT_LOADED + "display stores");
             System.out.println(Messenger.LINE_SEPARATOR_NEW_LINE);
         }
@@ -91,7 +95,7 @@ public class UI {
     }
 
     static private void displayAllItems(Engine engine){
-        if(!engine.isValidFileLoaded()){
+        if(engine.validFileIsNotLoaded()){
             System.out.println(Messenger.VALID_FILE_NOT_LOADED + "display all items");
             System.out.println(Messenger.LINE_SEPARATOR_NEW_LINE);
         }
@@ -106,7 +110,7 @@ public class UI {
     }
 
     static private void makeOrder(Engine engine){
-        if(!engine.isValidFileLoaded()){
+        if(engine.validFileIsNotLoaded()){
             System.out.println(Messenger.VALID_FILE_NOT_LOADED + "make an order");
         }
         else {
@@ -124,6 +128,36 @@ public class UI {
         System.out.println(Messenger.LINE_SEPARATOR_NEW_LINE);
     }
 
+    static private void updateStoreItems(Engine engine){
+        if(engine.validFileIsNotLoaded()){
+            System.out.println(Messenger.VALID_FILE_NOT_LOADED + "update store's products");
+        }
+        else{
+            displayStoresMinimalData(engine.getAllStoreList());
+            int storeId = chooseStore(engine);
+
+            System.out.println(Messenger.generateMenu(Messenger.getUpdateStoreMenu()));
+            int Choice = Input.getOnePositiveIntegerInRange(MIN_CHOICE, Messenger.getUpdateStoreMenu().length,
+                    String.format("Invalid input: number must be between %d-%d",
+                            MIN_CHOICE, Messenger.getUpdateStoreMenu().length));
+            switch(Choice){
+                case 1:
+                    removeItemFromStore(engine, storeId);
+                    break;
+                case 2:
+                    addItemToStore(engine, storeId);
+                    break;
+                case 3:
+                    updateItemPrice(engine, storeId);
+                    break;
+                default:
+                    System.out.println(Messenger.UNKNOWN_ERROR);
+                    System.out.println(Messenger.LINE_SEPARATOR_NEW_LINE);
+            }
+        }
+        System.out.println(Messenger.LINE_SEPARATOR_NEW_LINE);
+    }
+
     static private void makeStaticOrder(Engine engine){
         displayStoresMinimalData(engine.getAllStoreList());
         int storeId = chooseStore(engine);
@@ -133,25 +167,21 @@ public class UI {
 
         Point customerLocation = getUserLocation(engine);
 
-        //note: show store name, maybe should get back DTO map
-        System.out.println("---" + engine.getStoreNameById(storeId) + "---");
-        displayAllItemInStore(engine, storeId);
-        System.out.println(Messenger.LINE_SEPARATOR_NEW_LINE);
+        Map<Integer, Double> itemsMap = chooseItems(engine, storeId);
 
-        Map<Integer, Double> itemsMap = chooseItems(engine, storeId, true);
         if(itemsMap.isEmpty()){
             System.out.println("No items were chosen");
         }
         else{
             CartDTO cart = engine.summarizeStaticOrder(itemsMap, storeId, customerLocation);
-            displayOrderSummary(cart);
+            displayStaticOrderSummary(cart);
             System.out.println(Messenger.generateMenu(Messenger.getCompleteOrderMenu()));
             Integer Choice = Input.getOnePositiveIntegerInRange(MIN_CHOICE, Messenger.getCompleteOrderMenu().length,
                     String.format("Invalid input: number must be between %d-%d",
                             MIN_CHOICE, Messenger.getCompleteOrderMenu().length));
             if(Choice.equals(1)){
-                engine.executeStaticOrder(cart, orderDate, storeId);
-                System.out.println("Thank you for buying " + engine.getStoreNameById(storeId) + "!");
+                engine.getSDM().executeStaticOrder(cart, orderDate, storeId);
+                System.out.println("Thank you for buying " + engine.getSDM().getStoreNameById(storeId) + "!");
             }
             else{
                 System.out.println("You chose to cancel to order.. hope to see you again soon");
@@ -161,26 +191,24 @@ public class UI {
 
     static private void makeDynamicOrder(Engine engine){
         System.out.println(Messenger.CHOOSE_DATE);
-        Date orderDate = Input.getDate();   //note: get date is buggy
+        Date orderDate = Input.getDate();
 
         Point customerLocation = getUserLocation(engine);
 
-        displayAllItems(engine);
-
-        Map<Integer, Double> itemsMap = chooseItems(engine, -1, false);
+        Map<Integer, Double> itemsMap = chooseItems(engine);
 
         if(itemsMap.isEmpty()){
             System.out.println("No items were chosen");
         }
         else{
             CartDTO cart = engine.summarizeDynamicOrder(itemsMap, customerLocation);
-            displayOrderSummary(cart);
+            displayDynamicOrderSummary(cart);
             System.out.println(Messenger.generateMenu(Messenger.getCompleteOrderMenu()));
             Integer Choice = Input.getOnePositiveIntegerInRange(MIN_CHOICE, Messenger.getCompleteOrderMenu().length,
                     String.format("Invalid input: number must be between %d-%d",
                             MIN_CHOICE, Messenger.getCompleteOrderMenu().length));
             if(Choice.equals(1)){
-                engine.executeDynamicOrder(cart, orderDate);
+                engine.getSDM().executeDynamicOrder(cart, orderDate, customerLocation);
                 System.out.println("Thank you for buying Super Duper Market!");
             }
             else{
@@ -190,7 +218,7 @@ public class UI {
     }
 
     static private void showOrdersHistory(Engine engine){
-        if(!engine.isValidFileLoaded()){
+        if(engine.validFileIsNotLoaded()){
             System.out.println(Messenger.VALID_FILE_NOT_LOADED + "see orders history");
         }
         else{
@@ -205,7 +233,7 @@ public class UI {
         System.out.println(Messenger.LINE_SEPARATOR_NEW_LINE);
     }
 
-    static private void displayOrderSummary(CartDTO cart){
+    static private void displayStaticOrderSummary(CartDTO cart){
         System.out.println("---Order Summary---");
         System.out.println("--Cart--");
         cart.getItems().stream().map((item -> "{Id: " + item.getId() + ", "
@@ -226,12 +254,37 @@ public class UI {
         System.out.println(Messenger.LINE_SEPARATOR_NEW_LINE);
     }
 
-    static private Map<Integer, Double> chooseItems(Engine engine, int storeId, boolean insideStore){
+    static private void displayDynamicOrderSummary(CartDTO cart){
+        System.out.println("---Order Summary---");
+        System.out.println("--Cart--");
+        cart.getItems().stream().map((item -> "{Id: " + item.getId() + ", "
+                + "Name: " + item.getName() + ", "
+                + "Purchase category: " + item.getPurchaseCategory() + ", "
+                + String.format("Price: %.2f", item.getPrice()) + ", "
+                + (item.getPurchaseCategory().equals(PurchaseCategory.WEIGHT) ?
+                String.format("Weight: %.2f", item.getNumOfSales()) :
+                String.format("Quantity: %.0f", item.getNumOfSales()))
+                + ", "   //note: num of sales not such a good name
+                + String.format("Total: %.2f", item.getPriceSum()) + ", " +
+                "(Store: " + item.getStoreName() + ", " + "Store Id: " + item.getStoreId() + ")}"))
+                .forEach(System.out::println);
+        System.out.println(Messenger.LINE_SEPARATOR);
+        System.out.println(String.format("Delivery price: %.2f", cart.getDeliveryPrice()) + "\n"
+                + String.format("Total price: %.2f", cart.getTotalOrderPrice()));
+        System.out.println(Messenger.LINE_SEPARATOR_NEW_LINE);
+    }
+
+    //Chose items for static order, store Id is needed (function overloading)
+    static private Map<Integer, Double> chooseItems(Engine engine, int storeId){
         Scanner scanner = new Scanner(System.in);
         Map<Integer, Double> itemsMap = new HashMap<>();
 
         do{
+            System.out.println("---" + engine.getSDM().getStoreNameById(storeId) + "---");
+            displayAllItemInStore(engine, storeId);
+
             System.out.println(Messenger.CONTINUE_ORDER);
+            System.out.println(Messenger.LINE_SEPARATOR_NEW_LINE);
             String userInputString = scanner.nextLine().trim();
             //Check if user chose to finish choosing by entering "q"/"Q"
             if(userInputString.equals("q") || userInputString.equals("Q")){
@@ -241,32 +294,65 @@ public class UI {
                 if(Input.isPositiveInteger(userInputString)){
                     int itemId = Integer.parseInt(userInputString);
 
-                    if(!engine.isItemExistInSystem(itemId)) {
-                        System.out.println("Invalid input: item is not exist in the system");
+                    if(engine.getSDM().itemNotExistInSystem(itemId)) {
+                        System.out.println(Messenger.ITEM_NOT_EXIST_SYSTEM);
                     }
-                    else if(insideStore){    //Check next condition only if choosing items from store
-                        if(!engine.isItemSoldByStore(storeId, itemId)) {
-                                System.out.println("Invalid input: item is not sold by this store");
-                        }
+                    else if(!engine.getSDM().isItemSoldByStore(storeId, itemId)) {
+                            System.out.println(Messenger.ITEM_NOT_SOLD_BY_STORE);
                     }
                     else{   //User entered a valid item ID, continue to chose amount
-                        PurchaseCategory category = engine.getItemPurchaseCategory(itemId);
-                        System.out.println(String.format("Please enter item's %s\n"
-                                + (category.equals(PurchaseCategory.QUANTITY) ?
-                                "[Units]" : "[Kg]"), category.getName()));
-                        if(category.equals(PurchaseCategory.QUANTITY)) {
-                            int quantity = Input.getOnePositiveInteger();
-                            addItemToOrder(itemsMap, itemId, quantity);
-                        }
-                        else {  //category.equals(PurchaseCategory.WEIGHT)
-                            double weight = Input.getOnePositiveDouble();
-                            addItemToOrder(itemsMap, itemId, weight);
-                        }
+                        choseAmountOfItem(engine, itemId, itemsMap);
                     }
                 }
             }
             System.out.println(Messenger.LINE_SEPARATOR_NEW_LINE);
         } while(true);  //A return statement is inside the do-while loop
+    }
+
+    //Chose items for dynamic order (function overloading)
+    static private Map<Integer, Double> chooseItems(Engine engine){
+        Scanner scanner = new Scanner(System.in);
+        Map<Integer, Double> itemsMap = new HashMap<>();
+
+        do{
+            displayAllItems(engine);
+
+            System.out.println(Messenger.CONTINUE_ORDER);
+            System.out.println(Messenger.LINE_SEPARATOR_NEW_LINE);
+            String userInputString = scanner.nextLine().trim();
+            //Check if user chose to finish choosing by entering "q"/"Q"
+            if(userInputString.equals("q") || userInputString.equals("Q")){
+                return itemsMap;
+            }
+            else{   //User continues to chose items by ID
+                if(Input.isPositiveInteger(userInputString)){
+                    int itemId = Integer.parseInt(userInputString);
+
+                    if(engine.getSDM().itemNotExistInSystem(itemId)) {
+                        System.out.println(Messenger.ITEM_NOT_EXIST_SYSTEM);
+                    }
+                    else{   //User entered a valid item ID, continue to chose amount
+                        choseAmountOfItem(engine, itemId, itemsMap);
+                    }
+                }
+            }
+            System.out.println(Messenger.LINE_SEPARATOR_NEW_LINE);
+        } while(true);  //A return statement is inside the do-while loop
+    }
+
+    static private void choseAmountOfItem(Engine engine, Integer itemId, Map<Integer, Double> itemsMap){
+        PurchaseCategory category = engine.getSDM().getItemPurchaseCategory(itemId);
+        System.out.println(String.format("Please enter item's %s\n"
+                + (category.equals(PurchaseCategory.QUANTITY) ?
+                "[Units]" : "[Kg]"), category.getName()));
+        if(category.equals(PurchaseCategory.QUANTITY)) {
+            int quantity = Input.getOnePositiveInteger();
+            addItemToOrder(itemsMap, itemId, quantity);
+        }
+        else {  //category.equals(PurchaseCategory.WEIGHT)
+            double weight = Input.getOnePositiveDouble();
+            addItemToOrder(itemsMap, itemId, weight);
+        }
     }
 
     static private void addItemToOrder(Map<Integer, Double> itemsMap, int itemId, int quantity){
@@ -292,10 +378,11 @@ public class UI {
                 .map(itemDTO -> "{Id: " + itemDTO.getId() + ", "
                         + "Name: " + itemDTO.getName() + ", "
                         + "Purchase category: " + itemDTO.getPurchaseCategory() + ", "
-                        + "Price: " + (engine.isItemSoldByStore(storeId, itemDTO.getId()) ?
-                        engine.getItemPriceInStore(storeId, itemDTO.getId()) :
+                        + "Price: " + (engine.getSDM().isItemSoldByStore(storeId, itemDTO.getId()) ?
+                        engine.getSDM().getItemPriceInStore(storeId, itemDTO.getId()) :
                         "Not sold by this store") + "}")
                 .forEach(System.out::println);
+        System.out.println(Messenger.LINE_SEPARATOR_NEW_LINE);
     }
 
     static private Point getUserLocation(Engine engine){
@@ -307,7 +394,7 @@ public class UI {
             int[] inputArray = Input.getTwoIntegers();
             customerLocation = new Point(inputArray[0], inputArray[1]);
             try{
-                engine.checkCustomerLocationIsValid(customerLocation);
+                engine.getSDM().checkCustomerLocationIsValid(customerLocation);
                 isValidLocation = true;
             }
             catch (invalidCustomerLocationException exception){
@@ -326,7 +413,7 @@ public class UI {
 
         do{
             userChoice = Input.getOnePositiveInteger();
-            if(!engine.storeExistById(userChoice)){
+            if(!engine.getSDM().isStoreExistById(userChoice)){
                 System.out.println(String.format(
                         "Invalid choice: store with id '%d' does not exist", userChoice));
                 isValidChoice = false;
@@ -395,5 +482,74 @@ public class UI {
                 String.format(", deliveryPrice: %.2f", order.getDeliveryPrice()) +
                 String.format(", totalPrice: %.2f", order.getTotalPrice()) +
                 '}';
+    }
+
+    static private void removeItemFromStore(Engine engine, int storeId){
+        System.out.println("---" + engine.getSDM().getStoreNameById(storeId) + "---");
+        displayAllItemInStore(engine, storeId);
+        System.out.println("chose item's id to remove item from store [id]");
+
+        int itemId = Input.getOnePositiveInteger();
+        if(engine.getSDM().itemNotExistInSystem(itemId)){
+            System.out.println(Messenger.ITEM_NOT_EXIST_SYSTEM);
+        }
+        else if(!engine.getSDM().isItemSoldByStore(storeId, itemId)){
+            System.out.println(Messenger.ITEM_NOT_SOLD_BY_STORE);
+        }
+        else{   //User entered a valid item's id
+            try{
+                engine.getSDM().removeItemFromStore(storeId, itemId);
+                System.out.println(String.format(
+                        "item '%s' was removed form store '%s' successfully",
+                        engine.getSDM().getItemNameById(itemId), engine.getSDM().getStoreNameById(storeId)));
+            }
+            catch (invalidItemException exception){
+                System.out.println(exception.getMessage());
+            }
+        }
+    }
+
+    static private void addItemToStore(Engine engine, int storeId){
+        System.out.println("---" + engine.getSDM().getStoreNameById(storeId) + "---");
+        displayAllItemInStore(engine, storeId);
+        System.out.println("chose item's id to add item to store [id]");
+
+        int itemId = Input.getOnePositiveInteger();
+        if(engine.getSDM().itemNotExistInSystem(itemId)){
+            System.out.println(Messenger.ITEM_NOT_EXIST_SYSTEM);
+        }
+        else if(engine.getSDM().isItemSoldByStore(storeId, itemId)){
+            System.out.println(Messenger.ITEM_SOLD_BY_STORE);
+        }
+        else{   //User entered a valid item's id
+            System.out.println("Please enter item's price");
+            int itemNewPrice = Input.getOnePositiveInteger();
+            engine.getSDM().addItemToStore(storeId, itemId, itemNewPrice);
+            System.out.println(String.format(
+                    "item '%s' with price '%d' was added to '%s' successfully",
+                    engine.getSDM().getItemNameById(itemId), itemNewPrice, engine.getSDM().getStoreNameById(storeId)));
+        }
+    }
+
+    static private void updateItemPrice(Engine engine, int storeId){
+        System.out.println("---" + engine.getSDM().getStoreNameById(storeId) + "---");
+        displayAllItemInStore(engine, storeId);
+        System.out.println("chose item's id to update item's price in the store [id]");
+
+        int itemId = Input.getOnePositiveInteger();
+        if(engine.getSDM().itemNotExistInSystem(itemId)){
+            System.out.println(Messenger.ITEM_NOT_EXIST_SYSTEM);
+        }
+        else if(!engine.getSDM().isItemSoldByStore(storeId, itemId)){
+            System.out.println(Messenger.ITEM_NOT_SOLD_BY_STORE);
+        }
+        else{   //User entered a valid item's id
+            System.out.println("Please enter item's new price");
+            int itemNewPrice = Input.getOnePositiveInteger();
+            engine.getSDM().updateItemPriceInStore(storeId, itemId, itemNewPrice);
+            System.out.println(String.format(
+                    "%s's price in store '%s' was updated to '%d' successfully",
+                    engine.getSDM().getItemNameById(itemId), engine.getSDM().getStoreNameById(storeId), itemNewPrice));
+        }
     }
 }
