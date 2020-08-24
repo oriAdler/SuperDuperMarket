@@ -1,5 +1,9 @@
 package course.java.sdm.DTO;
 
+import jdk.internal.util.xml.impl.Input;
+
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 
 public class OrderDTO {
@@ -54,5 +58,31 @@ public class OrderDTO {
 
     public double getTotalPrice() {
         return totalPrice;
+    }
+
+    @Override
+    public String toString() {
+        DateFormat dateFormat = new SimpleDateFormat("dd/MM-HH:mm");
+        return "{" +
+                "id: " + id +
+                ", date: " + dateFormat.format(date) +
+                ", store id: " + storeId +
+                ", store name: " + storeName +
+                ", numOfItems: " + numOfItems +
+                String.format(", itemsPrice: %.2f", itemsPrice) +
+                String.format(", deliveryPrice: %.2f", deliveryPrice) +
+                String.format(", totalPrice: %.2f", totalPrice) +
+                '}';
+    }
+
+    public String toStringInStore() {
+        DateFormat dateFormat = new SimpleDateFormat("dd/MM-HH:mm");
+        return "{" +
+                "date: " + dateFormat.format(date) +
+                ", numOfItems: " + numOfItems +
+                String.format(", itemsPrice: %.2f", itemsPrice) +
+                String.format(", deliveryPrice: %.2f", deliveryPrice) +
+                String.format(", totalPrice: %.2f", totalPrice) +
+                '}';
     }
 }

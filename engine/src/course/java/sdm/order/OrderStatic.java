@@ -1,5 +1,7 @@
 package course.java.sdm.order;
 
+import course.java.sdm.DTO.OrderDTO;
+
 import java.util.Date;
 
 public class OrderStatic {
@@ -56,5 +58,16 @@ public class OrderStatic {
 
     public double getDeliveryPrice() {
         return deliveryPrice;
+    }
+
+    public OrderDTO orderToOrderDTO(int orderId){
+        return new OrderDTO(orderId,
+                this.getDate(),
+                this.getStoreId(),
+                this.getStoreName(),
+                this.getNumOfItems(),
+                this.getItemsPrice(),
+                this.getDeliveryPrice(),
+                this.getTotalOrderPrice());
     }
 }

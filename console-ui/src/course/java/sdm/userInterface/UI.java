@@ -11,6 +11,7 @@ import course.java.sdm.exception.invalidItemException;
 import course.java.sdm.input.Input;
 import course.java.sdm.item.PurchaseCategory;
 import course.java.sdm.message.Messenger;
+import course.java.sdm.store.Store;
 
 import java.awt.*;
 import java.text.DateFormat;
@@ -89,7 +90,7 @@ public class UI {
         else{
             List<StoreDTO> storesList = engine.getAllStoreList();
             storesList.stream()
-                    .map(UI::storeDTOToString)
+                    .map(StoreDTO::toString)
                     .forEach(System.out::println);
         }
     }
@@ -97,16 +98,15 @@ public class UI {
     static private void displayAllItems(Engine engine){
         if(engine.validFileIsNotLoaded()){
             System.out.println(Messenger.VALID_FILE_NOT_LOADED + "display all items");
-            System.out.println(Messenger.LINE_SEPARATOR_NEW_LINE);
         }
         else {
             List<ItemDTO> itemsList = engine.getAllItemList();
             System.out.println(Messenger.SUPER_DUPER_MARKET);
             itemsList.stream()
-                    .map((ItemDTO item) -> itemDTOToString(item,false))
+                    .map(ItemDTO::toString)
                     .forEach(System.out::println);
-            System.out.println(Messenger.LINE_SEPARATOR_NEW_LINE);
         }
+        System.out.println(Messenger.LINE_SEPARATOR_NEW_LINE);
     }
 
     static private void makeOrder(Engine engine){
@@ -173,7 +173,7 @@ public class UI {
             System.out.println("No items were chosen");
         }
         else{
-            CartDTO cart = engine.summarizeStaticOrder(itemsMap, storeId, customerLocation);
+            CartDTO cart = engine.getSDM().summarizeStaticOrder(itemsMap, storeId, customerLocation);
             displayStaticOrderSummary(cart);
             System.out.println(Messenger.generateMenu(Messenger.getCompleteOrderMenu()));
             Integer Choice = Input.getOnePositiveIntegerInRange(MIN_CHOICE, Messenger.getCompleteOrderMenu().length,
@@ -201,7 +201,7 @@ public class UI {
             System.out.println("No items were chosen");
         }
         else{
-            CartDTO cart = engine.summarizeDynamicOrder(itemsMap, customerLocation);
+            CartDTO cart = engine.getSDM().summarizeDynamicOrder(itemsMap, customerLocation);
             displayDynamicOrderSummary(cart);
             System.out.println(Messenger.generateMenu(Messenger.getCompleteOrderMenu()));
             Integer Choice = Input.getOnePositiveIntegerInRange(MIN_CHOICE, Messenger.getCompleteOrderMenu().length,
@@ -227,7 +227,7 @@ public class UI {
                             "No orders have been placed" : "---Orders---" + "\n" +
                             engine.getOrdersHistory()
                             .stream()
-                            .map(order->orderDTOToString(order, false))
+                            .map(OrderDTO::toString)
                             .collect(Collectors.joining("\n")));
         }
         System.out.println(Messenger.LINE_SEPARATOR_NEW_LINE);
@@ -435,53 +435,6 @@ public class UI {
                         "PPK: " + storeDTO.getPPK() + "}")
                 .forEach(System.out::println);
         System.out.println(Messenger.LINE_SEPARATOR_NEW_LINE);
-    }
-
-    static private String itemDTOToString(ItemDTO item, boolean inStore){
-        return "{" +
-                "Id: " + item.getId() +
-                ", Name: '" + item.getName() + '\'' +
-                ", Purchase category: " + item.getPurchaseCategory() +
-                (inStore ? "" : ", Number of sellers: " + item.getNumOfSellers()) +
-                ", Price: " + String.format("%.2f", item.getPrice()) +
-                ", Number of sales: " + (item.getPurchaseCategory().equals(PurchaseCategory.QUANTITY) ?
-                String.format("%.0f", item.getNumOfSales()) + " Units" : String.format("%.2f", item.getNumOfSales()) + " Kg") +
-                '}';
-    }
-
-    static private String storeDTOToString(StoreDTO store){
-        return "---" + store.getName() + "---" + "\n" +
-                "Id: " + store.getId() + "\n" +
-                "--Items-- \n" +
-                store.getItems()
-                .stream()
-                .map((ItemDTO item) -> itemDTOToString(item,true))
-                .collect(Collectors.joining("\n")) +
-                "\n" + Messenger.LINE_SEPARATOR_NEW_LINE +
-                "Orders: \n" +
-                (store.getOrders().isEmpty() ? "No orders have been placed" :
-                store.getOrders()
-                        .stream()
-                        .map((OrderDTO order)->orderDTOToString(order, true))
-                        .collect(Collectors.joining("\n"))) +
-                "\n" + Messenger.LINE_SEPARATOR_NEW_LINE +
-                "PPK: " + store.getPPK() + "\n" +
-                String.format("TotalShipmentsIncome: %.2f", store.getTotalDeliveryIncome()) + "\n" +
-                Messenger.LINE_SEPARATOR_NEW_LINE;
-    }
-
-    static private String orderDTOToString(OrderDTO order, boolean inStore){
-        DateFormat dateFormat = new SimpleDateFormat(Input.DATE_FORMAT);
-        return "{" +
-                (inStore ? "" : "id: " + order.getId() + ", ") +
-                "date: " + dateFormat.format(order.getDate()) +
-                (inStore ? "" :", store id: " + order.getStoreId()) +
-                (inStore ? "" : ", store name: " + order.getStoreName()) + "\n" +
-                "numOfItems: " + order.getNumOfItems() +
-                String.format(", itemsPrice: %.2f", order.getItemsPrice()) +
-                String.format(", deliveryPrice: %.2f", order.getDeliveryPrice()) +
-                String.format(", totalPrice: %.2f", order.getTotalPrice()) +
-                '}';
     }
 
     static private void removeItemFromStore(Engine engine, int storeId){

@@ -5,6 +5,7 @@ import course.java.sdm.item.PurchaseCategory;
 
 import java.awt.*;
 import java.util.Date;
+import java.util.Map;
 
 public interface SuperDuperMarket {
     void checkCustomerLocationIsValid(Point location);
@@ -23,4 +24,6 @@ public interface SuperDuperMarket {
 
     void executeStaticOrder(CartDTO cart, Date date, int storeId);
     void executeDynamicOrder(CartDTO cart, Date orderDate, Point customerLocation);
+    CartDTO summarizeStaticOrder(Map<Integer, Double> itemsMap, int storeId, Point customerLocation);
+    CartDTO summarizeDynamicOrder(Map<Integer, Double> itemsMap, Point customerLocation);
 }

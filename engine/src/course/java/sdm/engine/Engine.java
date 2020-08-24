@@ -20,7 +20,4 @@ public interface Engine {
     List<StoreDTO> getAllStoreList();
     List<ItemDTO> getAllItemList();
     List<OrderDTO> getOrdersHistory();
-
-    CartDTO summarizeStaticOrder(Map<Integer, Double> itemsMap, int storeId, Point customerLocation);
-    CartDTO summarizeDynamicOrder(Map<Integer, Double> itemsMap, Point customerLocation);
 }

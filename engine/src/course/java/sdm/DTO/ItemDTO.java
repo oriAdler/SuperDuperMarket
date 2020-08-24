@@ -43,4 +43,28 @@ public class ItemDTO {
     public double getNumOfSales() {
         return numOfSales;
     }
+
+    @Override
+    public String toString() {
+        return "{" +
+                "Id: " + id +
+                ", Name: '" + name + '\'' +
+                ", Purchase category: " + category.toString() +
+                ", Number of sellers: " + numOfSellers +
+                ", Price: " + String.format("%.2f", price) +
+                ", Number of sales: " + (category.equals(PurchaseCategory.QUANTITY) ?
+                String.format("%.0f", numOfSales) + " Units" : String.format("%.2f", numOfSales) + " Kg") +
+                '}';
+    }
+
+    public String toStringInStore(){
+        return "{" +
+                "Id: " + id +
+                ", Name: '" + name + '\'' +
+                ", Purchase category: " + category.toString() +
+                ", Price: " + String.format("%.2f", price) +
+                ", Number of sales: " + (category.equals(PurchaseCategory.QUANTITY) ?
+                String.format("%.0f", numOfSales) + " Units" : String.format("%.2f", numOfSales) + " Kg") +
+                '}';
+    }
 }
