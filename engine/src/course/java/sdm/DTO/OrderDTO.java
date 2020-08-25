@@ -68,10 +68,10 @@ public class OrderDTO {
                 ", date: " + dateFormat.format(date) +
                 ", store id: " + storeId +
                 ", store name: " + storeName +
-                ", numOfItems: " + numOfItems +
-                String.format(", itemsPrice: %.2f", itemsPrice) +
-                String.format(", deliveryPrice: %.2f", deliveryPrice) +
-                String.format(", totalPrice: %.2f", totalPrice) +
+                ", number of items: " + numOfItems +
+                String.format(", items price: %.2f", itemsPrice) +
+                String.format(", delivery price: %.2f", deliveryPrice) +
+                String.format(", total price: %.2f", totalPrice) +
                 '}';
     }
 
@@ -79,10 +79,10 @@ public class OrderDTO {
         DateFormat dateFormat = new SimpleDateFormat("dd/MM-HH:mm");
         return "{" +
                 "date: " + dateFormat.format(date) +
-                ", numOfItems: " + numOfItems +
-                String.format(", itemsPrice: %.2f", itemsPrice) +
-                String.format(", deliveryPrice: %.2f", deliveryPrice) +
-                String.format(", totalPrice: %.2f", totalPrice) +
+                ", number of items: " + numOfItems +
+                String.format(", items price: %.2f", itemsPrice) +
+                String.format(", delivery price: %.2f", deliveryPrice) +
+                String.format(", total price: %.2f", totalPrice) +
                 '}';
     }
 }

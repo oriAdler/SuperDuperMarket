@@ -20,4 +20,7 @@ public interface Engine {
     List<StoreDTO> getAllStoreList();
     List<ItemDTO> getAllItemList();
     List<OrderDTO> getOrdersHistory();
+
+    void saveOrders();
+    void loadOrders();
 }

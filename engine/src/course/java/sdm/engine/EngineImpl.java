@@ -13,6 +13,7 @@ import course.java.sdm.order.OrderStatic;
 import course.java.sdm.store.Store;
 
 import java.awt.*;
+import java.io.IOException;
 import java.util.*;
 import java.util.List;
 
@@ -76,7 +77,7 @@ public class EngineImpl implements Engine{
     public List<OrderDTO> getOrdersHistory() {
         List<OrderDTO> orderDTOList = new ArrayList<>();
         superDuperMarketImpl.getOrderIdToOrder()
-                .forEach((key, value) -> orderDTOList.add(value.orderToOrderDTO(key)));
+                .forEach((key, value) -> orderDTOList.add(value.convertOrderToOrderDTO(key)));
         return orderDTOList;
     }
 
@@ -93,10 +94,10 @@ public class EngineImpl implements Engine{
                         orderDTOList.add(
                                 ((OrderDynamic)currentOrder)    //Casting to Order Dynamic
                                         .getStoreIdToOrder().get(storeId)   //Get store's part in order
-                                        .orderToOrderDTO(orderId));     //Convert to DTO object
+                                        .convertOrderToOrderDTO(orderId));     //Convert to DTO object
                     }
                     else{
-                        orderDTOList.add(currentOrder.orderToOrderDTO(orderId));
+                        orderDTOList.add(currentOrder.convertOrderToOrderDTO(orderId)); //note: exception
                     }
                 });
         return orderDTOList;
@@ -120,7 +121,7 @@ public class EngineImpl implements Engine{
         Map<Integer, Item> itemsMap = new HashMap<>();
         List<SDMItem> SDMItemsList = superDuperMarketDescriptor.getSDMItems().getSDMItem();
         for(SDMItem item : SDMItemsList){
-            itemsMap.put(item.getId(), new Item(item.getId(), item.getName(), item.getPurchaseCategory()));
+            itemsMap.put(item.getId(), new Item(item.getId(), item.getName(), item.getPurchaseCategory(), 0));
         }
         //Convert stores list:
         Map<Integer, Store> storesMap = new HashMap<>();
@@ -136,5 +137,26 @@ public class EngineImpl implements Engine{
         }
 
         this.superDuperMarketImpl = new SuperDuperMarketImpl(storesMap, itemsMap);
+    }
+
+    @Override
+    public void saveOrders() {
+        try {
+            Serialization.writeOrdersToFile(superDuperMarketImpl.getOrderIdToOrder());
+        }
+        catch (IOException ioException){
+            System.out.println(ioException.getMessage());
+        }
+    }
+
+    @Override
+    public void loadOrders() {
+        try {
+            Map<Integer, OrderStatic> orderIdToOrder = Serialization.readOrdersFromFile();
+            superDuperMarketImpl.addOrdersFromFileToSDM(orderIdToOrder);
+        }
+        catch (Exception exception){
+            System.out.println(exception.getMessage());
+        }
     }
 }

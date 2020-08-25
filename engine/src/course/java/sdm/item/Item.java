@@ -1,18 +1,18 @@
 package course.java.sdm.item;
 
-import java.util.Objects;
+import java.io.Serializable;
 
-public class Item {
+public class Item implements Serializable {
     final private int id;
     final private String name;
     final private PurchaseCategory category;
-    final private int numberOfSales;
+    final private double numberOfSales;
 
-    public Item(int id, String name, String purchaseCategory) {
+    public Item(int id, String name, String purchaseCategory, double numberOfSales) {
         this.id = id;
         this.name = name;
         this.category = PurchaseCategory.valueOf(purchaseCategory.toUpperCase());
-        this.numberOfSales = 0;
+        this.numberOfSales = numberOfSales;
     }
 
     public int getId() {
@@ -27,7 +27,7 @@ public class Item {
         return category;
     }
 
-    public int getNumberOfSales() {
+    public double getNumberOfSales() {
         return numberOfSales;
     }
 }

@@ -11,11 +11,8 @@ import course.java.sdm.exception.invalidItemException;
 import course.java.sdm.input.Input;
 import course.java.sdm.item.PurchaseCategory;
 import course.java.sdm.message.Messenger;
-import course.java.sdm.store.Store;
 
 import java.awt.*;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -50,6 +47,12 @@ public class UI {
                     updateStoreItems(engine);
                     break;
                 case 7:
+                    saveOrdersToFile(engine);
+                    break;
+                case 8:
+                    loadOrdersFromFile(engine);
+                    break;
+                case 9:
                     System.out.println(Messenger.EXIT);
                     System.out.println(Messenger.LINE_SEPARATOR_NEW_LINE);
                     superDuperMarketIsOpen = false;
@@ -239,7 +242,7 @@ public class UI {
         cart.getItems().stream().map((item -> "{Id: " + item.getId() + ", "
                 + "Name: " + item.getName() + ", "
                 + "Purchase category: " + item.getPurchaseCategory() + ", "
-                + String.format("Price: %.2f", item.getPrice()) + ", "
+                + String.format("Price: %.0f", item.getPrice()) + ", "
                 + (item.getPurchaseCategory().equals(PurchaseCategory.WEIGHT) ?
                 String.format("Weight: %.2f", item.getNumOfSales()) :
                 String.format("Quantity: %.0f", item.getNumOfSales()))
@@ -248,7 +251,7 @@ public class UI {
                 .forEach(System.out::println);
         System.out.println(Messenger.LINE_SEPARATOR);
         System.out.println(String.format("Distance from store: %.2f", cart.getDistanceFromStoreToCustomer()) + "\n"
-                + String.format("PPK: %.2f",cart.getPPK())+ "\n"
+                + String.format("PPK: %.0f",cart.getPPK())+ "\n"
                 + String.format("Delivery price: %.2f", cart.getDeliveryPrice()) + "\n"
                 + String.format("Total price: %.2f", cart.getTotalOrderPrice()));
         System.out.println(Messenger.LINE_SEPARATOR_NEW_LINE);
@@ -260,7 +263,7 @@ public class UI {
         cart.getItems().stream().map((item -> "{Id: " + item.getId() + ", "
                 + "Name: " + item.getName() + ", "
                 + "Purchase category: " + item.getPurchaseCategory() + ", "
-                + String.format("Price: %.2f", item.getPrice()) + ", "
+                + String.format("Price: %.0f", item.getPrice()) + ", "
                 + (item.getPurchaseCategory().equals(PurchaseCategory.WEIGHT) ?
                 String.format("Weight: %.2f", item.getNumOfSales()) :
                 String.format("Quantity: %.0f", item.getNumOfSales()))
@@ -503,6 +506,24 @@ public class UI {
             System.out.println(String.format(
                     "%s's price in store '%s' was updated to '%d' successfully",
                     engine.getSDM().getItemNameById(itemId), engine.getSDM().getStoreNameById(storeId), itemNewPrice));
+        }
+    }
+
+    static private void saveOrdersToFile(Engine engine){
+        if(engine.validFileIsNotLoaded()){
+            System.out.println(Messenger.VALID_FILE_NOT_LOADED + "save orders to file");
+        }
+        else{
+            engine.saveOrders();
+        }
+    }
+
+    static private void loadOrdersFromFile(Engine engine){
+        if(engine.validFileIsNotLoaded()){
+            System.out.println(Messenger.VALID_FILE_NOT_LOADED + "load orders from file");
+        }
+        else{
+            engine.loadOrders();
         }
     }
 }

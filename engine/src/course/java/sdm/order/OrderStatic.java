@@ -1,10 +1,13 @@
 package course.java.sdm.order;
 
 import course.java.sdm.DTO.OrderDTO;
+import course.java.sdm.item.Item;
 
+import java.io.Serializable;
 import java.util.Date;
+import java.util.List;
 
-public class OrderStatic {
+public class OrderStatic implements Serializable {
     static private int id = 0;
     final private Date date;
     final private int storeId;
@@ -13,9 +16,10 @@ public class OrderStatic {
     final private double itemsPrice;
     final private double deliveryPrice;
     final private double totalOrderPrice;
+    final private List<Item> itemList;
 
     public OrderStatic(Date date, int storeId, String storeName, int numOfItems, double itemsPrice,
-                       double deliveryPrice, double totalOrderPrice, boolean advanceId) {
+                       double deliveryPrice, double totalOrderPrice, boolean advanceId, List<Item> itemList) {
         if(advanceId){
             id++;
         }
@@ -26,10 +30,15 @@ public class OrderStatic {
         this.itemsPrice = itemsPrice;
         this.deliveryPrice = deliveryPrice;
         this.totalOrderPrice = totalOrderPrice;
+        this.itemList = itemList;
     }
 
     public static int getId() {
         return id;
+    }
+
+    public static void setId(int id) {
+        OrderStatic.id = id;
     }
 
     public Date getDate() {
@@ -60,7 +69,11 @@ public class OrderStatic {
         return deliveryPrice;
     }
 
-    public OrderDTO orderToOrderDTO(int orderId){
+    public List<Item> getItemList() {
+        return itemList;
+    }
+
+    public OrderDTO convertOrderToOrderDTO(int orderId){
         return new OrderDTO(orderId,
                 this.getDate(),
                 this.getStoreId(),

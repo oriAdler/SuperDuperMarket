@@ -1,12 +1,13 @@
 package course.java.sdm.store;
 
 import java.awt.*;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class Store {
+public class Store implements Serializable {
     final private int Id;
     final private String name;
     final private Map<Integer, Integer> itemIdToPrice;

@@ -2,6 +2,7 @@ package course.java.sdm;
 
 import course.java.sdm.DTO.CartDTO;
 import course.java.sdm.item.PurchaseCategory;
+import course.java.sdm.order.OrderStatic;
 
 import java.awt.*;
 import java.util.Date;
@@ -26,4 +27,6 @@ public interface SuperDuperMarket {
     void executeDynamicOrder(CartDTO cart, Date orderDate, Point customerLocation);
     CartDTO summarizeStaticOrder(Map<Integer, Double> itemsMap, int storeId, Point customerLocation);
     CartDTO summarizeDynamicOrder(Map<Integer, Double> itemsMap, Point customerLocation);
+
+    void addOrdersFromFileToSDM(Map<Integer, OrderStatic> orderIdToOrder);
 }

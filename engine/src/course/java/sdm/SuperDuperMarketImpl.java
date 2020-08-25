@@ -1,6 +1,7 @@
 package course.java.sdm;
 
 import course.java.sdm.DTO.CartDTO;
+import course.java.sdm.DTO.ItemDTO;
 import course.java.sdm.DTO.ItemExtendedDTO;
 import course.java.sdm.engine.XmlFileHandler;
 import course.java.sdm.exception.invalidCustomerLocationException;
@@ -183,7 +184,11 @@ public class SuperDuperMarketImpl implements SuperDuperMarket {
         OrderStatic orderStatic = new OrderStatic(date, storeId,
                 storeIdToStore.get(storeId).getName(),
                 cart.getItems().size(), cart.getTotalItemsPrice(),
-                cart.getDeliveryPrice(), cart.getTotalOrderPrice(), true);
+                cart.getDeliveryPrice(), cart.getTotalOrderPrice(),
+                true,
+                cart.getItems().stream()    //Generate items list:
+                        .map(this::itemDTOToItem)
+                        .collect(Collectors.toList()));
         orderIdToOrder.put(OrderStatic.getId(), orderStatic);
 
         //Update store's orders list & total delivery income:
@@ -205,31 +210,38 @@ public class SuperDuperMarketImpl implements SuperDuperMarket {
                 .map(ItemExtendedDTO::getStoreId)
                 .collect(Collectors.toSet());
         //Add dynamic order to Super Duper Market:
-        Map<Integer, OrderStatic> orderStaticMap = new HashMap<>();
+        Map<Integer, OrderStatic> orderIdToOrderStatic = new HashMap<>();
         storesIdSet.forEach(storeId-> {
             Store store = storeIdToStore.get(storeId);
             double deliveryPrice = store.calculateDeliveryPrice(customerLocation);
             double itemsPrice = calculateItemsPriceFromStoreInCart(cart, storeId);
 
-            orderStaticMap.put(storeId, new OrderStatic(date,
+            orderIdToOrderStatic.put(storeId, new OrderStatic(date,
                     storeId,
                     store.getName(),
                     calculateNumOfItemsFromStoreInCart(cart, storeId),
                     itemsPrice,
                     deliveryPrice,
                     deliveryPrice + itemsPrice,
-                    false));
+                    false,
+                    cart.getItems().stream()    //Generate items list of current store:
+                            .filter(item -> item.getStoreId().equals(storeId))
+                            .map(this::itemDTOToItem)
+                            .collect(Collectors.toList())));
         });
 
         OrderDynamic orderDynamic = new OrderDynamic(date,
-                -1,
+                0,  //note: special number for SDM
                 "Super Duper Market",
                 cart.getItems().size(),
                 cart.getTotalItemsPrice(),
                 cart.getDeliveryPrice(),
                 cart.getTotalOrderPrice(),
-                new HashMap<>(orderStaticMap),
-                true);
+                new HashMap<>(orderIdToOrderStatic),
+                true,
+                cart.getItems().stream()    //Generate items list:
+                        .map(this::itemDTOToItem)
+                        .collect(Collectors.toList()));
         orderIdToOrder.put(OrderStatic.getId(), orderDynamic);
 
         //Update store's orders list & total delivery income:
@@ -237,7 +249,7 @@ public class SuperDuperMarketImpl implements SuperDuperMarket {
             Store store = storeIdToStore.get(storeId);
             store.getOrders().add(OrderStatic.getId());
             store.setTotalDeliveryIncome(
-                    store.getTotalDeliveryIncome() + orderStaticMap.get(storeId).getDeliveryPrice());
+                    store.getTotalDeliveryIncome() + orderIdToOrderStatic.get(storeId).getDeliveryPrice());
         });
 
         //Update store's sales counter:
@@ -312,5 +324,44 @@ public class SuperDuperMarketImpl implements SuperDuperMarket {
         return (int) cart.getItems().stream()
                 .filter(item->item.getStoreId().equals(storeId))
                 .count();
+    }
+
+    @Override
+    public void addOrdersFromFileToSDM(Map<Integer, OrderStatic> orderIdToOrder) {
+        orderIdToOrder.forEach((orderId, order) -> {
+            this.orderIdToOrder.put(orderId, order);    //Add order to orders history
+
+            if (order instanceof OrderDynamic) {    //Order is dynamic order
+                Map<Integer, OrderStatic> storeIdToOrderStatic = ((OrderDynamic) order).getStoreIdToOrder();
+                storeIdToOrderStatic.forEach((storeId, orderStatic) ->
+                                updateStoreRevenue(storeIdToStore.get(orderStatic.getStoreId()), orderId, orderStatic));
+            }
+            else {   //Order is a static order
+                updateStoreRevenue(storeIdToStore.get(order.getStoreId()), orderId, order);
+            }
+        });
+
+        //Update order's running id number
+        OrderStatic.setId(orderIdToOrder.size());
+    }
+
+    private void updateStoreRevenue(Store store, int orderId, OrderStatic orderStatic) {
+        //Update store's orders list & total delivery income:
+        store.getOrders().add(orderId);
+        store.setTotalDeliveryIncome(store.getTotalDeliveryIncome() +
+                orderStatic.getDeliveryPrice());
+
+        //Update store's sales counter:
+        orderStatic.getItemList().forEach(item -> {
+            store.getItemIdToNumberOfSales().replace(item.getId(),
+                    store.getItemIdToNumberOfSales().get(item.getId()) + item.getNumberOfSales());
+        });
+    }
+
+    private Item itemDTOToItem(ItemDTO itemDTO){
+        return new Item(itemDTO.getId(),
+                itemDTO.getName(),
+                itemDTO.getPurchaseCategory().getName(),
+                itemDTO.getNumOfSales());
     }
 }

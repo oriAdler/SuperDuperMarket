@@ -60,8 +60,8 @@ public class StoreDTO {
                                 .map(OrderDTO::toStringInStore)
                                 .collect(Collectors.joining("\n"))) +
                 "\n" + "----------------------------------------\n" +
-                "PPK: " + PPK + "\n" +
-                String.format("TotalShipmentsIncome: %.2f", totalDeliveryIncome) + "\n" +
+                String.format("PPK: %.0f", PPK) + "\n" +
+                String.format("Total delivery income: %.2f", totalDeliveryIncome) + "\n" +
                 "----------------------------------------\n";
     }
 }

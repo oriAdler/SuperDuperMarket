@@ -44,6 +44,8 @@ public class Messenger {
             "Make order",
             "Show orders history",
             "Update store's Prices/Items",
+            "Save orders to file",
+            "Load orders from file",
             "Exit"
     };
 

@@ -7,7 +7,7 @@ public class ItemDTO {
     final private String name;
     final private PurchaseCategory category;
     final private int numOfSellers;
-    final private double price;
+    final private double price; //note: change to int
     final private double numOfSales;
 
     public ItemDTO(int id, String name, PurchaseCategory category,
@@ -51,7 +51,7 @@ public class ItemDTO {
                 ", Name: '" + name + '\'' +
                 ", Purchase category: " + category.toString() +
                 ", Number of sellers: " + numOfSellers +
-                ", Price: " + String.format("%.2f", price) +
+                ", Price: " + String.format("%.0f", price) +
                 ", Number of sales: " + (category.equals(PurchaseCategory.QUANTITY) ?
                 String.format("%.0f", numOfSales) + " Units" : String.format("%.2f", numOfSales) + " Kg") +
                 '}';
@@ -62,7 +62,7 @@ public class ItemDTO {
                 "Id: " + id +
                 ", Name: '" + name + '\'' +
                 ", Purchase category: " + category.toString() +
-                ", Price: " + String.format("%.2f", price) +
+                ", Price: " + String.format("%.0f", price) +
                 ", Number of sales: " + (category.equals(PurchaseCategory.QUANTITY) ?
                 String.format("%.0f", numOfSales) + " Units" : String.format("%.2f", numOfSales) + " Kg") +
                 '}';
