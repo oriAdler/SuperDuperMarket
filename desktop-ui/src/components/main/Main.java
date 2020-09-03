@@ -18,19 +18,19 @@ public class Main extends Application {
         FXMLLoader loader = new FXMLLoader();
 
         // Load main fxml
-        URL mainFXML = getClass().getResource("sdm.fxml");
+        URL mainFXML = getClass().getResource("/components/main/sdm.fxml");
         loader.setLocation(mainFXML);
         BorderPane root = loader.load();
 
         // Wire up controller
         MainController mainController = loader.getController();
-        Engine engine = new EngineImpl(mainController);
+        Engine engine = new EngineImpl();
         mainController.setPrimaryStage(primaryStage);
         mainController.setEngine(engine);
 
         // Set stage:
         primaryStage.setTitle("Super Duper Market");
-        Scene scene = new Scene(root, 600, 400);
+        Scene scene = new Scene(root, 800, 600);
         primaryStage.setScene(scene);
         primaryStage.show();
     }

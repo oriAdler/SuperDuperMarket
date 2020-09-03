@@ -43,6 +43,10 @@ public class SuperDuperMarketImpl implements SuperDuperMarket {
         return orderIdToOrder;
     }
 
+    public Map<Integer, Customer> getCustomerIdToCustomer() {
+        return customerIdToCustomer;
+    }
+
     public int getNumOfSellersById(int id){
         return (int) storeIdToStore
                 .values()

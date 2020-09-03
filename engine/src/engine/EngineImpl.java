@@ -1,9 +1,9 @@
 package engine;
 
+import DTO.CustomerDTO;
 import DTO.ItemDTO;
 import DTO.OrderDTO;
 import DTO.StoreDTO;
-import components.main.MainController;
 import exception.DatFileException;
 import jaxb.schema.generated.*;
 import sdm.SuperDuperMarket;
@@ -28,10 +28,8 @@ public class EngineImpl implements Engine{
     static public final int MAX_RANGE = 50;
     private SuperDuperMarketImpl superDuperMarketImpl;
     private boolean validFileLoaded;
-    final private MainController mainController;
 
-    public EngineImpl(MainController mainController) {
-        this.mainController = mainController;
+    public EngineImpl() {
         this.validFileLoaded = false;
     }
 
@@ -86,6 +84,20 @@ public class EngineImpl implements Engine{
         superDuperMarketImpl.getOrderIdToOrder()
                 .forEach((key, value) -> orderDTOList.add(value.convertOrderToOrderDTO(key)));
         return orderDTOList;
+    }
+
+    @Override
+    public List<CustomerDTO> getAllCustomersList() {
+        List<CustomerDTO> customerDTOList = new ArrayList<>();
+        superDuperMarketImpl.getCustomerIdToCustomer()
+                .forEach((id, customer) -> customerDTOList.add(new CustomerDTO(id,
+                        customer.getName(),
+                        customer.getLocation().x,
+                        customer.getLocation().y,
+                        customer.getOrdersIdList().size(),
+                        customer.getAverageOrdersPrice(),
+                        customer.getAverageDeliveryPrice())));
+        return customerDTOList;
     }
 
     //Gets a store's id and returns a list of orders from this store.

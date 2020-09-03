@@ -16,7 +16,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public class XmlFileHandler {
-    private final static String JAXB_XML_SDM_PACKAGE_NAME = "sdm.jaxb.schema.generated";
+    private final static String JAXB_XML_SDM_PACKAGE_NAME = "jaxb.schema.generated";
     private final static String XML_FILE_SUFFIX = ".xml";
     
     public static SuperDuperMarketDescriptor generateJaxbClasses(String pathName){
