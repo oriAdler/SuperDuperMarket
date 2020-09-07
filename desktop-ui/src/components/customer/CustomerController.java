@@ -9,6 +9,7 @@ import javafx.fxml.Initializable;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.layout.GridPane;
 import sdm.customer.Customer;
 
 import java.net.URL;
@@ -17,7 +18,11 @@ import java.util.ResourceBundle;
 
 public class CustomerController implements Initializable {
 
+    // View:
+    @FXML private GridPane gridPane;
     @FXML private TableView<CustomerDTO> tableView;
+
+    // Table View:
     @FXML private TableColumn<CustomerDTO, Integer> idColumn;
     @FXML private TableColumn<CustomerDTO, String> nameColumn;
     @FXML private TableColumn<CustomerDTO, Integer> xColumn;
@@ -35,10 +40,6 @@ public class CustomerController implements Initializable {
         ordersNumberColumn.setCellValueFactory(new PropertyValueFactory<>("numberOfOrders"));
         itemsAveragePriceColumn.setCellValueFactory(new PropertyValueFactory<>("averageOrdersPrice"));
         deliverAveragePriceColumn.setCellValueFactory(new PropertyValueFactory<>("averageDeliveryPrice"));
-    }
-
-    public TableView<CustomerDTO> getTableView() {
-        return tableView;
     }
 
     public void fillTableViewData(List<CustomerDTO> customersList){

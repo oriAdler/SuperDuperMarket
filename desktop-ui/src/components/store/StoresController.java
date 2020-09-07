@@ -1,7 +1,5 @@
 package components.store;
 
-import DTO.ItemDTO;
-import DTO.OrderDTO;
 import DTO.StoreDTO;
 import common.SDMResourcesConstants;
 import components.item.ItemsController;
@@ -10,128 +8,139 @@ import engine.Engine;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.property.SimpleIntegerProperty;
-import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
-import javafx.scene.control.ComboBox;
-import javafx.scene.control.Label;
-import javafx.scene.control.SplitPane;
-import javafx.scene.control.TableView;
+import javafx.scene.control.*;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Pane;
+import javafx.scene.layout.VBox;
 
-import javax.naming.Binding;
 import java.io.IOException;
 import java.net.URL;
 import java.util.List;
-import java.util.Optional;
 import java.util.ResourceBundle;
-import java.util.stream.Collectors;
 
 public class StoresController implements Initializable {
 
-    @FXML private ComboBox<String> storesComboBox;
-    @FXML private Label IdLabel;
-    @FXML private Label PPKLabel;
-    @FXML private Label DeliveryIncomeLabel;
-    @FXML private Pane itemsPane;
-    @FXML private Pane ordersPane;
+    // View:
+    @FXML VBox vbox;
+    @FXML private Pane bottomPane;
 
+    @FXML private ComboBox<StoreDTO> storesComboBox;
+    @FXML private Label idValueLabel;
+    @FXML private Label PPKValueLabel;
+    @FXML private Label deliveryIncomeValueLabel;
+
+    private ToggleGroup toggleGroup;
+    @FXML private RadioButton itemsRadioButton;
+    @FXML private RadioButton ordersRadioButton;
+
+    // Properties:
     private SimpleIntegerProperty storeId;
     private SimpleDoubleProperty PPK;
     private SimpleDoubleProperty DeliveryIncome;
 
-    private TableView<ItemDTO> itemsTableView;
+    // Secondary Controllers:
     private ItemsController itemsController;
-    private TableView<OrderDTO> ordersTableView;
+    private AnchorPane itemsAnchorPane;
     private OrdersController ordersController;
+    private AnchorPane ordersAnchorPane;
 
     public StoresController(){
         storeId = new SimpleIntegerProperty();
         PPK = new SimpleDoubleProperty();
         DeliveryIncome = new SimpleDoubleProperty();
-    }
 
-    @FXML
-    void storesComboBoxAction(ActionEvent event) {
-
-    }
-
-    public void fillBorderPaneData(Engine engine){
-        List<StoreDTO> storesList = engine.getAllStoreList();
-
-        // Set stores names in combo box:
-        ObservableList<String> storesOL = FXCollections.observableArrayList();
-        storesOL.addAll(engine.getAllStoreList()
-                .stream()
-                .map(StoreDTO::getName)
-                .collect(Collectors.toList()));
-        storesComboBox.setItems(storesOL);
-
-        storesComboBox.setOnAction(e->displayStoreDetails(storesComboBox.getValue(), engine));
+        itemsController = createItemsController();
+        ordersController = createOrderSController();
     }
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        storesComboBox.setPromptText("Choose store");
+        idValueLabel.textProperty().bind(Bindings.format("%d", storeId));
+        PPKValueLabel.textProperty().bind(Bindings.format("%.0f", PPK));
+        deliveryIncomeValueLabel.textProperty().bind(Bindings.format("%.2f", DeliveryIncome));
 
-        IdLabel.textProperty().bind(Bindings.format("%d", storeId));
-        PPKLabel.textProperty().bind(Bindings.format("%.0f", PPK));
-        DeliveryIncomeLabel.textProperty().bind(Bindings.format("%.2f", DeliveryIncome));
+        toggleGroup = new ToggleGroup();
+        itemsRadioButton.setToggleGroup(toggleGroup);
+        itemsRadioButton.setDisable(true);
+        ordersRadioButton.setToggleGroup(toggleGroup);
+        ordersRadioButton.setDisable(true);
     }
 
-    private void displayStoreDetails(String storeName, Engine engine){
-        // Find store
-        Optional<StoreDTO> storeOptional = engine.getAllStoreList()
-                .stream()
-                .filter(storeDTO -> storeDTO.getName().equals(storeName))
-                .findAny();
-        // Fill store's data:
-        if(storeOptional.isPresent()){
-            StoreDTO store = storeOptional.get();
+    public void fillBorderPaneData(Engine engine){
+        // Set controllers to default:
+        storesComboBox.setValue(null);
+        itemsRadioButton.setSelected(false);
+        ordersRadioButton.setSelected(false);
+        bottomPane.getChildren().clear();
+
+        // Set stores names in combo box:
+        ObservableList<StoreDTO> storesOL = FXCollections.observableArrayList();
+        storesOL.addAll(engine.getAllStoreList());
+        storesComboBox.setItems(storesOL);
+
+        storesComboBox.setOnAction(e -> displayStoreDetails(storesComboBox.getValue()));
+    }
+
+    // TODO: without checking store is not null get exception
+    private void displayStoreDetails(StoreDTO store){
+        if(store != null){
+            // Fill store's data:
             storeId.set(store.getId());
             PPK.set(store.getPPK());
             DeliveryIncome.set(store.getTotalDeliveryIncome());
-            // Fill items:
-            createItemsTableView();
-            itemsController.fillTableViewData(store.getItems());
-            itemsPane.getChildren().add(itemsController.getTableView());
-            // Fill orders:
-//            createOrdersTableView();
-//            ordersController.fillTableViewData(store.getOrders());
-//            ordersPane.getChildren().add(ordersController.getTableView());
+
+            itemsRadioButton.setSelected(false);
+            ordersRadioButton.setSelected(false);
+            itemsRadioButton.setDisable(false);
+            ordersRadioButton.setDisable(false);
+
+            bottomPane.getChildren().clear();
+
+            itemsRadioButton.setOnAction(e->{
+                itemsController.fillTableViewData(store.getItems());
+                bottomPane.getChildren().clear();
+                bottomPane.getChildren().add(itemsController.getTableView());
+            });
+
+            ordersRadioButton.setOnAction(e->{
+                ordersController.fillTableViewData(store.getOrders());
+                bottomPane.getChildren().clear();
+                bottomPane.getChildren().add(ordersController.getTableView());
+            });
         }
     }
 
-    private void createItemsTableView()
+    public OrdersController createOrderSController(){
+        try {
+            FXMLLoader loader = new FXMLLoader();
+
+            loader.setLocation(SDMResourcesConstants.ORDERS_ANCHOR_PANE);
+            ordersAnchorPane = loader.load();
+            return loader.getController();
+        }
+        catch (IOException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    public ItemsController createItemsController()
     {
         try {
             FXMLLoader loader = new FXMLLoader();
 
-            loader.setLocation(SDMResourcesConstants.ITEMS_TABLE_VIEW);
-            itemsTableView = loader.load();
-            itemsController = loader.getController();
+            loader.setLocation(SDMResourcesConstants.ITEMS_ANCHOR_PANE);
+            itemsAnchorPane = loader.load();
+            return loader.getController();
         }
         catch (IOException e) {
             e.printStackTrace();
-        }
-    }
-
-    private void createOrdersTableView()
-    {
-        try {
-            FXMLLoader loader = new FXMLLoader();
-
-            loader.setLocation(SDMResourcesConstants.ORDERS_TABLE_VIEW);
-            ordersTableView = loader.load();
-            ordersController = loader.getController();
-        }
-        catch (IOException e) {
-            e.printStackTrace();
+            return null;
         }
     }
 }

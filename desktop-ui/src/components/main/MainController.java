@@ -1,19 +1,19 @@
 package components.main;
 
-import DTO.CustomerDTO;
-import DTO.ItemExtendedDTO;
 import common.SDMResourcesConstants;
 import components.customer.CustomerController;
 import components.item.ItemsController;
+import components.order.MakeOrderController;
+import components.order.OrdersController;
 import components.store.StoresController;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.control.Button;
-import javafx.scene.control.TableView;
-import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.Pane;
+import javafx.scene.control.CheckBox;
+import javafx.scene.control.ComboBox;
+import javafx.scene.layout.*;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import engine.Engine;
@@ -23,6 +23,10 @@ import java.io.IOException;
 
 public class MainController {
 
+    // View;
+    @FXML private AnchorPane anchorPaneRight;
+
+    // Buttons:
     @FXML private Button openFileButton;
     @FXML private Button displayStoresButton;
     @FXML private Button displayItemsButton;
@@ -31,25 +35,38 @@ public class MainController {
     @FXML private Button showOrdersHistoryButton;
     @FXML private Button updateStoreItemsButton;
     @FXML private Button showMapButton;
-    @FXML private Pane currentCenterScenePane;
 
-    private SimpleBooleanProperty isFileLoaded;
+    @FXML private CheckBox animationLabel;
+    @FXML private ComboBox<?> styleComboBox;
 
-    private ItemsController itemsController;
-    private TableView<ItemExtendedDTO> itemsTableView;
-    private StoresController storesController;
-    private BorderPane storesBorderPane;
-    private CustomerController customerController;
-    private TableView<CustomerDTO> customerTableView;
-
+    // Miscellaneous:
     private Stage primaryStage;
     private Engine engine;
 
+    // Properties:
+    private SimpleBooleanProperty isFileLoaded;
+
+    // Secondary Controllers:
+    private ItemsController itemsController;
+    private AnchorPane itemsAnchorPane;
+    private StoresController storesController;
+    private VBox storesVBox;
+    private CustomerController customerController;
+    private AnchorPane customerAnchorPane;
+    private MakeOrderController makeOrderController;
+    private BorderPane makeOrderBorderPane;
+    private OrdersController ordersController;
+    private AnchorPane ordersAnchorPane;
+
     public MainController(){
         isFileLoaded = new SimpleBooleanProperty(false);
-        createItemsTableView();
-        createStoresBorderPane();
-        createCustomersTableView();
+
+        itemsController = createItemsController();
+        customerController = createCustomersController();
+        storesController = createStoresController();
+        ordersController = createOrderSController();
+        makeOrderController = createMakeOrderController();
+        makeOrderController.setMainController(this);
     }
 
     @FXML
@@ -63,31 +80,33 @@ public class MainController {
         showMapButton.disableProperty().bind(isFileLoaded.not());
     }
 
-    //TODO: is it okay upon every click to fill table data from scratch?
     @FXML
     public void displayItemsButtonAction(ActionEvent actionEvent) {
         itemsController.fillTableViewData(engine.getAllItemList());
-        currentCenterScenePane.getChildren().clear();
-        currentCenterScenePane.getChildren().add(itemsTableView);
+        anchorPaneRight.getChildren().clear();
+        anchorPaneRight.getChildren().add(itemsAnchorPane);
     }
 
     @FXML
     public void displayStoresButtonAction(ActionEvent event) {
         storesController.fillBorderPaneData(engine);
-        currentCenterScenePane.getChildren().clear();
-        currentCenterScenePane.getChildren().add(storesBorderPane);
+        anchorPaneRight.getChildren().clear();
+        anchorPaneRight.getChildren().add(storesVBox);
     }
 
     @FXML
     void showCustomersButtonOnAction(ActionEvent event) {
         customerController.fillTableViewData(engine.getAllCustomersList());
-        currentCenterScenePane.getChildren().clear();
-        currentCenterScenePane.getChildren().add(customerTableView);
+        anchorPaneRight.getChildren().clear();
+        anchorPaneRight.getChildren().add(customerAnchorPane);
     }
 
     @FXML
     public void makeOrderButtonAction(ActionEvent event) {
-
+        makeOrderController.setEngine(engine);
+        makeOrderController.fillMakeOrderData(engine);
+        anchorPaneRight.getChildren().clear();
+        anchorPaneRight.getChildren().add(makeOrderBorderPane);
     }
 
     @FXML
@@ -108,7 +127,6 @@ public class MainController {
         catch (Exception exception){
 
         }
-
     }
 
     @FXML
@@ -118,7 +136,9 @@ public class MainController {
 
     @FXML
     public void showOrdersHistoryButtonAction(ActionEvent event) {
-
+        ordersController.fillTableViewData(engine.getOrdersHistory());
+        anchorPaneRight.getChildren().clear();
+        anchorPaneRight.getChildren().add(ordersAnchorPane);
     }
 
     @FXML
@@ -134,45 +154,76 @@ public class MainController {
         this.engine = engine;
     }
 
-    private void createItemsTableView()
+    public ItemsController createItemsController()
     {
         try {
             FXMLLoader loader = new FXMLLoader();
 
-            loader.setLocation(SDMResourcesConstants.ITEMS_TABLE_VIEW);
-            itemsTableView = loader.load();
-            itemsController = loader.getController();
+            loader.setLocation(SDMResourcesConstants.ITEMS_ANCHOR_PANE);
+            itemsAnchorPane = loader.load();
+            return loader.getController();
         }
         catch (IOException e) {
             e.printStackTrace();
+            return null;
         }
     }
 
-    private void createStoresBorderPane()
+    public StoresController createStoresController()
     {
         try {
             FXMLLoader loader = new FXMLLoader();
 
-            loader.setLocation(SDMResourcesConstants.STORES_BORDER_PANE);
-            storesBorderPane = loader.load();
-            storesController = loader.getController();
+            loader.setLocation(SDMResourcesConstants.STORES_VBOX);
+            storesVBox = loader.load();
+            return loader.getController();
         }
         catch (IOException e) {
             e.printStackTrace();
+            return null;
         }
     }
 
-    private void createCustomersTableView()
+    public CustomerController createCustomersController()
     {
         try {
             FXMLLoader loader = new FXMLLoader();
 
-            loader.setLocation(SDMResourcesConstants.CUSTOMERS_TABLE_VIEW);
-            customerTableView = loader.load();
-            customerController = loader.getController();
+            loader.setLocation(SDMResourcesConstants.CUSTOMERS_ANCHOR_PANE);
+            customerAnchorPane = loader.load();
+            return loader.getController();
         }
         catch (IOException e) {
             e.printStackTrace();
+            return null;
+        }
+    }
+
+    public MakeOrderController createMakeOrderController(){
+        try {
+            FXMLLoader loader = new FXMLLoader();
+
+            loader.setLocation(SDMResourcesConstants.MAKE_ORDER_BORDER_PANE);
+            makeOrderBorderPane = loader.load();
+            return loader.getController();
+        }
+        catch (IOException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    public OrdersController createOrderSController(){
+        try {
+            FXMLLoader loader = new FXMLLoader();
+
+            loader.setLocation(SDMResourcesConstants.ORDERS_ANCHOR_PANE);
+            ordersAnchorPane = loader.load();
+            return loader.getController();
+        }
+        catch (IOException e) {
+            e.printStackTrace();
+            return null;
         }
     }
 }

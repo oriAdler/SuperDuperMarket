@@ -1,12 +1,15 @@
 package sdm;
 
 import DTO.CartDTO;
+import DTO.CustomerDTO;
+import DTO.StoreDTO;
 import sdm.item.PurchaseCategory;
 import sdm.order.OrderStatic;
 
 import java.awt.*;
 import java.util.Date;
 import java.util.Map;
+import java.util.function.Consumer;
 
 public interface SuperDuperMarket {
     void checkCustomerLocationIsValid(Point location);
@@ -29,4 +32,5 @@ public interface SuperDuperMarket {
     CartDTO summarizeDynamicOrder(Map<Integer, Double> itemsMap, Point customerLocation);
 
     void addOrdersFromFileToSDM(Map<Integer, OrderStatic> orderIdToOrder);
+    void calculateDeliveryPrice(Integer storeId, Integer customerId, Consumer<Double> deliveryPrice);
 }

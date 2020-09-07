@@ -7,7 +7,7 @@ public class ItemExtendedDTO extends ItemDTO {
     final private String storeName;
     final private Integer storeId;
 
-    public ItemExtendedDTO(int id, String name, PurchaseCategory category, int numOfSellers,
+    public ItemExtendedDTO(int id, String name, String category, int numOfSellers,
                            double price, double numOfSales, String storeName, Integer storeId) {
         super(id, name, category, numOfSellers, price, numOfSales);
         this.storeName = storeName;

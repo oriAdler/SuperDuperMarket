@@ -59,6 +59,8 @@ public class EngineImpl implements Engine{
                         store.getName(),
                         getItemsSoldByStore(store),
                         getStoreOrdersList(id),
+                        store.getLocation().x,
+                        store.getLocation().y,
                         store.getPPK(),
                         store.getTotalDeliveryIncome()
                         )));
@@ -71,7 +73,7 @@ public class EngineImpl implements Engine{
         superDuperMarketImpl.getItemIdToItem()
                 .forEach((id, item) -> itemsDTOList.add(new ItemDTO(id,
                         item.getName(),
-                        item.getPurchaseCategory(),
+                        item.getPurchaseCategory().toString(),
                         superDuperMarketImpl.getNumOfSellersById(id),
                         superDuperMarketImpl.getAveragePriceById(id),
                         superDuperMarketImpl.getNumOfSalesById(id))));
@@ -127,7 +129,7 @@ public class EngineImpl implements Engine{
         store.getItemIdToPrice()
                 .forEach((id, price) -> itemsDTOList.add(new ItemDTO(id,
                 superDuperMarketImpl.getItemIdToItem().get(id).getName(),
-                superDuperMarketImpl.getItemIdToItem().get(id).getPurchaseCategory(),
+                superDuperMarketImpl.getItemIdToItem().get(id).getPurchaseCategory().toString(),
                 0, // Inside store number of sellers is irrelevant
                 price,
                 store.getItemIdToNumberOfSales().get(id))));

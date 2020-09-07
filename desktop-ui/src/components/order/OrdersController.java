@@ -6,9 +6,12 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.GridPane;
 
 import java.net.URL;
 import java.util.Date;
@@ -17,8 +20,12 @@ import java.util.ResourceBundle;
 
 public class OrdersController implements Initializable {
 
+    // View:
+    @FXML private AnchorPane anchorPane;
+    @FXML private GridPane gridPane;
     @FXML private TableView<OrderDTO> tableView;
 
+    // Table View:
     @FXML private TableColumn<OrderDTO, Integer> orderIdColumn;
     @FXML private TableColumn<OrderDTO, Date> dateColumn;
     @FXML private TableColumn<OrderDTO, Integer> storeIdColumn;
@@ -27,10 +34,6 @@ public class OrdersController implements Initializable {
     @FXML private TableColumn<OrderDTO, Double> itemsPriceColumn;
     @FXML private TableColumn<OrderDTO, Double> deliveryPriceColumn;
     @FXML private TableColumn<OrderDTO, Double> totalPriceColumn;
-
-    public TableView<OrderDTO> getTableView() {
-        return tableView;
-    }
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
@@ -42,6 +45,10 @@ public class OrdersController implements Initializable {
         itemsPriceColumn.setCellValueFactory(new PropertyValueFactory<>("itemsPrice"));
         deliveryPriceColumn.setCellValueFactory(new PropertyValueFactory<>("deliveryPrice"));
         totalPriceColumn.setCellValueFactory(new PropertyValueFactory<>("totalPrice"));
+    }
+
+    public TableView<OrderDTO> getTableView() {
+        return tableView;
     }
 
     public void fillTableViewData(List<OrderDTO> ordersList){

@@ -14,6 +14,7 @@ import sdm.store.Store;
 import java.awt.*;
 import java.util.*;
 import java.util.List;
+import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 public class SuperDuperMarketImpl implements SuperDuperMarket {
@@ -274,7 +275,7 @@ public class SuperDuperMarketImpl implements SuperDuperMarket {
         itemsToAddToCart.forEach((itemId, amount)->itemExtendedDTOList.add(new ItemExtendedDTO(
                 itemId,
                 itemIdToItem.get(itemId).getName(),
-                itemIdToItem.get(itemId).getPurchaseCategory(),
+                itemIdToItem.get(itemId).getPurchaseCategory().toString(),
                 0, // Number of sellers has no meaning and therefor get an arbitrary number.
                 store.getItemIdToPrice().get(itemId),
                 amount,
@@ -306,7 +307,7 @@ public class SuperDuperMarketImpl implements SuperDuperMarket {
 
             itemExtendedDTOList.add(new ItemExtendedDTO(itemId,
                     itemIdToItem.get(itemId).getName(),
-                    itemIdToItem.get(itemId).getPurchaseCategory(),
+                    itemIdToItem.get(itemId).getPurchaseCategory().toString(),
                     -1,
                     storeIdToStore.get(storeId).getItemIdToPrice().get(itemId),
                     amount,
@@ -366,7 +367,12 @@ public class SuperDuperMarketImpl implements SuperDuperMarket {
     private Item itemDTOToItem(ItemDTO itemDTO){
         return new Item(itemDTO.getId(),
                 itemDTO.getName(),
-                itemDTO.getPurchaseCategory().getName(),
+                itemDTO.getPurchaseCategory(),
                 itemDTO.getNumOfSales());
+    }
+
+    @Override
+    public void calculateDeliveryPrice(Integer storeId, Integer customerId, Consumer<Double> deliveryPrice) {
+        deliveryPrice.accept(storeIdToStore.get(storeId).calculateDeliveryPrice(customerIdToCustomer.get(customerId).getLocation()));
     }
 }

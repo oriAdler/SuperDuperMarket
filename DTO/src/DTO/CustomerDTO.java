@@ -3,13 +3,13 @@ package DTO;
 public class CustomerDTO {
     final private int id;
     final private String name;
-    final private Integer xLocation;
-    final private Integer yLocation;
+    final private int xLocation;
+    final private int yLocation;
     final private int numberOfOrders;
     final private double averageOrdersPrice;
     final private double averageDeliveryPrice;
 
-    public CustomerDTO(int id, String name, Integer xLocation, Integer yLocation,
+    public CustomerDTO(int id, String name, int xLocation, int yLocation,
                        int numberOfOrders, double averageOrdersPrice, double averageDeliveryPrice) {
         this.id = id;
         this.name = name;
@@ -28,11 +28,11 @@ public class CustomerDTO {
         return name;
     }
 
-    public Integer getxLocation() {
+    public int getXLocation() {
         return xLocation;
     }
 
-    public Integer getyLocation() {
+    public int getYLocation() {
         return yLocation;
     }
 
@@ -46,5 +46,10 @@ public class CustomerDTO {
 
     public double getAverageDeliveryPrice() {
         return averageDeliveryPrice;
+    }
+
+    @Override
+    public String toString() {
+        return name;
     }
 }

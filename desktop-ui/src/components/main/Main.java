@@ -4,6 +4,7 @@ import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import engine.Engine;
 import engine.EngineImpl;
@@ -20,7 +21,7 @@ public class Main extends Application {
         // Load main fxml
         URL mainFXML = getClass().getResource("/components/main/sdm.fxml");
         loader.setLocation(mainFXML);
-        BorderPane root = loader.load();
+        VBox root = loader.load();
 
         // Wire up controller
         MainController mainController = loader.getController();
@@ -32,6 +33,8 @@ public class Main extends Application {
         primaryStage.setTitle("Super Duper Market");
         Scene scene = new Scene(root, 800, 600);
         primaryStage.setScene(scene);
+        primaryStage.setMinHeight(450);
+        primaryStage.setMinWidth(450);
         primaryStage.show();
     }
 

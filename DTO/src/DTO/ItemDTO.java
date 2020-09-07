@@ -1,23 +1,31 @@
 package DTO;
 
-import sdm.item.PurchaseCategory;
+import javafx.beans.property.SimpleBooleanProperty;
+import javafx.beans.property.SimpleDoubleProperty;
+import javafx.beans.property.SimpleStringProperty;
+import javafx.scene.control.Button;
+
+import java.util.Objects;
 
 public class ItemDTO {
     final private int id;
     final private String name;
-    final private PurchaseCategory category;
+    final private String category;
     final private int numOfSellers;
-    final private double price;
+    private String price;
     final private double numOfSales;
+    private String amount;
 
-    public ItemDTO(int id, String name, PurchaseCategory category,
+    public ItemDTO(int id, String name, String category,
                    int numOfSellers, double price, double numOfSales) {
         this.id = id;
         this.name = name;
         this.category = category;
         this.numOfSellers = numOfSellers;
-        this.price = price;
+        this.price = String.format("%.2f", price);
         this.numOfSales = numOfSales;
+
+        this.amount = ("0");
     }
 
     public int getId() {
@@ -28,7 +36,12 @@ public class ItemDTO {
         return name;
     }
 
-    public PurchaseCategory getPurchaseCategory() {
+    public String getCategory(){
+        return category;
+    }
+
+    // Backward compatibility
+    public String getPurchaseCategory() {
         return category;
     }
 
@@ -36,7 +49,7 @@ public class ItemDTO {
         return numOfSellers;
     }
 
-    public double getPrice() {
+    public String getPrice() {
         return price;
     }
 
@@ -44,27 +57,31 @@ public class ItemDTO {
         return numOfSales;
     }
 
-    @Override
-    public String toString() {
-        return "{" +
-                "Id: " + id +
-                ", Name: '" + name + '\'' +
-                ", Purchase category: " + category.toString() +
-                ", Number of sellers: " + numOfSellers +
-                ", Price: " + String.format("%.2f", price) +
-                ", Number of sales: " + (category.equals(PurchaseCategory.QUANTITY) ?
-                String.format("%.0f", numOfSales) + " Units" : String.format("%.2f", numOfSales) + " Kg") +
-                '}';
+    // Features for Desktop Application:
+
+
+    public String getAmount() {
+        return amount;
     }
 
-    public String toStringInStore(){
-        return "{" +
-                "Id: " + id +
-                ", Name: '" + name + '\'' +
-                ", Purchase category: " + category.toString() +
-                ", Price: " + String.format("%.2f", price) +
-                ", Number of sales: " + (category.equals(PurchaseCategory.QUANTITY) ?
-                String.format("%.0f", numOfSales) + " Units" : String.format("%.2f", numOfSales) + " Kg") +
-                '}';
+    public void setAmount(String amount) {
+        this.amount = amount;
+    }
+
+    public void setPrice(String price) {
+        this.price = price;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        ItemDTO itemDTO = (ItemDTO) o;
+        return id == itemDTO.id;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id);
     }
 }
