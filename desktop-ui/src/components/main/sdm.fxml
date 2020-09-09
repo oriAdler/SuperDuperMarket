@@ -11,9 +11,9 @@
 <?import javafx.scene.layout.Pane?>
 <?import javafx.scene.layout.VBox?>
 
-<VBox minHeight="320.0" minWidth="320.0" prefHeight="492.0" prefWidth="676.0" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="components.main.MainController">
-  <children>
-    <SplitPane dividerPositions="0.2505567928730512" focusTraversable="true" minHeight="300.0" minWidth="320.0" prefHeight="-1.0" prefWidth="600.0" VBox.vgrow="ALWAYS">
+<ScrollPane fitToHeight="true" fitToWidth="true" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="components.main.MainController">
+   <content>
+      <SplitPane dividerPositions="0.5" focusTraversable="true" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="500.0" minWidth="900.0" prefHeight="650.0" prefWidth="650.0">
       <items>
         <AnchorPane maxWidth="165.0" minHeight="300.0" minWidth="165.0" prefHeight="600.0" prefWidth="165.0">
                <children>
@@ -110,16 +110,12 @@
                   </Pane>
                </children>
         </AnchorPane>
-        <ScrollPane fx:id="scrollPane" prefWidth="300.0">
-          <content>
-                  <AnchorPane prefHeight="490.0" prefWidth="503.0">
-                     <children>
-                  <AnchorPane id="Content" fx:id="anchorPaneRight" minHeight="-1.0" minWidth="-1.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
-                     </children>
-                  </AnchorPane>
-          </content>
-        </ScrollPane>
+            <AnchorPane minWidth="350.0">
+               <children>
+                  <AnchorPane fx:id="anchorPaneRight" prefHeight="200.0" prefWidth="200.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
+               </children>
+            </AnchorPane>
       </items>
-    </SplitPane>
-  </children>
-</VBox>
+      </SplitPane>
+   </content>
+</ScrollPane>

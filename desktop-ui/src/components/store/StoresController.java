@@ -26,8 +26,7 @@ import java.util.ResourceBundle;
 public class StoresController implements Initializable {
 
     // View:
-    @FXML VBox vbox;
-    @FXML private Pane bottomPane;
+    @FXML private AnchorPane anchorPaneBottom;
 
     @FXML private ComboBox<StoreDTO> storesComboBox;
     @FXML private Label idValueLabel;
@@ -76,7 +75,7 @@ public class StoresController implements Initializable {
         storesComboBox.setValue(null);
         itemsRadioButton.setSelected(false);
         ordersRadioButton.setSelected(false);
-        bottomPane.getChildren().clear();
+        anchorPaneBottom.getChildren().clear();
 
         // Set stores names in combo box:
         ObservableList<StoreDTO> storesOL = FXCollections.observableArrayList();
@@ -99,18 +98,18 @@ public class StoresController implements Initializable {
             itemsRadioButton.setDisable(false);
             ordersRadioButton.setDisable(false);
 
-            bottomPane.getChildren().clear();
+            anchorPaneBottom.getChildren().clear();
 
             itemsRadioButton.setOnAction(e->{
                 itemsController.fillTableViewData(store.getItems());
-                bottomPane.getChildren().clear();
-                bottomPane.getChildren().add(itemsController.getTableView());
+                anchorPaneBottom.getChildren().clear();
+                anchorPaneBottom.getChildren().add(itemsController.getTableView());
             });
 
             ordersRadioButton.setOnAction(e->{
                 ordersController.fillTableViewData(store.getOrders());
-                bottomPane.getChildren().clear();
-                bottomPane.getChildren().add(ordersController.getTableView());
+                anchorPaneBottom.getChildren().clear();
+                anchorPaneBottom.getChildren().add(ordersController.getTableView());
             });
         }
     }

@@ -6,6 +6,7 @@ import sdm.customer.Customer;
 
 import java.nio.file.Path;
 import java.util.List;
+import java.util.function.Consumer;
 
 public interface Engine {
     void loadDataFromFile(String pathName);

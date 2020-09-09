@@ -47,7 +47,7 @@ public class XmlFileHandler {
         checkAllCustomersInRange(SDMDescriptor.getSDMCustomers().getSDMCustomer());
 
         checkTwoObjectsWithIdenticalLocation(SDMDescriptor.getSDMStores().getSDMStore(), SDMDescriptor.getSDMCustomers().getSDMCustomer());
-        checkAllDiscountsAreValid(SDMDescriptor.getSDMStores().getSDMStore());
+        checkAllDiscountsAreValid(SDMDescriptor.getSDMStores().getSDMStore(), SDMDescriptor.getSDMItems().getSDMItem());
     }
 
     //Checks that a given coordinates (x,y) are between (MIN,MAX) range.
@@ -178,9 +178,30 @@ public class XmlFileHandler {
         }
     }
 
-    //TODO: Implement method
     private static void checkTwoObjectsWithIdenticalLocation(List<SDMStore> storesList, List<SDMCustomer> customersList) {
-
+        // Find duplicates via dummy set:
+        Set<Point> dummySet = new HashSet<>();
+        // Find duplicates among stores:
+        Set<Point> duplicateSet = storesList
+                .stream()
+                .filter(store->!dummySet.add(
+                        new Point(store.getLocation().getX(), store.getLocation().getY())))
+                .map(store->
+                        new Point(store.getLocation().getX(), store.getLocation().getY()))
+                .collect(Collectors.toSet());
+        // Find duplicates among customers:
+        duplicateSet.addAll(customersList.
+                stream().filter(customer->!dummySet.add(
+                        new Point(customer.getLocation().getX(), customer.getLocation().getY())))
+                .map(customer->
+                        new Point(customer.getLocation().getX(), customer.getLocation().getY()))
+                .collect(Collectors.toSet()));
+        if(!duplicateSet.isEmpty()){
+            Point duplicatedLocation = duplicateSet.iterator().next();
+            throw new invalidLocationException(
+                    String.format("Invalid File: Location [%.0f,%.0f] is inhibited by more than one customer/store",
+                            duplicatedLocation.getX(), duplicatedLocation.getY()));
+        }
     }
 
     private static void checkAllCustomersInRange(List<SDMCustomer> customerList){
@@ -193,7 +214,64 @@ public class XmlFileHandler {
     }
 
     //TODO: Implement method
-    private static void checkAllDiscountsAreValid(List<SDMStore> storeList){
+    private static void checkAllDiscountsAreValid(List<SDMStore> storeList, List<SDMItem> itemsList){
+        List<Integer> discountItemsIdList = new ArrayList<>();
+        // Collect SDM item's id list:
+        List<Integer> SDMItemsIdList = itemsList
+                .stream()
+                .map(SDMItem::getId)
+                .collect(Collectors.toList());
 
+        // Check all stores discounts:
+        storeList.forEach(store->{
+            // If store has discounts:
+            if(store.getSDMDiscounts() != null){
+                // Collect store's items id:
+                List<Integer> storeItemsIdList = store.getSDMPrices().getSDMSell()
+                        .stream()
+                        .map(SDMSell::getItemId)
+                        .collect(Collectors.toList());
+
+                List<SDMDiscount> sdmDiscounts = store.getSDMDiscounts().getSDMDiscount();
+                // Collect item's id from discount
+                sdmDiscounts.forEach(discount -> {
+                    discountItemsIdList.add(discount.getIfYouBuy().getItemId());
+                    discountItemsIdList.addAll(discount.getThenYouGet().getSDMOffer()
+                            .stream()
+                            .map(SDMOffer::getItemId)
+                            .collect(Collectors.toList()));
+                });
+                // Check if all items in discount sold by store and exist in system:
+                if(!SDMItemsIdList.containsAll(discountItemsIdList) || !storeItemsIdList.containsAll(discountItemsIdList)){
+                    generateInvalidItemInDiscountException(SDMItemsIdList, storeItemsIdList, discountItemsIdList, store.getName());
+                }
+                // Clear item's id list before inquiring next store:
+                discountItemsIdList.clear();
+            }
+        });
+    }
+
+    private static void generateInvalidItemInDiscountException(List<Integer> SDMItemsIdList,
+                                                               List<Integer> storeItemsIdList,
+                                                               List<Integer> discountItemsIdList, String storeName){
+        // Make a copy of the list for the second check:
+        List<Integer> dummyDiscountItemsIdList = new ArrayList<>(discountItemsIdList);
+        int itemId;
+
+        // Check item exist in the system:
+        discountItemsIdList.removeAll(SDMItemsIdList);
+        if(!discountItemsIdList.isEmpty()){
+            itemId = discountItemsIdList.iterator().next();
+            throw new invalidLocationException(String.format(
+                    "Item with id '%d' defined in discount in store '%s' doesn't exist in System", itemId, storeName));
+        }
+        else{   // Check item sold by the store:
+            dummyDiscountItemsIdList.removeAll(storeItemsIdList);
+            if(!dummyDiscountItemsIdList.isEmpty()){
+                itemId = dummyDiscountItemsIdList.iterator().next();
+                throw new invalidLocationException(String.format(
+                        "Item with id '%d' defined in discount in store '%s' doesn't sold by the store", itemId, storeName));
+            }
+        }
     }
 }

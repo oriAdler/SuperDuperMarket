@@ -2,23 +2,18 @@ package components.item;
 
 import DTO.ItemDTO;
 import javafx.beans.property.SimpleBooleanProperty;
-import javafx.beans.property.SimpleDoubleProperty;
-import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.scene.control.Button;
-import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.control.cell.TextFieldTableCell;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.GridPane;
-import sdm.item.PurchaseCategory;
 
-import java.awt.*;
 import java.net.URL;
 import java.util.List;
 import java.util.ResourceBundle;
@@ -27,7 +22,6 @@ public class ItemsController implements Initializable{
 
     // View:
     @FXML private AnchorPane anchorPane;
-    @FXML private GridPane gridPane;
     @FXML private TableView<ItemDTO> tableView;
 
     // Table View:
@@ -54,13 +48,13 @@ public class ItemsController implements Initializable{
 
         // Set columns for order procedure:
         amountColumn.setCellFactory(TextFieldTableCell.forTableColumn());
-        amountColumn.setOnEditCommit(this::userEditAmountCell);
+        //amountColumn.setOnEditCommit(this::userEditAmountCell);
         amountColumn.setVisible(false);
         proceedToCheckout = new SimpleBooleanProperty(false);
     }
 
-    public GridPane getGridPane() {
-        return gridPane;
+    public AnchorPane getAnchorPane() {
+        return anchorPane;
     }
 
     public TableView<ItemDTO> getTableView() {
@@ -93,7 +87,8 @@ public class ItemsController implements Initializable{
         tableView.setItems(itemsOL);
     }
 
-    private void userEditAmountCell(TableColumn.CellEditEvent<ItemDTO, String> event) {
+    @FXML
+    void amountColumnOnEditCommit(TableColumn.CellEditEvent<ItemDTO, String> event) {
         ItemDTO currentItem = event.getTableView()
                 .getItems()
                 .get(event.getTablePosition().getRow());
@@ -147,4 +142,58 @@ public class ItemsController implements Initializable{
 
         tableView.refresh();
     }
+//    private void userEditAmountCell(TableColumn.CellEditEvent<ItemDTO, String> event) {
+//        ItemDTO currentItem = event.getTableView()
+//                .getItems()
+//                .get(event.getTablePosition().getRow());
+//
+//        String category = currentItem.getCategory();
+//        String price = currentItem.getPrice();
+//        String newValue = event.getNewValue();
+//
+//        if (price.toUpperCase().equals("NOT SOLD")) {
+//            newValue = "Not Sold";
+//        }
+//        else{
+//            if(category.toUpperCase().equals("WEIGHT")){
+//                try{
+//                    double amount = Double.parseDouble(newValue);
+//                    if(amount < 0){
+//                        newValue = "Enter Positive Number";
+//                    }
+//                }
+//                catch (Exception ignored){
+//                    newValue = "Enter Number";
+//                }
+//            }
+//            else{
+//                try{
+//                    int amount = Integer.parseInt(newValue);
+//                    if(amount < 0){
+//                        newValue = "Enter Positive Number";
+//                    }
+//                }
+//                catch (Exception ignored){
+//                    newValue = "Enter Whole Number";
+//                }
+//            }
+//        }
+//
+//        currentItem.setAmount(newValue);
+//
+//        // Check if at least one item was chosen:
+//        proceedToCheckout.set(false);
+//        tableView.getItems().forEach(item -> {
+//            try{
+//                if(Double.parseDouble(item.getAmount()) > 0){
+//                    proceedToCheckout.set(true);
+//                }
+//            }
+//            catch (Exception ignore){
+//
+//            }
+//        });
+//
+//        tableView.refresh();
+//    }
 }

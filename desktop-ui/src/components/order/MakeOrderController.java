@@ -11,7 +11,6 @@ import javafx.beans.binding.Bindings;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.property.SimpleIntegerProperty;
-import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -20,9 +19,7 @@ import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import javafx.scene.layout.AnchorPane;
-import javafx.scene.layout.Pane;
 
-import java.awt.event.MouseEvent;
 import java.io.IOException;
 import java.net.URL;
 import java.util.HashMap;
@@ -35,7 +32,7 @@ import java.util.stream.Collectors;
 public class MakeOrderController implements Initializable {
 
     // View:
-    @FXML private Pane paneBottom;
+    @FXML private AnchorPane anchorPaneBottom;
 
     // Buttons:
     @FXML private ComboBox<CustomerDTO> chooseCustomerComboBox;
@@ -195,8 +192,8 @@ public class MakeOrderController implements Initializable {
 
         // Show the table:
         itemsController.fillTableViewData(itemList);
-        paneBottom.getChildren().clear();
-        paneBottom.getChildren().add(itemsController.getGridPane());
+        anchorPaneBottom.getChildren().clear();
+        anchorPaneBottom.getChildren().add(itemsController.getTableView());
 
         itemsController.getAmountColumn().setVisible(true);
         itemsController.getTableView().setEditable(true);
@@ -218,7 +215,7 @@ public class MakeOrderController implements Initializable {
 
             }
         });
-        paneBottom.getChildren().clear();
+        anchorPaneBottom.getChildren().clear();
     }
 
     public ItemsController createItemsController()

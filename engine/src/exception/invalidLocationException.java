@@ -1,9 +1,9 @@
 package exception;
 
-public class invalidCustomerLocationException extends RuntimeException {
+public class invalidLocationException extends RuntimeException {
     private final String errorMessage;
 
-    public invalidCustomerLocationException(String errorMessage) {
+    public invalidLocationException(String errorMessage) {
         this.errorMessage = errorMessage;
     }
 

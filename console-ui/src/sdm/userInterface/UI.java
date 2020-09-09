@@ -2,9 +2,8 @@ package sdm.userInterface;
 
 import DTO.*;
 import engine.Engine;
-import engine.EngineImpl;
 import exception.DatFileException;
-import exception.invalidCustomerLocationException;
+import exception.invalidLocationException;
 import exception.invalidItemException;
 import sdm.input.Input;
 import sdm.item.PurchaseCategory;
@@ -404,7 +403,7 @@ public class UI {
                 engine.getSDM().checkCustomerLocationIsValid(customerLocation);
                 isValidLocation = true;
             }
-            catch (invalidCustomerLocationException exception){
+            catch (invalidLocationException exception){
                 System.out.println(exception.getMessage());
                 isValidLocation = false;
             }

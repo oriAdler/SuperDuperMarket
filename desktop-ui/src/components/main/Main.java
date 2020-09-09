@@ -3,6 +3,8 @@ package components.main;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
+import javafx.scene.control.ScrollPane;
+import javafx.scene.control.SplitPane;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
@@ -21,7 +23,7 @@ public class Main extends Application {
         // Load main fxml
         URL mainFXML = getClass().getResource("/components/main/sdm.fxml");
         loader.setLocation(mainFXML);
-        VBox root = loader.load();
+        ScrollPane root = loader.load();
 
         // Wire up controller
         MainController mainController = loader.getController();

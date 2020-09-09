@@ -2,7 +2,7 @@ package sdm;
 
 import DTO.*;
 import engine.XmlFileHandler;
-import exception.invalidCustomerLocationException;
+import exception.invalidLocationException;
 import exception.invalidItemException;
 import sdm.customer.Customer;
 import sdm.item.PurchaseCategory;
@@ -99,7 +99,7 @@ public class SuperDuperMarketImpl implements SuperDuperMarket {
     public void checkCustomerLocationIsValid(Point location) {
         // Xml file handler contains inRange function
         if(!XmlFileHandler.inRange(location)){
-            throw new invalidCustomerLocationException(
+            throw new invalidLocationException(
                     "Invalid input: customer location must be between [1,50]");
         }
         else {
@@ -111,7 +111,7 @@ public class SuperDuperMarketImpl implements SuperDuperMarket {
                     .limit(1)
                     .collect(Collectors.toList());
             if(!storeSameLocation.isEmpty()){
-                throw new invalidCustomerLocationException(String.format(
+                throw new invalidLocationException(String.format(
                         "Invalid input: Store '%s' is already in location [%.0f,%.0f]\n" +
                                 "Customer and store in same location is forbidden",
                         storeSameLocation.get(0).getName(), location.getX(), location.getY()));
