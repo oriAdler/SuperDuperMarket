@@ -17,7 +17,7 @@ public interface Engine {
     List<ItemDTO> getAllItemList();
     List<OrderDTO> getOrdersHistory();
     List<CustomerDTO> getAllCustomersList();
-
-    void saveOrders(Path path);
-    void loadOrders(Path path);
+//
+//    void saveOrders(Path path);
+//    void loadOrders(Path path);
 }

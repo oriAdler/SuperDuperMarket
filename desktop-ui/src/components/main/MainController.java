@@ -70,15 +70,6 @@ public class MainController {
     public MainController(){
         isFileLoaded = new SimpleBooleanProperty(false);
         inOrderProcedure = new SimpleBooleanProperty(false);
-
-        fileLoaderController = createFileLoaderController();
-
-        itemsController = createItemsController();
-        customerController = createCustomersController();
-        storesController = createStoresController();
-        ordersController = createOrderSController();
-        makeOrderController = createMakeOrderController();
-        makeOrderController.setMainController(this);
     }
 
     @FXML
@@ -101,13 +92,25 @@ public class MainController {
         this.engine = engine;
     }
 
+    public void setInOrderProcedure(boolean inOrderProcedure) {
+        this.inOrderProcedure.set(inOrderProcedure);
+    }
+
+    public AnchorPane getAnchorPaneRight() {
+        return anchorPaneRight;
+    }
+
     public SimpleBooleanProperty isFileLoadedProperty() {
         return isFileLoaded;
     }
 
     @FXML
     public void displayItemsButtonAction(ActionEvent actionEvent) {
+        // Load items FXML file
+        itemsController = createItemsController();
         itemsController.fillTableViewData(engine.getAllItemList());
+
+        // Place items scene:
         anchorPaneRight.getChildren().clear();
         anchorPaneRight.getChildren().add(itemsAnchorPane);
         AnchorPane.setTopAnchor(itemsAnchorPane, 0.0);
@@ -118,7 +121,11 @@ public class MainController {
 
     @FXML
     public void displayStoresButtonAction(ActionEvent event) {
+        // Load stores FXML file:
+        storesController = createStoresController();
         storesController.fillBorderPaneData(engine);
+
+        // Set stores scene:
         anchorPaneRight.getChildren().clear();
         anchorPaneRight.getChildren().add(storesAnchorPane);
         AnchorPane.setTopAnchor(storesAnchorPane, 0.0);
@@ -129,7 +136,11 @@ public class MainController {
 
     @FXML
     void showCustomersButtonOnAction(ActionEvent event) {
+        // Load customers FXML file:
+        customerController = createCustomersController();
         customerController.fillTableViewData(engine.getAllCustomersList());
+
+        // Set customers scene:
         anchorPaneRight.getChildren().clear();
         anchorPaneRight.getChildren().add(customerAnchorPane);
         AnchorPane.setTopAnchor(customerAnchorPane, 0.0);
@@ -141,8 +152,17 @@ public class MainController {
     @FXML
     public void makeOrderButtonAction(ActionEvent event) {
         inOrderProcedure.set(true);
+
+        // Load make order FXML file:
+        ordersController = createOrderSController();
+        makeOrderController = createMakeOrderController();
+
+        // Wire up controller:
+        makeOrderController.setMainController(this);
         makeOrderController.setEngine(engine);
         makeOrderController.fillMakeOrderData(engine);
+
+        // Set make order scene:
         anchorPaneRight.getChildren().clear();
         anchorPaneRight.getChildren().add(makeOrderAnchorPane);
         AnchorPane.setTopAnchor(makeOrderAnchorPane, 0.0);
@@ -159,12 +179,12 @@ public class MainController {
         fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("xml files", "*.xml"));
         File selectedFile = fileChooser.showOpenDialog(primaryStage);
 
-        //TODO: place the setters in different place
-
-        // Wire up file loader controller:
+        // Load FXML & Wire up file loader controller:
+        fileLoaderController = createFileLoaderController();
         fileLoaderController.setEngine(engine);
         fileLoaderController.setSelectedFile(selectedFile);
         fileLoaderController.setMainController(this);
+
         if (selectedFile == null) {
             fileLoaderController.setFilePath("No selection has been made");
             fileLoaderController.getLoadFileButton().setDisable(true);

@@ -15,12 +15,9 @@ import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import javafx.scene.layout.AnchorPane;
-import javafx.scene.layout.Pane;
-import javafx.scene.layout.VBox;
 
 import java.io.IOException;
 import java.net.URL;
-import java.util.List;
 import java.util.ResourceBundle;
 
 public class StoresController implements Initializable {
@@ -53,6 +50,7 @@ public class StoresController implements Initializable {
         PPK = new SimpleDoubleProperty();
         DeliveryIncome = new SimpleDoubleProperty();
 
+        // Load items & orders FXML files:
         itemsController = createItemsController();
         ordersController = createOrderSController();
     }
@@ -71,47 +69,38 @@ public class StoresController implements Initializable {
     }
 
     public void fillBorderPaneData(Engine engine){
-        // Set controllers to default:
-        storesComboBox.setValue(null);
-        itemsRadioButton.setSelected(false);
-        ordersRadioButton.setSelected(false);
-        anchorPaneBottom.getChildren().clear();
-
         // Set stores names in combo box:
         ObservableList<StoreDTO> storesOL = FXCollections.observableArrayList();
         storesOL.addAll(engine.getAllStoreList());
         storesComboBox.setItems(storesOL);
 
-        storesComboBox.setOnAction(e -> displayStoreDetails(storesComboBox.getValue()));
+        storesComboBox.setOnAction(event -> displayStoreDetails(storesComboBox.getValue()));
     }
 
-    // TODO: without checking store is not null get exception
     private void displayStoreDetails(StoreDTO store){
-        if(store != null){
-            // Fill store's data:
-            storeId.set(store.getId());
-            PPK.set(store.getPPK());
-            DeliveryIncome.set(store.getTotalDeliveryIncome());
+        // Fill store's data:
+        storeId.set(store.getId());
+        PPK.set(store.getPPK());
+        DeliveryIncome.set(store.getTotalDeliveryIncome());
 
-            itemsRadioButton.setSelected(false);
-            ordersRadioButton.setSelected(false);
-            itemsRadioButton.setDisable(false);
-            ordersRadioButton.setDisable(false);
+        // Clear last choice:
+        itemsRadioButton.setSelected(false);
+        ordersRadioButton.setSelected(false);
+        itemsRadioButton.setDisable(false);
+        ordersRadioButton.setDisable(false);
+        anchorPaneBottom.getChildren().clear();
 
+        itemsRadioButton.setOnAction(e->{
+            itemsController.fillTableViewData(store.getItems());
             anchorPaneBottom.getChildren().clear();
+            anchorPaneBottom.getChildren().add(itemsController.getTableView());
+        });
 
-            itemsRadioButton.setOnAction(e->{
-                itemsController.fillTableViewData(store.getItems());
-                anchorPaneBottom.getChildren().clear();
-                anchorPaneBottom.getChildren().add(itemsController.getTableView());
-            });
-
-            ordersRadioButton.setOnAction(e->{
-                ordersController.fillTableViewData(store.getOrders());
-                anchorPaneBottom.getChildren().clear();
-                anchorPaneBottom.getChildren().add(ordersController.getTableView());
-            });
-        }
+        ordersRadioButton.setOnAction(e->{
+            ordersController.fillTableViewData(store.getOrders());
+            anchorPaneBottom.getChildren().clear();
+            anchorPaneBottom.getChildren().add(ordersController.getTableView());
+        });
     }
 
     public OrdersController createOrderSController(){

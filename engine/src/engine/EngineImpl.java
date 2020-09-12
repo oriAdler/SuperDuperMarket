@@ -9,6 +9,9 @@ import jaxb.schema.generated.*;
 import sdm.SuperDuperMarket;
 import sdm.SuperDuperMarketImpl;
 import sdm.customer.Customer;
+import sdm.discount.Discount;
+import sdm.discount.Offer;
+import sdm.discount.Operator;
 import sdm.item.Item;
 import sdm.order.OrderDynamic;
 import sdm.order.OrderStatic;
@@ -118,7 +121,7 @@ public class EngineImpl implements Engine{
                                         .convertOrderToOrderDTO(orderId));     //Convert to DTO object
                     }
                     else{
-                        orderDTOList.add(currentOrder.convertOrderToOrderDTO(orderId)); //TODO exception has occurred
+                        orderDTOList.add(currentOrder.convertOrderToOrderDTO(orderId)); //NOTE: exception has occurred
                     }
                 });
         return orderDTOList;
@@ -148,13 +151,17 @@ public class EngineImpl implements Engine{
         Map<Integer, Store> storeIdToStore = new HashMap<>();
         List<SDMStore> SDMStoresList = superDuperMarketDescriptor.getSDMStores().getSDMStore();
         for(SDMStore store : SDMStoresList){
+            // Convert store's items:
             Map<Integer, Integer> storeItems = new HashMap<>();
             List<SDMSell> SDMPrices = store.getSDMPrices().getSDMSell();
             for (SDMSell sell : SDMPrices) {
                 storeItems.put(sell.getItemId(), sell.getPrice());
             }
+            // Convert store's discounts:
+            List<Discount> discountList = convertStoreDiscounts(store.getSDMDiscounts());
+            // Generate a new store in the system:
             storeIdToStore.put(store.getId(), new Store(store.getId(), store.getName(), storeItems,
-                    new Point(store.getLocation().getX(), store.getLocation().getY()), store.getDeliveryPpk()));
+                    new Point(store.getLocation().getX(), store.getLocation().getY()), store.getDeliveryPpk(), discountList));
         }
         // Convert customers list:
         Map<Integer, Customer> customerIdToCustomer = new HashMap<>();
@@ -167,24 +174,53 @@ public class EngineImpl implements Engine{
         this.superDuperMarketImpl = new SuperDuperMarketImpl(storeIdToStore, itemIdToItem, customerIdToCustomer);
     }
 
-    @Override
-    public void saveOrders(Path path) {
-        try {
-            Serialization.writeOrdersToFile(superDuperMarketImpl.getOrderIdToOrder(), path);
+    // 'sdmDiscounts' can be null if store didn't define any discounts,
+    // in that case return an empty discount list in order to enable adding discounts in future.
+    private List<Discount> convertStoreDiscounts(SDMDiscounts sdmDiscounts){
+        List<Discount> discountList = new ArrayList<>();
+        // If store has discounts:
+        if(sdmDiscounts != null){
+            List<SDMDiscount> sdmDiscountList = sdmDiscounts.getSDMDiscount();
+            for(SDMDiscount discount : sdmDiscountList){
+                discountList.add(new Discount(discount.getName(),
+                        discount.getIfYouBuy().getItemId(),
+                        discount.getIfYouBuy().getQuantity(),
+                        discount.getThenYouGet().getOperator(),
+                        convertDiscountOffers(discount.getThenYouGet().getSDMOffer())));
+            }
         }
-        catch (IOException ioException){
-            throw new DatFileException("An unknown error has occurred during saving orders to the file");
-        }
+        return discountList;
     }
 
-    @Override
-    public void loadOrders(Path path) {
-        try {
-            Map<Integer, OrderStatic> orderIdToOrder = Serialization.readOrdersFromFile(path);
-            superDuperMarketImpl.addOrdersFromFileToSDM(orderIdToOrder);
+    // If this function was called, it is schema guaranteed that 'offerSDMList isn't null.
+    private List<Offer> convertDiscountOffers(List<SDMOffer> offerSDMList){
+        List<Offer> offerList = new ArrayList<>();
+        for(SDMOffer offer : offerSDMList){
+            offerList.add(new Offer(offer.getItemId(),
+                    offer.getQuantity(),
+                    offer.getForAdditional()));
         }
-        catch (Exception exception){
-            throw new DatFileException("An unknown error has occurred during loading orders from the file");
-        }
+        return offerList;
     }
+
+//    @Override
+//    public void saveOrders(Path path) {
+//        try {
+//            Serialization.writeOrdersToFile(superDuperMarketImpl.getOrderIdToOrder(), path);
+//        }
+//        catch (IOException ioException){
+//            throw new DatFileException("An unknown error has occurred during saving orders to the file");
+//        }
+//    }
+//
+//    @Override
+//    public void loadOrders(Path path) {
+//        try {
+//            Map<Integer, OrderStatic> orderIdToOrder = Serialization.readOrdersFromFile(path);
+//            superDuperMarketImpl.addOrdersFromFileToSDM(orderIdToOrder);
+//        }
+//        catch (Exception exception){
+//            throw new DatFileException("An unknown error has occurred during loading orders from the file");
+//        }
+//    }
 }

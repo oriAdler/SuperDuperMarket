@@ -29,7 +29,6 @@ public class FileLoaderController implements Initializable {
     @FXML private Label taskMessageLabel;
     @FXML private Label progressPercentLabel;
     @FXML private ProgressBar taskProgressBar;
-    @FXML private ImageView imageView;
     @FXML private Label finalMessageLabel;
 
     SimpleStringProperty filePath;
@@ -37,8 +36,8 @@ public class FileLoaderController implements Initializable {
     SimpleStringProperty finalMessage;
 
     private Task<Boolean> currentRunningTask;
-    Engine engine;
-    File selectedFile;
+    private Engine engine;
+    private File selectedFile;
 
     MainController mainController;
 

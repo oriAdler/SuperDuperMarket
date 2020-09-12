@@ -213,7 +213,6 @@ public class XmlFileHandler {
         }
     }
 
-    //TODO: Implement method
     private static void checkAllDiscountsAreValid(List<SDMStore> storeList, List<SDMItem> itemsList){
         List<Integer> discountItemsIdList = new ArrayList<>();
         // Collect SDM item's id list:

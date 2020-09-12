@@ -112,23 +112,23 @@ public class UI {
         }
         System.out.println(Messenger.LINE_SEPARATOR_NEW_LINE);
     }
-
-    static private void makeOrder(Engine engine){
-        if(engine.validFileIsNotLoaded()){
-            System.out.println(Messenger.VALID_FILE_NOT_LOADED + "make an order");
-        }
-        else {
-            System.out.println(Messenger.generateMenu(Messenger.getChooseOrderMethodMenu()));
-            Integer Choice = Input.getOnePositiveIntegerInRange(MIN_CHOICE, Messenger.getCompleteOrderMenu().length,
-                    String.format("Invalid input: number must be between %d-%d",
-                            MIN_CHOICE, Messenger.getCompleteOrderMenu().length));
-            if(Choice.equals(1)){
-                makeStaticOrder(engine);
-            }
-            else{   //Choice.equals(2)
-                makeDynamicOrder(engine);
-            }
-        }
+//
+//    static private void makeOrder(Engine engine){
+//        if(engine.validFileIsNotLoaded()){
+//            System.out.println(Messenger.VALID_FILE_NOT_LOADED + "make an order");
+//        }
+//        else {
+//            System.out.println(Messenger.generateMenu(Messenger.getChooseOrderMethodMenu()));
+//            Integer Choice = Input.getOnePositiveIntegerInRange(MIN_CHOICE, Messenger.getCompleteOrderMenu().length,
+//                    String.format("Invalid input: number must be between %d-%d",
+//                            MIN_CHOICE, Messenger.getCompleteOrderMenu().length));
+//            if(Choice.equals(1)){
+//                makeStaticOrder(engine);
+//            }
+//            else{   //Choice.equals(2)
+//                makeDynamicOrder(engine);
+//            }
+//        }
         System.out.println(Messenger.LINE_SEPARATOR_NEW_LINE);
     }
 
@@ -193,33 +193,33 @@ public class UI {
         }
     }
 
-    static private void makeDynamicOrder(Engine engine){
-        System.out.println(Messenger.CHOOSE_DATE);
-        Date orderDate = Input.getDate();
-
-        Point customerLocation = getUserLocation(engine);
-
-        Map<Integer, Double> itemsMap = chooseItems(engine);
-
-        if(itemsMap.isEmpty()){
-            System.out.println("No items were chosen");
-        }
-        else{
-            CartDTO cart = engine.getSDM().summarizeDynamicOrder(itemsMap, customerLocation);
-            displayDynamicOrderSummary(cart);
-            System.out.println(Messenger.generateMenu(Messenger.getCompleteOrderMenu()));
-            Integer Choice = Input.getOnePositiveIntegerInRange(MIN_CHOICE, Messenger.getCompleteOrderMenu().length,
-                    String.format("Invalid input: number must be between %d-%d",
-                            MIN_CHOICE, Messenger.getCompleteOrderMenu().length));
-            if(Choice.equals(1)){
-                engine.getSDM().executeDynamicOrder(cart, orderDate, customerLocation);
-                System.out.println("Thank you for buying Super Duper Market!");
-            }
-            else{
-                System.out.println("You chose to cancel to order.. hope to see you again soon");
-            }
-        }
-    }
+//    static private void makeDynamicOrder(Engine engine){
+//        System.out.println(Messenger.CHOOSE_DATE);
+//        Date orderDate = Input.getDate();
+//
+//        Point customerLocation = getUserLocation(engine);
+//
+//        Map<Integer, Double> itemsMap = chooseItems(engine);
+//
+//        if(itemsMap.isEmpty()){
+//            System.out.println("No items were chosen");
+//        }
+//        else{
+//            CartDTO cart = engine.getSDM().summarizeDynamicOrder(itemsMap, customerLocation);
+//            displayDynamicOrderSummary(cart);
+//            System.out.println(Messenger.generateMenu(Messenger.getCompleteOrderMenu()));
+//            Integer Choice = Input.getOnePositiveIntegerInRange(MIN_CHOICE, Messenger.getCompleteOrderMenu().length,
+//                    String.format("Invalid input: number must be between %d-%d",
+//                            MIN_CHOICE, Messenger.getCompleteOrderMenu().length));
+//            if(Choice.equals(1)){
+//                engine.getSDM().executeDynamicOrder(cart, orderDate, customerLocation);
+//                System.out.println("Thank you for buying Super Duper Market!");
+//            }
+//            else{
+//                System.out.println("You chose to cancel to order.. hope to see you again soon");
+//            }
+//        }
+//    }
 
     static private void showOrdersHistory(Engine engine){
         if(engine.validFileIsNotLoaded()){
@@ -512,83 +512,83 @@ public class UI {
         }
     }
 
-    static private void saveOrdersToFile(Engine engine){
-        if(engine.validFileIsNotLoaded()){
-            System.out.println(Messenger.VALID_FILE_NOT_LOADED + "save orders to file");
-        }
-        else{
-            try{
-                Scanner scanner = new Scanner(System.in);
-                System.out.println(Messenger.ENTER_FULL_PATH);
-                Path path = Paths.get(scanner.nextLine());
-                if(!Files.exists(path)){
-                    System.out.println(Messenger.PATH_NOT_EXIST);
-                }
-                else{
-                    System.out.println(Messenger.ENTER_FILE_NAME);
-                    String fileName = scanner.nextLine().trim();
-                    if(!fileName.toUpperCase().endsWith(Messenger.SUFFIX_DAT.toUpperCase())){
-                        System.out.println(Messenger.INVALID_FILE_NAME);
-                    }
-                    else
-                    {
-                        engine.saveOrders(path.resolve(fileName));
-                        System.out.println(String.format("Orders were saved to file '%s' successfully", fileName));
-                    }
-                }
-            }
-            catch (InvalidPathException pathException){
-                System.out.println(Messenger.CANT_CONVERT_STRING_TO_PATH);
-            }
-            catch (DatFileException datFileException){
-                System.out.println(datFileException.getMessage());
-            }
-            catch (Exception exception){
-                System.out.println(Messenger.UNKNOWN_ERROR);
-            }
-        }
-        System.out.println(Messenger.LINE_SEPARATOR_NEW_LINE);
-    }
+//    static private void saveOrdersToFile(Engine engine){
+//        if(engine.validFileIsNotLoaded()){
+//            System.out.println(Messenger.VALID_FILE_NOT_LOADED + "save orders to file");
+//        }
+//        else{
+//            try{
+//                Scanner scanner = new Scanner(System.in);
+//                System.out.println(Messenger.ENTER_FULL_PATH);
+//                Path path = Paths.get(scanner.nextLine());
+//                if(!Files.exists(path)){
+//                    System.out.println(Messenger.PATH_NOT_EXIST);
+//                }
+//                else{
+//                    System.out.println(Messenger.ENTER_FILE_NAME);
+//                    String fileName = scanner.nextLine().trim();
+//                    if(!fileName.toUpperCase().endsWith(Messenger.SUFFIX_DAT.toUpperCase())){
+//                        System.out.println(Messenger.INVALID_FILE_NAME);
+//                    }
+//                    else
+//                    {
+//                        engine.saveOrders(path.resolve(fileName));
+//                        System.out.println(String.format("Orders were saved to file '%s' successfully", fileName));
+//                    }
+//                }
+//            }
+//            catch (InvalidPathException pathException){
+//                System.out.println(Messenger.CANT_CONVERT_STRING_TO_PATH);
+//            }
+//            catch (DatFileException datFileException){
+//                System.out.println(datFileException.getMessage());
+//            }
+//            catch (Exception exception){
+//                System.out.println(Messenger.UNKNOWN_ERROR);
+//            }
+//        }
+//        System.out.println(Messenger.LINE_SEPARATOR_NEW_LINE);
+//    }
 
-    static private void loadOrdersFromFile(Engine engine){
-        if(engine.validFileIsNotLoaded()){
-            System.out.println(Messenger.VALID_FILE_NOT_LOADED + "load orders from file");
-        }
-        else{
-            try{
-                Scanner scanner = new Scanner(System.in);
-                System.out.println(Messenger.ENTER_FILE_PATH);
-                Path path = Paths.get(scanner.nextLine());
-                if(!Files.exists(path)){
-                    System.out.println(Messenger.PATH_NOT_EXIST);
-                }
-                else{
-                    System.out.println(Messenger.ENTER_FILE_NAME);
-                    String fileName = scanner.nextLine().trim();
-                    if(!fileName.toUpperCase().endsWith(Messenger.SUFFIX_DAT.toUpperCase())){
-                        System.out.println(Messenger.INVALID_FILE_NAME);
-                    }
-                    else if(!Files.exists(path.resolve(fileName))){
-                        System.out.println(Messenger.FILE_NOT_EXIST);
-                    }
-                    else
-                    {
-                        engine.loadOrders(path.resolve(fileName));
-                        System.out.println(String.format("File '%s' was loaded to Super Duper Market successfully",
-                                fileName));
-                    }
-                }
-            }
-            catch (InvalidPathException pathException){
-                System.out.println(Messenger.CANT_CONVERT_STRING_TO_PATH);
-            }
-            catch (DatFileException datFileException){
-                System.out.println(datFileException.getMessage());
-            }
-            catch (Exception exception){
-                System.out.println(Messenger.UNKNOWN_ERROR);
-            }
-        }
-        System.out.println(Messenger.LINE_SEPARATOR_NEW_LINE);
-    }
+//    static private void loadOrdersFromFile(Engine engine){
+//        if(engine.validFileIsNotLoaded()){
+//            System.out.println(Messenger.VALID_FILE_NOT_LOADED + "load orders from file");
+//        }
+//        else{
+//            try{
+//                Scanner scanner = new Scanner(System.in);
+//                System.out.println(Messenger.ENTER_FILE_PATH);
+//                Path path = Paths.get(scanner.nextLine());
+//                if(!Files.exists(path)){
+//                    System.out.println(Messenger.PATH_NOT_EXIST);
+//                }
+//                else{
+//                    System.out.println(Messenger.ENTER_FILE_NAME);
+//                    String fileName = scanner.nextLine().trim();
+//                    if(!fileName.toUpperCase().endsWith(Messenger.SUFFIX_DAT.toUpperCase())){
+//                        System.out.println(Messenger.INVALID_FILE_NAME);
+//                    }
+//                    else if(!Files.exists(path.resolve(fileName))){
+//                        System.out.println(Messenger.FILE_NOT_EXIST);
+//                    }
+//                    else
+//                    {
+//                        engine.loadOrders(path.resolve(fileName));
+//                        System.out.println(String.format("File '%s' was loaded to Super Duper Market successfully",
+//                                fileName));
+//                    }
+//                }
+//            }
+//            catch (InvalidPathException pathException){
+//                System.out.println(Messenger.CANT_CONVERT_STRING_TO_PATH);
+//            }
+//            catch (DatFileException datFileException){
+//                System.out.println(datFileException.getMessage());
+//            }
+//            catch (Exception exception){
+//                System.out.println(Messenger.UNKNOWN_ERROR);
+//            }
+//        }
+//        System.out.println(Messenger.LINE_SEPARATOR_NEW_LINE);
+//    }
 }

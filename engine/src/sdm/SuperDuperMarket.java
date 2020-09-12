@@ -1,13 +1,12 @@
 package sdm;
 
 import DTO.CartDTO;
-import DTO.CustomerDTO;
-import DTO.StoreDTO;
 import sdm.item.PurchaseCategory;
 import sdm.order.OrderStatic;
 
 import java.awt.*;
 import java.util.Date;
+import java.util.List;
 import java.util.Map;
 import java.util.function.Consumer;
 
@@ -26,11 +25,13 @@ public interface SuperDuperMarket {
     void addItemToStore(int storeId, int itemId, int itemNewPrice);
     void updateItemPriceInStore(int storeId, int itemId, int itemNewPrice);
 
-    void executeStaticOrder(CartDTO cart, Date date, int storeId);
-    void executeDynamicOrder(CartDTO cart, Date orderDate, Point customerLocation);
+    void executeStaticOrder(CartDTO cart, Date date, int customerId);
+    void executeDynamicOrder(List<CartDTO> cartList, Date orderDate, Integer customerId);
     CartDTO summarizeStaticOrder(Map<Integer, Double> itemsMap, int storeId, Point customerLocation);
-    CartDTO summarizeDynamicOrder(Map<Integer, Double> itemsMap, Point customerLocation);
+    List<CartDTO> summarizeDynamicOrder(Map<Integer, Double> itemsMap, Integer customerId);
 
     void addOrdersFromFileToSDM(Map<Integer, OrderStatic> orderIdToOrder);
     void calculateDeliveryPrice(Integer storeId, Integer customerId, Consumer<Double> deliveryPrice);
+    Double calculateDeliveryPrice(Integer storeId, Integer customerId);
+    Double calculateDistanceStoreToCustomer(Integer storeId, Integer customerId);
 }

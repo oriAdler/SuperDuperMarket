@@ -1,5 +1,7 @@
 package sdm.store;
 
+import sdm.discount.Discount;
+
 import java.awt.*;
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -8,16 +10,18 @@ import java.util.List;
 import java.util.Map;
 
 public class Store implements Serializable {
-    final private int Id;
-    final private String name;
-    final private Map<Integer, Integer> itemIdToPrice;
-    final private Map<Integer, Double> itemIdToNumberOfSales;
-    final private Point location;
-    final private double PPK;
-    final private List<Integer> orders;
+    private final int Id;
+    private final String name;
+    private final Map<Integer, Integer> itemIdToPrice;
+    private final Map<Integer, Double> itemIdToNumberOfSales;
+    private final Point location;
+    private final double PPK;
+    private final List<Integer> orders;
     private double totalDeliveryIncome;
+    private final List<Discount> discounts;
 
-    public Store(int id, String name, Map<Integer, Integer> itemIdToPrice, Point location, double PPK) {
+    public Store(int id, String name, Map<Integer, Integer> itemIdToPrice, Point location,
+                 double PPK, List<Discount> discounts) {
         this.Id = id;
         this.name = name;
         this.itemIdToPrice = itemIdToPrice;
@@ -27,6 +31,7 @@ public class Store implements Serializable {
         this.PPK = PPK;
         this.orders = new ArrayList<>();
         this.totalDeliveryIncome = 0;
+        this.discounts = discounts;
     }
 
     public Map<Integer, Integer> getItemIdToPrice() {
@@ -51,6 +56,10 @@ public class Store implements Serializable {
 
     public List<Integer> getOrders() {
         return orders;
+    }
+
+    public List<Discount> getDiscounts() {
+        return discounts;
     }
 
     public double getTotalDeliveryIncome() {

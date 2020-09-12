@@ -15,7 +15,7 @@ public class FileLoaderTask extends Task<Boolean> {
     private Engine engine;
 
     // Progress variables:
-    private final int SLEEP_TIME = 12;
+    private final int SLEEP_TIME = 5;
     private final int MAX_PROGRESS = 100;
     private final int HALF_PROGRESS = 50;
     private final int QUARTER_PROGRESS = 25;
@@ -56,8 +56,6 @@ public class FileLoaderTask extends Task<Boolean> {
         return true;
     }
 
-    //TODO: count lines in file instead of dummy function.
-    // Dummy function to simulate progress bar flow.
     private void updateProgressWithFlow(int advance){
         for(int i=0; i<advance; i++){
             dummyProgress++;

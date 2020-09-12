@@ -1,5 +1,7 @@
 package sdm.customer;
 
+import sdm.order.OrderStatic;
+
 import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -43,5 +45,14 @@ public class Customer {
 
     public double getAverageDeliveryPrice() {
         return averageDeliveryPrice;
+    }
+
+    public void addNewOrder(OrderStatic order, Integer orderId){
+        averageOrdersPrice =
+                (averageOrdersPrice * ordersIdList.size() + order.getTotalOrderPrice())
+                        / (ordersIdList.size() + 1);
+        averageDeliveryPrice = (averageDeliveryPrice * ordersIdList.size() + order.getDeliveryPrice())
+                / (ordersIdList.size() + 1);
+        ordersIdList.add(orderId);
     }
 }

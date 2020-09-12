@@ -1,6 +1,7 @@
 package components.item;
 
 import DTO.ItemDTO;
+import common.Input;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -53,6 +54,46 @@ public class ItemsController implements Initializable{
         proceedToCheckout = new SimpleBooleanProperty(false);
     }
 
+    @FXML
+    void amountColumnOnEditCommit(TableColumn.CellEditEvent<ItemDTO, String> event) {
+        // Get the selected item:
+        ItemDTO currentItem = event.getTableView()
+                .getItems()
+                .get(event.getTablePosition().getRow());
+        String category = currentItem.getCategory();
+        String price = currentItem.getPrice();
+
+        // Check input validation:
+        String newValue = event.getNewValue();
+        if (price.toUpperCase().equals("NOT SOLD")) {
+            newValue = "Not Sold";
+        }
+        else{
+            if(category.toUpperCase().equals("WEIGHT")){
+                if(!Input.isPositiveDouble(newValue)){
+                    newValue = "Enter positive number";
+                }
+            }
+            else{   //category.toUpperCase().equals("QUANTITY")
+                if(!Input.isPositiveInteger(newValue)){
+                    newValue = "Enter whole positive number";
+                }
+            }
+        }
+        currentItem.setAmount(newValue);
+
+        // Check if at least one item was chosen:
+        proceedToCheckout.set(false);
+        tableView.getItems().forEach(item -> {
+            if(Input.isPositiveDouble(item.getAmount())) {
+                // User now can proceed to checkout
+                proceedToCheckout.set(true);
+            }
+        });
+
+        tableView.refresh();
+    }
+
     public AnchorPane getAnchorPane() {
         return anchorPane;
     }
@@ -86,114 +127,4 @@ public class ItemsController implements Initializable{
         itemsOL.addAll(itemsList);
         tableView.setItems(itemsOL);
     }
-
-    @FXML
-    void amountColumnOnEditCommit(TableColumn.CellEditEvent<ItemDTO, String> event) {
-        ItemDTO currentItem = event.getTableView()
-                .getItems()
-                .get(event.getTablePosition().getRow());
-
-        String category = currentItem.getCategory();
-        String price = currentItem.getPrice();
-        String newValue = event.getNewValue();
-
-        if (price.toUpperCase().equals("NOT SOLD")) {
-            newValue = "Not Sold";
-        }
-        else{
-            if(category.toUpperCase().equals("WEIGHT")){
-                try{
-                    double amount = Double.parseDouble(newValue);
-                    if(amount < 0){
-                        newValue = "Enter Positive Number";
-                    }
-                }
-                catch (Exception ignored){
-                    newValue = "Enter Number";
-                }
-            }
-            else{
-                try{
-                    int amount = Integer.parseInt(newValue);
-                    if(amount < 0){
-                        newValue = "Enter Positive Number";
-                    }
-                }
-                catch (Exception ignored){
-                    newValue = "Enter Whole Number";
-                }
-            }
-        }
-
-        currentItem.setAmount(newValue);
-
-        // Check if at least one item was chosen:
-        proceedToCheckout.set(false);
-        tableView.getItems().forEach(item -> {
-            try{
-                if(Double.parseDouble(item.getAmount()) > 0){
-                    proceedToCheckout.set(true);
-                }
-            }
-            catch (Exception ignore){
-
-            }
-        });
-
-        tableView.refresh();
-    }
-//    private void userEditAmountCell(TableColumn.CellEditEvent<ItemDTO, String> event) {
-//        ItemDTO currentItem = event.getTableView()
-//                .getItems()
-//                .get(event.getTablePosition().getRow());
-//
-//        String category = currentItem.getCategory();
-//        String price = currentItem.getPrice();
-//        String newValue = event.getNewValue();
-//
-//        if (price.toUpperCase().equals("NOT SOLD")) {
-//            newValue = "Not Sold";
-//        }
-//        else{
-//            if(category.toUpperCase().equals("WEIGHT")){
-//                try{
-//                    double amount = Double.parseDouble(newValue);
-//                    if(amount < 0){
-//                        newValue = "Enter Positive Number";
-//                    }
-//                }
-//                catch (Exception ignored){
-//                    newValue = "Enter Number";
-//                }
-//            }
-//            else{
-//                try{
-//                    int amount = Integer.parseInt(newValue);
-//                    if(amount < 0){
-//                        newValue = "Enter Positive Number";
-//                    }
-//                }
-//                catch (Exception ignored){
-//                    newValue = "Enter Whole Number";
-//                }
-//            }
-//        }
-//
-//        currentItem.setAmount(newValue);
-//
-//        // Check if at least one item was chosen:
-//        proceedToCheckout.set(false);
-//        tableView.getItems().forEach(item -> {
-//            try{
-//                if(Double.parseDouble(item.getAmount()) > 0){
-//                    proceedToCheckout.set(true);
-//                }
-//            }
-//            catch (Exception ignore){
-//
-//            }
-//        });
-//
-//        tableView.refresh();
-//    }
 }

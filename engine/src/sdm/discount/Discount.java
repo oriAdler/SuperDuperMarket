@@ -6,10 +6,10 @@ public class Discount {
     private final String name;
     private final int itemId;
     private final double amount;
-    private final Operator operator;
+    private final String operator;
     private final List<Offer> offerList;
 
-    public Discount(String name, int itemId, double amount, Operator operator, List<Offer> offerList) {
+    public Discount(String name, int itemId, double amount, String operator, List<Offer> offerList) {
         this.name = name;
         this.itemId = itemId;
         this.amount = amount;

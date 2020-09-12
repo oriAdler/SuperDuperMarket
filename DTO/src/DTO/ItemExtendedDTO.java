@@ -1,7 +1,5 @@
 package DTO;
 
-import sdm.item.PurchaseCategory;
-
 public class ItemExtendedDTO extends ItemDTO {
     final private double priceSum;
     final private String storeName;
