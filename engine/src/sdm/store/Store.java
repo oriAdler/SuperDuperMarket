@@ -66,6 +66,10 @@ public class Store implements Serializable {
         return totalDeliveryIncome;
     }
 
+    public int getId() {
+        return Id;
+    }
+
     public void setTotalDeliveryIncome(double totalDeliveryIncome) {
         this.totalDeliveryIncome = totalDeliveryIncome;
     }

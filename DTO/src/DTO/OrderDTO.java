@@ -1,20 +1,18 @@
 package DTO;
 
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.Date;
+import java.time.LocalDate;
 
 public class OrderDTO {
-    int id;
-    final private Date date;
-    int storeId;
-    String storeName;
-    final private int numOfItems;
-    double itemsPrice;
-    double deliveryPrice;
-    double totalPrice;
+    private final int id;
+    private final LocalDate date;
+    private final int storeId;
+    private final String storeName;
+    private final int numOfItems;
+    private final double itemsPrice;
+    private final double deliveryPrice;
+    private final double totalPrice;
 
-    public OrderDTO(int id, Date date, int storeId, String storeName, int numOfItems,
+    public OrderDTO(int id, LocalDate date, int storeId, String storeName, int numOfItems,
                     double itemsPrice, double deliveryPrice, double totalPrice) {
         this.id = id;
         this.date = date;
@@ -30,7 +28,7 @@ public class OrderDTO {
         return id;
     }
 
-    public Date getDate() {
+    public LocalDate getDate() {
         return date;
     }
 
@@ -60,27 +58,32 @@ public class OrderDTO {
 
     @Override
     public String toString() {
-        DateFormat dateFormat = new SimpleDateFormat("dd/MM-HH:mm");
-        return "{" +
-                "id: " + id +
-                ", date: " + dateFormat.format(date) +
-                ", store id: " + storeId +
-                ", store name: " + storeName +
-                ", number of items: " + numOfItems +
-                String.format(", items price: %.2f", itemsPrice) +
-                String.format(", delivery price: %.2f", deliveryPrice) +
-                String.format(", total price: %.2f", totalPrice) +
-                '}';
+        return String.format("%d", id);
     }
 
-    public String toStringInStore() {
-        DateFormat dateFormat = new SimpleDateFormat("dd/MM-HH:mm");
-        return "{" +
-                "date: " + dateFormat.format(date) +
-                ", number of items: " + numOfItems +
-                String.format(", items price: %.2f", itemsPrice) +
-                String.format(", delivery price: %.2f", deliveryPrice) +
-                String.format(", total price: %.2f", totalPrice) +
-                '}';
-    }
+    //    @Override
+//    public String toString() {
+//        DateFormat dateFormat = new SimpleDateFormat("dd/MM-HH:mm");
+//        return "{" +
+//                "id: " + id +
+//                ", date: " + dateFormat.format(date) +
+//                ", store id: " + storeId +
+//                ", store name: " + storeName +
+//                ", number of items: " + numOfItems +
+//                String.format(", items price: %.2f", itemsPrice) +
+//                String.format(", delivery price: %.2f", deliveryPrice) +
+//                String.format(", total price: %.2f", totalPrice) +
+//                '}';
+//    }
+//
+//    public String toStringInStore() {
+//        DateFormat dateFormat = new SimpleDateFormat("dd/MM-HH:mm");
+//        return "{" +
+//                "date: " + dateFormat.format(date) +
+//                ", number of items: " + numOfItems +
+//                String.format(", items price: %.2f", itemsPrice) +
+//                String.format(", delivery price: %.2f", deliveryPrice) +
+//                String.format(", total price: %.2f", totalPrice) +
+//                '}';
+//    }
 }

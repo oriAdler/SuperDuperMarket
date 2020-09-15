@@ -16,4 +16,24 @@ public class Discount {
         this.operator = operator;
         this.offerList = offerList;
     }
+
+    public String getName() {
+        return name;
+    }
+
+    public int getItemId() {
+        return itemId;
+    }
+
+    public double getAmount() {
+        return amount;
+    }
+
+    public String getOperator() {
+        return operator;
+    }
+
+    public List<Offer> getOfferList() {
+        return offerList;
+    }
 }

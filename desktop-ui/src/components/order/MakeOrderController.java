@@ -1,12 +1,10 @@
 package components.order;
 
-import DTO.CartDTO;
-import DTO.CustomerDTO;
-import DTO.ItemDTO;
-import DTO.StoreDTO;
+import DTO.*;
 import common.Input;
 import common.SDMResourcesConstants;
 import components.cart.CartController;
+import components.discount.AllDiscountsController;
 import components.item.ItemsController;
 import components.main.MainController;
 import engine.Engine;
@@ -27,9 +25,7 @@ import javafx.scene.control.ScrollPane;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.GridPane;
-import javafx.scene.layout.VBox;
 
-import java.awt.*;
 import java.io.IOException;
 import java.net.URL;
 import java.time.LocalDate;
@@ -61,11 +57,15 @@ public class MakeOrderController implements Initializable {
 
     @FXML private Button okButton;
     @FXML private Button checkoutButton;
+    @FXML private Button nextToDiscountButton;
     @FXML private Button nextToSummaryButton;
     @FXML private Button approveButton;
     @FXML private Button cancelButton;
-    @FXML private Label totalPriceLabel;
+    @FXML private GridPane gridPaneSummary;
+    @FXML private Label itemsPriceValueLabel;
+    @FXML private Label deliveryPriceValueLabel;
     @FXML private Label totalPriceValueLabel;
+
 
     // Secondary Controllers:
     private MainController mainController;
@@ -78,6 +78,9 @@ public class MakeOrderController implements Initializable {
 
     private DynamicOrderController dynamicOrderController;
     private AnchorPane dynamicOrderAnchorPane;
+
+    private AllDiscountsController allDiscountsController;
+    private AnchorPane  allDiscountAnchorPane;
 
     private Engine engine;
 
@@ -95,6 +98,8 @@ public class MakeOrderController implements Initializable {
     private SimpleBooleanProperty datePickerClicked;
     private SimpleBooleanProperty okButtonIsClicked;
 
+    private SimpleDoubleProperty totalItemsPrice;
+    private SimpleDoubleProperty totalDeliveryPrice;
     private SimpleDoubleProperty totalPrice;
 
     // Order details:
@@ -104,6 +109,7 @@ public class MakeOrderController implements Initializable {
     Map<Integer, Double> itemIdToAmount;
     CartDTO cart;
     List<CartDTO> cartList;
+    List<OfferDTO> offerList;
 
     public MakeOrderController(){
         customerId = new SimpleIntegerProperty();
@@ -120,6 +126,8 @@ public class MakeOrderController implements Initializable {
         okButtonIsClicked = new SimpleBooleanProperty();
 
         totalPrice = new SimpleDoubleProperty();
+        totalItemsPrice = new SimpleDoubleProperty();
+        totalDeliveryPrice = new SimpleDoubleProperty();
 
         // Load items & orders FXML files:
         itemsController = createItemsController();
@@ -144,6 +152,8 @@ public class MakeOrderController implements Initializable {
         okButtonIsClicked.set(false);
         nextToSummaryButton.setVisible(false);
         nextToSummaryButton.setDisable(true);
+        nextToDiscountButton.setVisible(false);
+        nextToDiscountButton.setDisable(true);
 
         staticOrderRadioButton.disableProperty().bind(customerComboBoxClicked.not().or(okButtonIsClicked));
         dynamicOrderRadioButton.disableProperty().bind(customerComboBoxClicked.not().or(okButtonIsClicked));
@@ -154,9 +164,10 @@ public class MakeOrderController implements Initializable {
         okButton.disableProperty().bind(datePickerClicked.not().or(storeComboBoxClicked.not().and(dynamicOrderRadioButtonClicked.not())));
         checkoutButton.disableProperty().bind(itemsController.proceedToCheckoutProperty().not());
 
-        totalPriceValueLabel.textProperty().bind(Bindings.concat(Bindings.format("%.2f", totalPrice)));
-        totalPriceLabel.setVisible(false);
-        totalPriceValueLabel.setVisible(false);
+        itemsPriceValueLabel.textProperty().bind(Bindings.format("%.2f", totalItemsPrice));
+        deliveryPriceValueLabel.textProperty().bind(Bindings.format("%.2f", totalDeliveryPrice));
+        totalPriceValueLabel.textProperty().bind(Bindings.format("%.2f", totalPrice));
+        gridPaneSummary.setVisible(false);
     }
 
     public void setMainController(MainController mainController) {
@@ -257,8 +268,8 @@ public class MakeOrderController implements Initializable {
     @FXML
     void checkoutButtonAction(ActionEvent event){
         checkoutButton.setVisible(false);
-        nextToSummaryButton.setVisible(true);
-        nextToSummaryButton.setDisable(false);
+        nextToDiscountButton.setVisible(true);
+        nextToDiscountButton.setDisable(false);
 
         // Collect data from controllers:
         date = datePicker.getValue();
@@ -280,10 +291,10 @@ public class MakeOrderController implements Initializable {
 
         // Execute order:
         if(staticOrderRadioButtonClicked.getValue()){
-            nextToSummaryButton.fire();
+            nextToDiscountButton.fire();
         }
         else{   // dynamicOrderRadioButtonClicked.getValue() == true
-            cartList = engine.getSDM().summarizeDynamicOrder(itemIdToAmount, customer.getId());
+            cartList = engine.getSDM().summarizeDynamicOrder(itemIdToAmount, null, customer.getId());
 
             // Load dynamic order FXML file:
             dynamicOrderController = createDynamicOrderController();
@@ -297,38 +308,60 @@ public class MakeOrderController implements Initializable {
         }
     }
 
-    //TODO: hakol beshekel shows distance 0.0
+    @FXML
+    void nextToDiscountButtonOnAction(ActionEvent event){
+        nextToSummaryButton.setVisible(true);
+        nextToSummaryButton.setDisable(false);
+        nextToDiscountButton.setVisible(false);
+        nextToDiscountButton.setDisable(true);
+
+        Map<Integer, Double> itemIdToAmountDummy = new HashMap<>(itemIdToAmount);
+
+        allDiscountsController = createAllDiscountsController();
+        allDiscountsController.setEngine(engine);
+        allDiscountsController.setItemsIdToAmount(itemIdToAmountDummy);
+        allDiscountsController.fillAllDiscountData();
+
+        scrollPaneCenter.setContent(allDiscountsController.getBorderPane());
+    }
+
     @FXML
     void nextToSummaryButtonAction(ActionEvent event){
         approveButton.setVisible(true);
         approveButton.setDisable(false);
         nextToSummaryButton.setVisible(false);
         nextToSummaryButton.setDisable(true);
-        totalPriceLabel.setVisible(true);
-        totalPriceValueLabel.setVisible(true);
+        gridPaneSummary.setVisible(true);
+
+        offerList = allDiscountsController.getOfferList();
 
         FlowPane flowPane = new FlowPane();
         scrollPaneCenter.setContent(flowPane);
 
         if(staticOrderRadioButtonClicked.getValue()){
             // Generate customer's cart:
-            cart = engine.getSDM().summarizeStaticOrder(itemIdToAmount, store.getId(),
-                    new Point(customer.getXLocation(), customer.getYLocation()));
+            cart = engine.getSDM().summarizeStaticOrder(itemIdToAmount, offerList, store.getId(), customer.getId());
 
             // Fill cart controller data:
             cartController.fillGridPaneData(cart, store.getName(), store.getId(), store.getPPK(),
                     engine.getSDM().calculateDistanceStoreToCustomer(store.getId(), customer.getId()),
                     engine.getSDM().calculateDeliveryPrice(store.getId(), customer.getId()));
+
+            totalItemsPrice.set(cart.getTotalItemsPrice());
+            totalDeliveryPrice.set(cart.getDeliveryPrice());
             totalPrice.set(cart.getTotalOrderPrice());
 
             flowPane.getChildren().add(cartGridPane);
         }
         else{
-            cartList = engine.getSDM().summarizeDynamicOrder(itemIdToAmount, customer.getId());
+            cartList = engine.getSDM().summarizeDynamicOrder(itemIdToAmount, offerList, customer.getId());
             for(CartDTO cart : cartList){
                 CartController currentCartController = createCartController();
                 currentCartController.fillGridPaneData(cart, cart.getStoreName(), cart.getStoreId(),
                         cart.getPPK(), cart.getDistanceFromStoreToCustomer(), cart.getDeliveryPrice());
+
+                totalItemsPrice.set(totalItemsPrice.get() + cart.getTotalItemsPrice());
+                totalDeliveryPrice.set(totalDeliveryPrice.get() + cart.getDeliveryPrice());
                 totalPrice.set(totalPrice.get() + cart.getTotalOrderPrice());
 
                 flowPane.getChildren().add(currentCartController.getGridPane());
@@ -340,11 +373,11 @@ public class MakeOrderController implements Initializable {
     void approveButtonAction(ActionEvent event) {
         //NOTE: change date in engine to local date?
         if(staticOrderRadioButtonClicked.get()){
-            engine.getSDM().executeStaticOrder(cart, new Date(), customer.getId());
+            engine.getSDM().executeStaticOrder(cart, date, customer.getId());
 
         }
         else{   // staticOrderRadioButtonClicked.getValue() == true
-            engine.getSDM().executeDynamicOrder(cartList, new Date(), customer.getId());
+            engine.getSDM().executeDynamicOrder(cartList, date, customer.getId());
         }
 
         mainController.setInOrderProcedure(false);
@@ -386,6 +419,21 @@ public class MakeOrderController implements Initializable {
 
             loader.setLocation(SDMResourcesConstants.DYNAMIC_ORDER_ANCHOR_PANE);
             dynamicOrderAnchorPane = loader.load();
+            return loader.getController();
+        }
+        catch (IOException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    public AllDiscountsController createAllDiscountsController()
+    {
+        try {
+            FXMLLoader loader = new FXMLLoader();
+
+            loader.setLocation(SDMResourcesConstants.ALL_DISCOUNT_ANCHOR_PANE);
+            allDiscountAnchorPane = loader.load();
             return loader.getController();
         }
         catch (IOException e) {

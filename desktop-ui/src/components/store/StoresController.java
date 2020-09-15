@@ -2,6 +2,7 @@ package components.store;
 
 import DTO.StoreDTO;
 import common.SDMResourcesConstants;
+import components.discount.AllDiscountsController;
 import components.item.ItemsController;
 import components.order.OrdersController;
 import engine.Engine;
@@ -15,6 +16,7 @@ import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.FlowPane;
 
 import java.io.IOException;
 import java.net.URL;
@@ -33,6 +35,7 @@ public class StoresController implements Initializable {
     private ToggleGroup toggleGroup;
     @FXML private RadioButton itemsRadioButton;
     @FXML private RadioButton ordersRadioButton;
+    @FXML private RadioButton discountsRadioButton;
 
     // Properties:
     private SimpleIntegerProperty storeId;
@@ -44,6 +47,9 @@ public class StoresController implements Initializable {
     private AnchorPane itemsAnchorPane;
     private OrdersController ordersController;
     private AnchorPane ordersAnchorPane;
+    private AnchorPane allDiscountAnchorPane;
+
+    Engine engine;
 
     public StoresController(){
         storeId = new SimpleIntegerProperty();
@@ -66,6 +72,12 @@ public class StoresController implements Initializable {
         itemsRadioButton.setDisable(true);
         ordersRadioButton.setToggleGroup(toggleGroup);
         ordersRadioButton.setDisable(true);
+        discountsRadioButton.setToggleGroup(toggleGroup);
+        discountsRadioButton.setDisable(true);
+    }
+
+    public void setEngine(Engine engine) {
+        this.engine = engine;
     }
 
     public void fillBorderPaneData(Engine engine){
@@ -86,8 +98,10 @@ public class StoresController implements Initializable {
         // Clear last choice:
         itemsRadioButton.setSelected(false);
         ordersRadioButton.setSelected(false);
+        discountsRadioButton.setSelected(false);
         itemsRadioButton.setDisable(false);
         ordersRadioButton.setDisable(false);
+        discountsRadioButton.setDisable(false);
         anchorPaneBottom.getChildren().clear();
 
         itemsRadioButton.setOnAction(e->{
@@ -100,6 +114,14 @@ public class StoresController implements Initializable {
             ordersController.fillTableViewData(store.getOrders());
             anchorPaneBottom.getChildren().clear();
             anchorPaneBottom.getChildren().add(ordersController.getTableView());
+        });
+
+        discountsRadioButton.setOnAction(e->{
+            AllDiscountsController allDiscountsController = createAllDiscountsController();
+            allDiscountsController.setEngine(engine);
+            allDiscountsController.fillAllDiscountData(store.getId());
+            anchorPaneBottom.getChildren().clear();
+            anchorPaneBottom.getChildren().add(allDiscountsController.getScrollPane());
         });
     }
 
@@ -124,6 +146,21 @@ public class StoresController implements Initializable {
 
             loader.setLocation(SDMResourcesConstants.ITEMS_ANCHOR_PANE);
             itemsAnchorPane = loader.load();
+            return loader.getController();
+        }
+        catch (IOException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    public AllDiscountsController createAllDiscountsController()
+    {
+        try {
+            FXMLLoader loader = new FXMLLoader();
+
+            loader.setLocation(SDMResourcesConstants.ALL_DISCOUNT_ANCHOR_PANE);
+            allDiscountAnchorPane = loader.load();
             return loader.getController();
         }
         catch (IOException e) {

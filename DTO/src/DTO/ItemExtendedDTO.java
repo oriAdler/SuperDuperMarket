@@ -4,12 +4,14 @@ public class ItemExtendedDTO extends ItemDTO {
     final private double priceSum;
     final private String storeName;
     final private Integer storeId;
+    final private Boolean onDiscount;
 
     public ItemExtendedDTO(int id, String name, String category, int numOfSellers,
-                           double price, double numOfSales, String storeName, Integer storeId) {
+                           double price, double numOfSales, String storeName, Integer storeId, Boolean onDiscount) {
         super(id, name, category, numOfSellers, price, numOfSales);
         this.storeName = storeName;
         this.storeId = storeId;
+        this.onDiscount = onDiscount;
         this.priceSum = price * numOfSales;
     }
 
@@ -23,5 +25,9 @@ public class ItemExtendedDTO extends ItemDTO {
 
     public Integer getStoreId() {
         return storeId;
+    }
+
+    public Boolean getOnDiscount() {
+        return onDiscount;
     }
 }

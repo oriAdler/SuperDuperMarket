@@ -1,15 +1,16 @@
 package sdm.order;
 
+import DTO.CartDTO;
 import DTO.OrderDTO;
 import sdm.item.Item;
 
 import java.io.Serializable;
-import java.util.Date;
+import java.time.LocalDate;
 import java.util.List;
 
 public class OrderStatic implements Serializable {
     static private int id = 0;
-    final private Date date;
+    final private LocalDate date;
     final private int storeId;
     final private String storeName;
     final private int numOfItems;
@@ -17,9 +18,12 @@ public class OrderStatic implements Serializable {
     final private double deliveryPrice;
     final private double totalOrderPrice;
     final private List<Item> itemList;
+    final private int customerId;
+    private CartDTO cart;
 
-    public OrderStatic(Date date, int storeId, String storeName, int numOfItems, double itemsPrice,
-                       double deliveryPrice, double totalOrderPrice, boolean advanceId, List<Item> itemList) {
+    public OrderStatic(LocalDate date, int storeId, String storeName, int numOfItems, double itemsPrice,
+                       double deliveryPrice, double totalOrderPrice, boolean advanceId,
+                       List<Item> itemList, int customerId) {
         if(advanceId){
             id++;
         }
@@ -31,6 +35,7 @@ public class OrderStatic implements Serializable {
         this.deliveryPrice = deliveryPrice;
         this.totalOrderPrice = totalOrderPrice;
         this.itemList = itemList;
+        this.customerId = customerId;
     }
 
     public static int getId() {
@@ -41,7 +46,7 @@ public class OrderStatic implements Serializable {
         OrderStatic.id = id;
     }
 
-    public Date getDate() {
+    public LocalDate getDate() {
         return date;
     }
 
@@ -73,6 +78,10 @@ public class OrderStatic implements Serializable {
         return itemList;
     }
 
+    public int getCustomerId() {
+        return customerId;
+    }
+
     public OrderDTO convertOrderToOrderDTO(int orderId){
         return new OrderDTO(orderId,
                 this.getDate(),
@@ -82,5 +91,13 @@ public class OrderStatic implements Serializable {
                 this.getItemsPrice(),
                 this.getDeliveryPrice(),
                 this.getTotalOrderPrice());
+    }
+
+    public void setCart(CartDTO cart) {
+        this.cart = cart;
+    }
+
+    public CartDTO getCart() {
+        return cart;
     }
 }

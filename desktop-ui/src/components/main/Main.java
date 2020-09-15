@@ -4,9 +4,6 @@ import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.control.ScrollPane;
-import javafx.scene.control.SplitPane;
-import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import engine.Engine;
 import engine.EngineImpl;
@@ -33,7 +30,7 @@ public class Main extends Application {
 
         // Set stage:
         primaryStage.setTitle("Super Duper Market");
-        Scene scene = new Scene(root, 800, 600);
+        Scene scene = new Scene(root, 950, 650);
         primaryStage.setScene(scene);
         primaryStage.setMinHeight(450);
         primaryStage.setMinWidth(450);

@@ -1,10 +1,14 @@
 package sdm;
 
 import DTO.CartDTO;
+import DTO.DiscountDTO;
+import DTO.OfferDTO;
+import sdm.discount.Discount;
 import sdm.item.PurchaseCategory;
 import sdm.order.OrderStatic;
 
 import java.awt.*;
+import java.time.LocalDate;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -25,13 +29,17 @@ public interface SuperDuperMarket {
     void addItemToStore(int storeId, int itemId, int itemNewPrice);
     void updateItemPriceInStore(int storeId, int itemId, int itemNewPrice);
 
-    void executeStaticOrder(CartDTO cart, Date date, int customerId);
-    void executeDynamicOrder(List<CartDTO> cartList, Date orderDate, Integer customerId);
-    CartDTO summarizeStaticOrder(Map<Integer, Double> itemsMap, int storeId, Point customerLocation);
-    List<CartDTO> summarizeDynamicOrder(Map<Integer, Double> itemsMap, Integer customerId);
+    void executeStaticOrder(CartDTO cart, LocalDate date, int customerId);
+    void executeDynamicOrder(List<CartDTO> cartList, LocalDate orderDate, Integer customerId);
+    CartDTO summarizeStaticOrder(Map<Integer, Double> itemsMap, List<OfferDTO> offersToAddToCart, int storeId, Integer customerId);
+    List<CartDTO> summarizeDynamicOrder(Map<Integer, Double> itemsMap, List<OfferDTO> offersToAddToCart, Integer customerId);
+    List<CartDTO> getDetailedOrder(Integer orderId);
 
     void addOrdersFromFileToSDM(Map<Integer, OrderStatic> orderIdToOrder);
     void calculateDeliveryPrice(Integer storeId, Integer customerId, Consumer<Double> deliveryPrice);
     Double calculateDeliveryPrice(Integer storeId, Integer customerId);
     Double calculateDistanceStoreToCustomer(Integer storeId, Integer customerId);
+
+    List<DiscountDTO> getStoreDiscounts(Integer storeId);
+    List<DiscountDTO> getDiscounts(Map<Integer, Double> itemIdToAmount);
 }

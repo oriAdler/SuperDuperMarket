@@ -5,6 +5,7 @@ import engine.XmlFileHandler;
 import exception.invalidLocationException;
 import exception.invalidItemException;
 import sdm.customer.Customer;
+import sdm.discount.Discount;
 import sdm.item.PurchaseCategory;
 import sdm.order.OrderDynamic;
 import sdm.order.OrderStatic;
@@ -12,6 +13,7 @@ import sdm.item.Item;
 import sdm.store.Store;
 
 import java.awt.*;
+import java.time.LocalDate;
 import java.util.*;
 import java.util.List;
 import java.util.function.Consumer;
@@ -185,7 +187,7 @@ public class SuperDuperMarketImpl implements SuperDuperMarket {
     }
 
     @Override
-    public void executeStaticOrder(CartDTO cart, Date date, int customerId) {
+    public void executeStaticOrder(CartDTO cart, LocalDate date, int customerId) {
         Integer storeId = cart.getStoreId();
 
         //Add order to Super Duper Market System:
@@ -196,7 +198,9 @@ public class SuperDuperMarketImpl implements SuperDuperMarket {
                 true,
                 cart.getItems().stream()    //Generate items list:
                         .map(this::itemDTOToItem)
-                        .collect(Collectors.toList()));
+                        .collect(Collectors.toList()),
+                customerId);
+        orderStatic.setCart(cart);  // Save cart for showing details later
         orderIdToOrder.put(OrderStatic.getId(), orderStatic);
 
         //Update store's orders list & total delivery income:
@@ -215,7 +219,7 @@ public class SuperDuperMarketImpl implements SuperDuperMarket {
     }
 
     @Override
-    public void executeDynamicOrder(List<CartDTO> cartList, Date date, Integer customerId) {
+    public void executeDynamicOrder(List<CartDTO> cartList, LocalDate date, Integer customerId) {
         //Get all id's of all stores participating in order:
         Set<Integer> storesIdSet = cartList
                 .stream()
@@ -230,8 +234,7 @@ public class SuperDuperMarketImpl implements SuperDuperMarket {
             double deliveryPrice = store.calculateDeliveryPrice(customerIdToCustomer.get(customerId).getLocation());
             double itemsPrice = calculateItemsPriceFromStoreInCart(cart, storeId);
 
-            orderIdToOrderStatic.put(storeId, new OrderStatic(date,
-                    storeId,
+            OrderStatic orderStatic = new OrderStatic(date, storeId,
                     store.getName(),
                     calculateNumOfItemsFromStoreInCart(cart, storeId),
                     itemsPrice,
@@ -241,7 +244,10 @@ public class SuperDuperMarketImpl implements SuperDuperMarket {
                     cart.getItems().stream()    //Generate items list of current store:
                             .filter(item -> item.getStoreId().equals(storeId))
                             .map(this::itemDTOToItem)
-                            .collect(Collectors.toList())));
+                            .collect(Collectors.toList()),
+                    customerId);
+            orderStatic.setCart(cart);  // Save cart for showing details later
+            orderIdToOrderStatic.put(storeId, orderStatic);
         });
 
         // Add dynamic order to system:
@@ -257,7 +263,8 @@ public class SuperDuperMarketImpl implements SuperDuperMarket {
                 true,
                 cart.getItems().stream()    //Generate items list:
                         .map(this::itemDTOToItem)
-                        .collect(Collectors.toList()));
+                        .collect(Collectors.toList()),
+                customerId);
         orderIdToOrder.put(OrderStatic.getId(), orderDynamic);
 
         //Update store's orders list & total delivery income:
@@ -302,7 +309,8 @@ public class SuperDuperMarketImpl implements SuperDuperMarket {
     }
 
     @Override
-    public CartDTO summarizeStaticOrder(Map<Integer, Double> itemsToAddToCart, int storeId, Point customerLocation) {
+    public CartDTO summarizeStaticOrder(Map<Integer, Double> itemsToAddToCart, List<OfferDTO> offersToAddToCart,
+                                        int storeId, Integer customerId) {
         List<ItemExtendedDTO> itemExtendedDTOList = new ArrayList<>();
         Store store = storeIdToStore.get(storeId);
 
@@ -314,33 +322,38 @@ public class SuperDuperMarketImpl implements SuperDuperMarket {
                 store.getItemIdToPrice().get(itemId),
                 amount,
                 store.getName(),
-                storeId)));
+                storeId,
+                false)));
+
+        if(offersToAddToCart!=null && !offersToAddToCart.isEmpty()) {
+            offersToAddToCart.forEach(offerDTO -> itemExtendedDTOList.add(new ItemExtendedDTO(
+                    offerDTO.getItemId(),
+                    itemIdToItem.get(offerDTO.getItemId()).getName(),
+                    itemIdToItem.get(offerDTO.getItemId()).getPurchaseCategory().toString(),
+                    0,
+                    offerDTO.getPrice(),
+                    offerDTO.getAmount(),
+                    store.getName(),
+                    storeId,
+                    true)));
+        }
 
         return new CartDTO(itemExtendedDTOList,
-                store.calculateDistanceFromStoreToCustomer(customerLocation),
+                store.calculateDistanceFromStoreToCustomer(customerIdToCustomer.get(customerId).getLocation()),
                 store.getPPK(),
-                store.calculateDeliveryPrice(customerLocation), storeId, store.getName(),
+                store.calculateDeliveryPrice(customerIdToCustomer.get(customerId).getLocation()), storeId, store.getName(),
                 store.getLocation().x, store.getLocation().y);
     }
 
     @Override
-    public List<CartDTO> summarizeDynamicOrder(Map<Integer, Double> itemsToAddToCart, Integer customerId) {
+    public List<CartDTO> summarizeDynamicOrder(Map<Integer, Double> itemsToAddToCart, List<OfferDTO> offersToAddToCart,
+                                               Integer customerId) {
         List<CartDTO> cartDTOList = new ArrayList<>();
         List<ItemExtendedDTO> itemExtendedDTOList = new ArrayList<>();
 
         // Find the items with best prices:
         itemsToAddToCart.forEach((itemId, amount)->{
-            double itemMinPrice = Double.MAX_VALUE;
-            Integer storeId = 0;   // SDM gets an arbitrary store's id
-
-            for(Map.Entry<Integer,Store> entry : storeIdToStore.entrySet()){
-                Store currentStore = entry.getValue();
-                if(currentStore.getItemIdToPrice().containsKey(itemId) &&
-                        currentStore.getItemIdToPrice().get(itemId)<itemMinPrice){
-                    itemMinPrice = currentStore.getItemIdToPrice().get(itemId);
-                    storeId = entry.getKey();
-                }
-            }
+            int storeId = findStoreIdWithCheapestPriceForItem(itemId);
 
             itemExtendedDTOList.add(new ItemExtendedDTO(itemId,
                     itemIdToItem.get(itemId).getName(),
@@ -349,8 +362,22 @@ public class SuperDuperMarketImpl implements SuperDuperMarket {
                     storeIdToStore.get(storeId).getItemIdToPrice().get(itemId),
                     amount,
                     storeIdToStore.get(storeId).getName(),
-                    storeId));
+                    storeId,
+                    false));
         });
+
+        if(offersToAddToCart!=null && !offersToAddToCart.isEmpty()){
+            offersToAddToCart.forEach(offer -> itemExtendedDTOList.add(new ItemExtendedDTO(
+                    offer.getItemId(),
+                    itemIdToItem.get(offer.getItemId()).getName(),
+                    itemIdToItem.get(offer.getItemId()).getPurchaseCategory().toString(),
+                    0,
+                    offer.getPrice(),
+                    offer.getAmount(),
+                    storeIdToStore.get(offer.getStoreId()).getName(),
+                    offer.getStoreId(),
+                    true)));
+        }
 
         // Generate a separate cart for each store:
         storeIdToStore.keySet().forEach(storeId->{
@@ -432,11 +459,98 @@ public class SuperDuperMarketImpl implements SuperDuperMarket {
     }
 
     public Double calculateDeliveryPrice(Integer storeId, Integer customerId){
-        return storeIdToStore.get(storeId).calculateDeliveryPrice(customerIdToCustomer.get(customerId).getLocation());
+        return storeIdToStore.get(storeId)
+                .calculateDeliveryPrice(customerIdToCustomer.get(customerId).getLocation());
     }
 
     public Double calculateDistanceStoreToCustomer(Integer storeId, Integer customerId){
         return this.storeIdToStore.get(storeId)
-                .calculateDeliveryPrice(customerIdToCustomer.get(customerId).getLocation());
+                .calculateDistanceFromStoreToCustomer(customerIdToCustomer.get(customerId).getLocation());
+    }
+
+    // Gets an order number and returns a list of 'CartDTO' objects representing the order.
+    public List<CartDTO> getDetailedOrder(Integer orderId){
+        List<CartDTO> cartDTOList = new ArrayList<>();
+
+        if(orderIdToOrder.get(orderId) instanceof OrderDynamic){
+            OrderDynamic orderDynamic = (OrderDynamic)orderIdToOrder.get(orderId);
+
+            for(OrderStatic orderStatic : orderDynamic.getStoreIdToOrder().values()){
+                cartDTOList.add(orderStatic.getCart());
+            }
+        }
+        else{   // order instance of OrderStatic
+            OrderStatic orderStatic = orderIdToOrder.get(orderId);
+
+            cartDTOList.add(orderStatic.getCart());
+        }
+
+        return cartDTOList;
+    }
+
+    public List<DiscountDTO> getStoreDiscounts(Integer storeId){
+        List<DiscountDTO> discountDTOList = new ArrayList<>();
+        List<Discount> discounts = storeIdToStore.get(storeId).getDiscounts();
+
+        for(Discount discount : discounts){
+            discountDTOList.add(discountToDiscountDTO(discount, storeId));
+        }
+
+        return discountDTOList;
+    }
+
+    // Get discounts for static order:
+    private DiscountDTO discountToDiscountDTO(Discount discount, int storeId){
+        List<OfferDTO> offerDTOList = new ArrayList<>();
+        discount.getOfferList().forEach(offer -> offerDTOList.add(new OfferDTO(offer.getItemId(),
+                itemIdToItem.get(offer.getItemId()).getName(),
+                offer.getAmount(),
+                offer.getPrice(),
+                storeId)));
+
+        return new DiscountDTO(discount.getName(),
+                discount.getItemId(),
+                itemIdToItem.get(discount.getItemId()).getName(),
+                discount.getAmount(),
+                discount.getOperator(),
+                offerDTOList);
+    }
+
+    // Get discounts for Dynamic order:
+    // As only item's id is provided, this function finds the store
+    // with the cheapest price in order to add adequate discounts.
+    public List<DiscountDTO> getDiscounts(Map<Integer, Double> itemIdToAmount){
+        List<DiscountDTO> discountDTOList = new ArrayList<>();
+
+        // For each item in Map:
+        itemIdToAmount.keySet().forEach(itemId->{
+            int storeId = findStoreIdWithCheapestPriceForItem(itemId);
+            List<Discount> discountList = storeIdToStore.get(storeId).getDiscounts();
+
+            for(Discount discount : discountList){
+                if(discount.getItemId() == itemId &&
+                        discount.getAmount() <= itemIdToAmount.get(itemId)){
+                    discountDTOList.add(discountToDiscountDTO(discount, storeId));
+                }
+            }
+        });
+
+        return discountDTOList;
+    }
+
+    private int findStoreIdWithCheapestPriceForItem(int itemId){
+        // Find the store with best prices:
+            double itemMinPrice = Double.MAX_VALUE;
+            int storeId = 0;   // SDM gets an arbitrary store's id
+
+            for(Store store : storeIdToStore.values()){
+                if(store.getItemIdToPrice().containsKey(itemId) &&
+                        store.getItemIdToPrice().get(itemId) < itemMinPrice){
+                    itemMinPrice = store.getItemIdToPrice().get(itemId);
+                    storeId = store.getId();
+                }
+            }
+
+            return storeId;
     }
 }

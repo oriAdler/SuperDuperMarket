@@ -100,7 +100,7 @@ public class EngineImpl implements Engine{
                         customer.getLocation().x,
                         customer.getLocation().y,
                         customer.getOrdersIdList().size(),
-                        customer.getAverageOrdersPrice(),
+                        customer.getAverageItemsPrice(),
                         customer.getAverageDeliveryPrice())));
         return customerDTOList;
     }

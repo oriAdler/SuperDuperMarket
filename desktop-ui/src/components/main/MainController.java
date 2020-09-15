@@ -121,9 +121,10 @@ public class MainController {
 
     @FXML
     public void displayStoresButtonAction(ActionEvent event) {
-        // Load stores FXML file:
+        // Load stores FXML file & wire up:
         storesController = createStoresController();
         storesController.fillBorderPaneData(engine);
+        storesController.setEngine(engine);
 
         // Set stores scene:
         anchorPaneRight.getChildren().clear();
@@ -210,7 +211,14 @@ public class MainController {
 
     @FXML
     public void showOrdersHistoryButtonAction(ActionEvent event) {
+        // Load make order FXML file:
+        ordersController = createOrderSController();
+
+        // Wire up controller:
+        ordersController.setEngine(engine);
         ordersController.fillTableViewData(engine.getOrdersHistory());
+
+        // Place show orders history scene:
         anchorPaneRight.getChildren().clear();
         anchorPaneRight.getChildren().add(ordersAnchorPane);
         AnchorPane.setTopAnchor(ordersAnchorPane, 0.0);

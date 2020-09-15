@@ -27,7 +27,7 @@ public class CartController implements Initializable {
     @FXML private TableColumn<ItemExtendedDTO, Double> amountColumn;
     @FXML private TableColumn<ItemExtendedDTO, Double> priceColumn;
     @FXML private TableColumn<ItemExtendedDTO, Double> totalPriceColumn;
-    @FXML private TableColumn<ItemExtendedDTO, Boolean> onSaleColumn;
+    @FXML private TableColumn<ItemExtendedDTO, Boolean> onDiscountColumn;
 
     @FXML private Label storeName;
     @FXML private Label storeId;
@@ -43,7 +43,7 @@ public class CartController implements Initializable {
         amountColumn.setCellValueFactory(new PropertyValueFactory<>("numOfSales"));
         priceColumn.setCellValueFactory(new PropertyValueFactory<>("price"));
         totalPriceColumn.setCellValueFactory(new PropertyValueFactory<>("priceSum"));
-//      onSaleColumn.setCellValueFactory(new PropertyValueFactory<>());
+        onDiscountColumn.setCellValueFactory(new PropertyValueFactory<>("onDiscount"));
     }
 
     public void fillGridPaneData(CartDTO cart, String storeName, Integer storeId, Double PPK,

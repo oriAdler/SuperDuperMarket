@@ -54,13 +54,19 @@ public class CartDTO {
         return deliveryPrice;
     }
 
+//    public String getDeliveryPrice(){return String.format("%.2f", deliveryPrice);}
+
     public double getTotalOrderPrice() {
         return totalOrderPrice;
     }
 
+//    public String getTotalOrderPrice(){return String.format("%.2f", totalOrderPrice);}
+
     public double getTotalItemsPrice() {
         return totalItemsPrice;
     }
+
+//    public String getTotalItemsPrice(){return String.format("%.2f", totalItemsPrice);}
 
     public Integer getStoreId() {
         return storeId;

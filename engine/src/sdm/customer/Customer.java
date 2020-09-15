@@ -13,6 +13,7 @@ public class Customer {
     final private List<Integer> ordersIdList;
     private double averageOrdersPrice;
     private double averageDeliveryPrice;
+    private double averageItemsPrice;
 
     public Customer(int id, String name, Point location) {
         this.id = id;
@@ -21,6 +22,7 @@ public class Customer {
         this.ordersIdList = new ArrayList<>();
         averageOrdersPrice = 0;
         averageDeliveryPrice = 0;
+        averageItemsPrice = 0;
     }
 
     public int getId() {
@@ -47,12 +49,19 @@ public class Customer {
         return averageDeliveryPrice;
     }
 
+    public double getAverageItemsPrice() {
+        return averageItemsPrice;
+    }
+
     public void addNewOrder(OrderStatic order, Integer orderId){
         averageOrdersPrice =
                 (averageOrdersPrice * ordersIdList.size() + order.getTotalOrderPrice())
                         / (ordersIdList.size() + 1);
+
         averageDeliveryPrice = (averageDeliveryPrice * ordersIdList.size() + order.getDeliveryPrice())
                 / (ordersIdList.size() + 1);
         ordersIdList.add(orderId);
+
+        averageItemsPrice = averageOrdersPrice - averageDeliveryPrice;
     }
 }

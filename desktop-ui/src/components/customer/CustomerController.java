@@ -1,7 +1,7 @@
 package components.customer;
 
 import DTO.CustomerDTO;
-import DTO.ItemDTO;
+import javafx.beans.binding.Bindings;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
@@ -10,7 +10,6 @@ import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.GridPane;
-import sdm.customer.Customer;
 
 import java.net.URL;
 import java.util.List;
@@ -28,8 +27,8 @@ public class CustomerController implements Initializable {
     @FXML private TableColumn<CustomerDTO, Integer> xColumn;
     @FXML private TableColumn<CustomerDTO, Integer> yColumn;
     @FXML private TableColumn<CustomerDTO, Integer> ordersNumberColumn;
-    @FXML private TableColumn<CustomerDTO, Integer> itemsAveragePriceColumn;
-    @FXML private TableColumn<CustomerDTO, Integer> deliverAveragePriceColumn;
+    @FXML private TableColumn<CustomerDTO, String> itemsAveragePriceColumn;
+    @FXML private TableColumn<CustomerDTO, String> deliverAveragePriceColumn;
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
@@ -38,8 +37,10 @@ public class CustomerController implements Initializable {
         xColumn.setCellValueFactory(new PropertyValueFactory<>("xLocation"));
         yColumn.setCellValueFactory(new PropertyValueFactory<>("yLocation"));
         ordersNumberColumn.setCellValueFactory(new PropertyValueFactory<>("numberOfOrders"));
-        itemsAveragePriceColumn.setCellValueFactory(new PropertyValueFactory<>("averageOrdersPrice"));
-        deliverAveragePriceColumn.setCellValueFactory(new PropertyValueFactory<>("averageDeliveryPrice"));
+        //itemsAveragePriceColumn.setCellValueFactory(new PropertyValueFactory<>("averageOrdersPrice"));
+        itemsAveragePriceColumn.setCellValueFactory(cell -> Bindings.format("%.2f", cell.getValue().getAverageItemsPrice()));
+        //deliverAveragePriceColumn.setCellValueFactory(new PropertyValueFactory<>("averageDeliveryPrice"));
+        deliverAveragePriceColumn.setCellValueFactory(cell -> Bindings.format("%.2f", cell.getValue().getAverageDeliveryPrice()));
     }
 
     public void fillTableViewData(List<CustomerDTO> customersList){

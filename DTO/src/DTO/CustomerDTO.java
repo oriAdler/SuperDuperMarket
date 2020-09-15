@@ -6,17 +6,18 @@ public class CustomerDTO {
     final private int xLocation;
     final private int yLocation;
     final private int numberOfOrders;
-    final private double averageOrdersPrice;
+    final private double averageItemsPrice;
     final private double averageDeliveryPrice;
 
+
     public CustomerDTO(int id, String name, int xLocation, int yLocation,
-                       int numberOfOrders, double averageOrdersPrice, double averageDeliveryPrice) {
+                       int numberOfOrders, double averageItemsPrice, double averageDeliveryPrice) {
         this.id = id;
         this.name = name;
         this.xLocation = xLocation;
         this.yLocation = yLocation;
         this.numberOfOrders = numberOfOrders;
-        this.averageOrdersPrice = averageOrdersPrice;
+        this.averageItemsPrice = averageItemsPrice;
         this.averageDeliveryPrice = averageDeliveryPrice;
     }
 
@@ -40,8 +41,8 @@ public class CustomerDTO {
         return numberOfOrders;
     }
 
-    public double getAverageOrdersPrice() {
-        return averageOrdersPrice;
+    public double getAverageItemsPrice() {
+        return averageItemsPrice;
     }
 
     public double getAverageDeliveryPrice() {

@@ -10,4 +10,16 @@ public class Offer {
         this.amount = amount;
         this.price = price;
     }
+
+    public int getItemId() {
+        return itemId;
+    }
+
+    public double getAmount() {
+        return amount;
+    }
+
+    public double getPrice() {
+        return price;
+    }
 }
