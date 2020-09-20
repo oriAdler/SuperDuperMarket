@@ -3,7 +3,6 @@ package components.discount;
 import DTO.DiscountDTO;
 import DTO.OfferDTO;
 import common.SDMResourcesConstants;
-import components.item.ItemsController;
 import engine.Engine;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.fxml.FXML;
@@ -14,7 +13,6 @@ import javafx.scene.control.ScrollPane;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.FlowPane;
-import sdm.discount.Offer;
 
 import java.io.IOException;
 import java.net.URL;
@@ -38,6 +36,8 @@ public class AllDiscountsController implements Initializable {
     private Map<Integer, Double> itemsIdToAmount;
     private List<OfferDTO> offerList;
     private Integer discountCounter;
+    boolean isStaticOrder;
+    int storeId;
 
     public AllDiscountsController(){
         offerList = new ArrayList<>();
@@ -58,6 +58,14 @@ public class AllDiscountsController implements Initializable {
         this.itemsIdToAmount = itemsIdToAmount;
     }
 
+    public void setStaticOrder(boolean staticOrder) {
+        isStaticOrder = staticOrder;
+    }
+
+    public void setStoreId(int storeId) {
+        this.storeId = storeId;
+    }
+
     public List<OfferDTO> getOfferList() {
         return offerList;
     }
@@ -75,14 +83,14 @@ public class AllDiscountsController implements Initializable {
     }
 
     public void fillAllDiscountData(Integer storeId){
+        this.storeId = storeId;
         FlowPane flowPane = new FlowPane();
-        List<DiscountDTO> discountDTOList = engine.getSDM().getStoreDiscounts(storeId);
+        List<DiscountDTO> discountDTOList = engine.getSDM().getStoreDiscounts(itemsIdToAmount, storeId);
 
         for(DiscountDTO discountDTO : discountDTOList){
             DiscountController discountController = createDiscountController();
             discountController.fillDiscountTileData(discountDTO);
-            discountController.getOfferComboBox().setVisible(false);
-            discountController.getAddButton().setVisible(false);
+            discountController.setAllDiscountsController(this);
 
             flowPane.getChildren().add(discountController.getAnchorPane());
         }
@@ -96,8 +104,8 @@ public class AllDiscountsController implements Initializable {
 
         for(DiscountDTO discountDTO : discountDTOList){
             DiscountController discountController = createDiscountController();
-            discountController.setAllDiscountsController(this);
             discountController.fillDiscountTileData(discountDTO);
+            discountController.setAllDiscountsController(this);
 
             flowPane.getChildren().add(discountController.getAnchorPane());
         }
@@ -110,7 +118,13 @@ public class AllDiscountsController implements Initializable {
         discountLabelProperty.set(String.format("%d. Discount '%s' was added to cart", discountCounter, discount.getName()));
         offerList.addAll(offerListToAdd);
         itemsIdToAmount.put(itemId, itemsIdToAmount.get(itemId) - itemAmount);
-        fillAllDiscountData();
+
+        if(isStaticOrder){
+            fillAllDiscountData(storeId);
+        }
+        else{
+            fillAllDiscountData();
+        }
     }
 
     public DiscountController createDiscountController()

@@ -2,14 +2,13 @@ package sdm;
 
 import DTO.CartDTO;
 import DTO.DiscountDTO;
+import DTO.ItemDTO;
 import DTO.OfferDTO;
-import sdm.discount.Discount;
 import sdm.item.PurchaseCategory;
 import sdm.order.OrderStatic;
 
 import java.awt.*;
 import java.time.LocalDate;
-import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Consumer;
@@ -40,6 +39,12 @@ public interface SuperDuperMarket {
     Double calculateDeliveryPrice(Integer storeId, Integer customerId);
     Double calculateDistanceStoreToCustomer(Integer storeId, Integer customerId);
 
-    List<DiscountDTO> getStoreDiscounts(Integer storeId);
+    List<DiscountDTO> getStoreDiscounts(Map <Integer, Double> itemIdToAmount, Integer storeId);
     List<DiscountDTO> getDiscounts(Map<Integer, Double> itemIdToAmount);
+
+    List<ItemDTO> getStoreItems(int storeId);
+    List<ItemDTO> getItemsNotSoldByStore(int storeId);
+
+    double findMaxXCoordinate();
+    double findMaxYCoordinate();
 }

@@ -2,7 +2,7 @@ package DTO;
 
 import java.util.List;
 
-public class StoreDTO {
+public class StoreDTO implements LocationDTO{
     final private int id;
     final private String name;
     final private List<ItemDTO> items;

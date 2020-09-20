@@ -6,6 +6,7 @@ import exception.invalidLocationException;
 import exception.invalidItemException;
 import sdm.customer.Customer;
 import sdm.discount.Discount;
+import sdm.discount.Offer;
 import sdm.item.PurchaseCategory;
 import sdm.order.OrderDynamic;
 import sdm.order.OrderStatic;
@@ -161,6 +162,21 @@ public class SuperDuperMarketImpl implements SuperDuperMarket {
                 .filter(store -> store.getItemIdToPrice().containsKey(itemId))
                 .count() > ONE_ITEM){
             storeIdToStore.get(storeId).getItemIdToPrice().remove(itemId);
+
+            List<Discount> discountListToDelete = getDiscountListIncludingRemovedItem(
+                    storeIdToStore.get(storeId).getDiscounts(), itemId);
+
+            // Remove discounts including the item to be removed and generate an adequate message
+            if(!discountListToDelete.isEmpty()){
+                storeIdToStore.get(storeId).getDiscounts().removeAll(discountListToDelete);
+                StringBuilder stringBuilder = new StringBuilder();
+                stringBuilder.append(String.format("Item '%s' was removed from store '%s' successfully.\n",
+                        itemIdToItem.get(itemId).getName(), storeIdToStore.get(storeId).getName()));
+                stringBuilder.append(String.format("The following discounts including item '%s' were removed as well:\n",
+                        itemIdToItem.get(itemId).getName()));
+                discountListToDelete.forEach(discount -> stringBuilder.append(String.format("%s\n", discount.getName())));
+                throw new invalidLocationException(stringBuilder.toString());
+            }
         }
         else{   //Item is sold by only one store -> update UI
             throw new invalidItemException(String.format(
@@ -168,6 +184,27 @@ public class SuperDuperMarketImpl implements SuperDuperMarket {
                     itemIdToItem.get(itemId).getName(),
                     storeIdToStore.get(storeId).getName()));
         }
+    }
+
+    // Gets a discount list and an item id, returns a list of discounts including the item.
+    private List<Discount> getDiscountListIncludingRemovedItem(List<Discount> storeDiscounts, int removedItemId){
+        List<Discount> discountListToDelete = new ArrayList<>();
+
+        for(Discount discount : storeDiscounts){
+            if(discount.getItemId() == removedItemId){
+                discountListToDelete.add(discount);
+            }
+            else{
+                for(Offer offer : discount.getOfferList()){
+                    if(offer.getItemId() == removedItemId){
+                        discountListToDelete.add(discount);
+                        break;
+                    }
+                }
+            }
+        }
+
+        return discountListToDelete;
     }
 
     @Override
@@ -488,13 +525,19 @@ public class SuperDuperMarketImpl implements SuperDuperMarket {
         return cartDTOList;
     }
 
-    public List<DiscountDTO> getStoreDiscounts(Integer storeId){
+    public List<DiscountDTO> getStoreDiscounts(Map<Integer, Double> itemIdToAmount, Integer storeId){
         List<DiscountDTO> discountDTOList = new ArrayList<>();
-        List<Discount> discounts = storeIdToStore.get(storeId).getDiscounts();
+        List<Discount> discountList = storeIdToStore.get(storeId).getDiscounts();
 
-        for(Discount discount : discounts){
-            discountDTOList.add(discountToDiscountDTO(discount, storeId));
-        }
+        // For each item in Map:
+        itemIdToAmount.keySet().forEach(itemId->{
+            for(Discount discount : discountList){
+                if(discount.getItemId() == itemId &&
+                        discount.getAmount() <= itemIdToAmount.get(itemId)){
+                    discountDTOList.add(discountToDiscountDTO(discount, storeId));
+                }
+            }
+        });
 
         return discountDTOList;
     }
@@ -552,5 +595,83 @@ public class SuperDuperMarketImpl implements SuperDuperMarket {
             }
 
             return storeId;
+    }
+
+    public List<ItemDTO> getStoreItems(int storeId) {
+        List<ItemDTO> itemDTOList = new ArrayList<>();
+        Store store = storeIdToStore.get(storeId);
+
+        store.getItemIdToPrice().keySet().forEach(itemId->{
+            Item item = itemIdToItem.get(itemId);
+
+            itemDTOList.add(new ItemDTO(itemId,
+                    item.getName(),
+                    item.getPurchaseCategory().toString(),
+                    getNumOfSellersById(itemId),
+                    store.getItemIdToPrice().get(itemId),
+                    getNumOfSalesById(itemId)));
+        });
+
+        return itemDTOList;
+    }
+
+    public List<ItemDTO> getItemsNotSoldByStore(int storeId){
+        List<ItemDTO> itemDTOList = new ArrayList<>();
+        Store store = storeIdToStore.get(storeId);
+
+        itemIdToItem.keySet().forEach(itemId->{
+            if(!store.getItemIdToPrice().containsKey(itemId)){
+                Item item = itemIdToItem.get(itemId);
+
+                itemDTOList.add(new ItemDTO(itemId,
+                        item.getName(),
+                        item.getPurchaseCategory().toString(),
+                        getNumOfSellersById(itemId),
+                        -1, // store doesn't sell this item therefor price isn't relevant
+                        getNumOfSalesById(itemId)));
+            }
+        });
+
+        return itemDTOList;
+    }
+
+    public double findMaxXCoordinate(){
+        double storeMaxXCoordinate, customerMaxXCoordinate;
+
+        // Find store's max X coordinate:
+        OptionalDouble storeMaxXCoordinateOD = storeIdToStore.values()
+                .stream()
+                .mapToDouble(store->store.getLocation().getX())
+                .max();
+        storeMaxXCoordinate = storeMaxXCoordinateOD.isPresent() ? storeMaxXCoordinateOD.getAsDouble() : 0;
+
+        // Find customer max X coordinate:
+        OptionalDouble customerMaxXCoordinateOD = customerIdToCustomer.values()
+                .stream()
+                .mapToDouble(customer->customer.getLocation().getX())
+                .max();
+        customerMaxXCoordinate = customerMaxXCoordinateOD.isPresent() ? customerMaxXCoordinateOD.getAsDouble() : 0;
+
+        return Math.max(storeMaxXCoordinate, customerMaxXCoordinate);
+    }
+
+    public double findMaxYCoordinate(){
+        double storeMaxYCoordinate, customerMaxYCoordinate;
+
+        // Find store's max X coordinate:
+        OptionalDouble storeMaxYCoordinateOD = storeIdToStore.values()
+                .stream()
+                .mapToDouble(store->store.getLocation().getY())
+                .max();
+        storeMaxYCoordinate = storeMaxYCoordinateOD.isPresent() ? storeMaxYCoordinateOD.getAsDouble() : 0;
+
+        // Find customer max X coordinate:
+        OptionalDouble customerMaxYCoordinateOD = customerIdToCustomer.values()
+                .stream()
+                .mapToDouble(customer->customer.getLocation().getY())
+                .max();
+        customerMaxYCoordinate = customerMaxYCoordinateOD.isPresent() ? customerMaxYCoordinateOD.getAsDouble() : 0;
+
+        return Math.max(storeMaxYCoordinate, customerMaxYCoordinate);
     }
 }

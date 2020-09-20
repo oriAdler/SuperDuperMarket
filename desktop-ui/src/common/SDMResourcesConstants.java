@@ -5,6 +5,7 @@ import java.net.URL;
 public class SDMResourcesConstants {
     private static final String BASE_PACKAGE = "/components";
 
+    public static final URL ITEM_UPDATE_ANCHOR_PANE = SDMResourcesConstants.class.getResource((BASE_PACKAGE + "/itemUpdate/itemUpdate.fxml"));
     public static final URL ALL_DISCOUNT_ANCHOR_PANE = SDMResourcesConstants.class.getResource((BASE_PACKAGE + "/discount/allDiscounts.fxml"));
     public static final URL DISCOUNT_ANCHOR_PANE = SDMResourcesConstants.class.getResource((BASE_PACKAGE + "/discount/discount.fxml"));
     public static final URL DYNAMIC_ORDER_ANCHOR_PANE = SDMResourcesConstants.class.getResource((BASE_PACKAGE + "/order/dynamicOrder.fxml"));

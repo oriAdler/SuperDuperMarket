@@ -1,9 +1,6 @@
 package components.order;
 
 import DTO.CartDTO;
-import DTO.ItemDTO;
-import DTO.ItemExtendedDTO;
-import engine.Engine;
 import javafx.beans.binding.Bindings;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -12,6 +9,7 @@ import javafx.fxml.Initializable;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.layout.AnchorPane;
 
 import java.net.URL;
 import java.util.List;
@@ -19,6 +17,7 @@ import java.util.ResourceBundle;
 
 public class DynamicOrderController implements Initializable {
 
+    @FXML private AnchorPane anchorPane;
     @FXML private TableView<CartDTO> tableView;
 
     @FXML private TableColumn<CartDTO, Integer> storeIdColumn;
@@ -46,6 +45,10 @@ public class DynamicOrderController implements Initializable {
         numberItemsTypeColumn.setCellValueFactory(new PropertyValueFactory<>("itemsNumber"));
         //itemsPriceColumn.setCellValueFactory(new PropertyValueFactory<>("totalItemsPrice"));
         itemsPriceColumn.setCellValueFactory(cell->Bindings.format("%.2f", cell.getValue().getTotalItemsPrice()));
+    }
+
+    public AnchorPane getAnchorPane() {
+        return anchorPane;
     }
 
     public void fillDynamicOrderTableView(List<CartDTO> cartDTOList){

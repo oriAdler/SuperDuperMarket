@@ -12,8 +12,10 @@ import javafx.beans.binding.Bindings;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.property.SimpleIntegerProperty;
+import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -54,6 +56,7 @@ public class MakeOrderController implements Initializable {
     @FXML private Label storeIdLabel;
     @FXML private Label locationLabel;
     @FXML private Label deliveryPriceLabel;
+    @FXML private Label chooseItemLabel;
 
     @FXML private Button okButton;
     @FXML private Button checkoutButton;
@@ -66,6 +69,10 @@ public class MakeOrderController implements Initializable {
     @FXML private Label deliveryPriceValueLabel;
     @FXML private Label totalPriceValueLabel;
 
+    @FXML private GridPane taskGridPane;
+    @FXML private ProgressIndicator taskProgressBar;
+    @FXML private Label taskMessageLabel;
+    @FXML private Label progressPercentLabel;
 
     // Secondary Controllers:
     private MainController mainController;
@@ -102,6 +109,9 @@ public class MakeOrderController implements Initializable {
     private SimpleDoubleProperty totalDeliveryPrice;
     private SimpleDoubleProperty totalPrice;
 
+    private SimpleStringProperty taskMessageProperty;
+    private SimpleBooleanProperty isOrderReadyProperty;
+
     // Order details:
     LocalDate date;
     CustomerDTO customer;
@@ -128,6 +138,9 @@ public class MakeOrderController implements Initializable {
         totalPrice = new SimpleDoubleProperty();
         totalItemsPrice = new SimpleDoubleProperty();
         totalDeliveryPrice = new SimpleDoubleProperty();
+
+        taskMessageProperty = new SimpleStringProperty();
+        isOrderReadyProperty = new SimpleBooleanProperty(false);
 
         // Load items & orders FXML files:
         itemsController = createItemsController();
@@ -161,6 +174,8 @@ public class MakeOrderController implements Initializable {
         chooseCustomerComboBox.disableProperty().bind(okButtonIsClicked);
         datePicker.disableProperty().bind(okButtonIsClicked);
 
+        chooseItemLabel.setVisible(false);
+
         okButton.disableProperty().bind(datePickerClicked.not().or(storeComboBoxClicked.not().and(dynamicOrderRadioButtonClicked.not())));
         checkoutButton.disableProperty().bind(itemsController.proceedToCheckoutProperty().not());
 
@@ -168,6 +183,9 @@ public class MakeOrderController implements Initializable {
         deliveryPriceValueLabel.textProperty().bind(Bindings.format("%.2f", totalDeliveryPrice));
         totalPriceValueLabel.textProperty().bind(Bindings.format("%.2f", totalPrice));
         gridPaneSummary.setVisible(false);
+
+        taskGridPane.setVisible(false);
+        taskMessageLabel.textProperty().bind(taskMessageProperty);
     }
 
     public void setMainController(MainController mainController) {
@@ -230,7 +248,7 @@ public class MakeOrderController implements Initializable {
 
     @FXML
     void cancelButtonAction(ActionEvent event) {
-        mainController.setInOrderProcedure(false);
+        mainController.setInDynamicProcedure(false);
         mainController.getAnchorPaneRight().getChildren().clear();
     }
 
@@ -239,6 +257,7 @@ public class MakeOrderController implements Initializable {
         okButtonIsClicked.set(true);
         okButton.setVisible(false);
         checkoutButton.setVisible(true);
+        chooseItemLabel.setVisible(true);
 
         List<ItemDTO> itemList, dummyList;
         // Get the items list:
@@ -294,11 +313,14 @@ public class MakeOrderController implements Initializable {
             nextToDiscountButton.fire();
         }
         else{   // dynamicOrderRadioButtonClicked.getValue() == true
+            showDynamicOrderProcess();
+
             cartList = engine.getSDM().summarizeDynamicOrder(itemIdToAmount, null, customer.getId());
 
             // Load dynamic order FXML file:
             dynamicOrderController = createDynamicOrderController();
             dynamicOrderController.fillDynamicOrderTableView(cartList);
+            dynamicOrderController.getAnchorPane().visibleProperty().bind(isOrderReadyProperty);
 
             scrollPaneCenter.setContent(dynamicOrderAnchorPane);
             AnchorPane.setTopAnchor(dynamicOrderAnchorPane, 0.0);
@@ -308,21 +330,59 @@ public class MakeOrderController implements Initializable {
         }
     }
 
+    private void showDynamicOrderProcess(){
+        taskGridPane.setVisible(true);
+        Task<Boolean> currentRunningTask = new DynamicOrderTask(isOrderReadyProperty::set);
+
+        // Bind task to UI components:
+        taskMessageLabel.textProperty().bind(currentRunningTask.messageProperty());
+        taskProgressBar.progressProperty().bind(currentRunningTask.progressProperty());
+        progressPercentLabel.textProperty().bind(
+                Bindings.concat(
+                        Bindings.format("%.0f",
+                                Bindings.multiply(
+                                        currentRunningTask.progressProperty(), 100)), " %"));
+
+        new Thread(currentRunningTask).start();
+    }
+
     @FXML
     void nextToDiscountButtonOnAction(ActionEvent event){
+        taskGridPane.setVisible(false);
         nextToSummaryButton.setVisible(true);
         nextToSummaryButton.setDisable(false);
         nextToDiscountButton.setVisible(false);
         nextToDiscountButton.setDisable(true);
+
 
         Map<Integer, Double> itemIdToAmountDummy = new HashMap<>(itemIdToAmount);
 
         allDiscountsController = createAllDiscountsController();
         allDiscountsController.setEngine(engine);
         allDiscountsController.setItemsIdToAmount(itemIdToAmountDummy);
-        allDiscountsController.fillAllDiscountData();
 
-        scrollPaneCenter.setContent(allDiscountsController.getBorderPane());
+        if(staticOrderRadioButtonClicked.getValue()){
+            // No available discounts on this order
+            if(engine.getSDM().getStoreDiscounts(itemIdToAmount, store.getId()).isEmpty()){
+                nextToSummaryButton.fire();
+            }
+            else{   // Show customer available discounts
+                allDiscountsController.setStaticOrder(true);
+                allDiscountsController.setStoreId(store.getId());
+                allDiscountsController.fillAllDiscountData(store.getId());
+                scrollPaneCenter.setContent(allDiscountsController.getBorderPane());
+            }
+        }
+        else{
+            if(engine.getSDM().getDiscounts(itemIdToAmount).isEmpty()){
+                nextToSummaryButton.fire();
+            }
+            else{
+                allDiscountsController.setStaticOrder(false);
+                allDiscountsController.fillAllDiscountData();
+                scrollPaneCenter.setContent(allDiscountsController.getBorderPane());
+            }
+        }
     }
 
     @FXML
@@ -380,7 +440,7 @@ public class MakeOrderController implements Initializable {
             engine.getSDM().executeDynamicOrder(cartList, date, customer.getId());
         }
 
-        mainController.setInOrderProcedure(false);
+        mainController.setInDynamicProcedure(false);
         mainController.getAnchorPaneRight().getChildren().clear();
     }
 

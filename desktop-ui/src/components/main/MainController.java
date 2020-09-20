@@ -1,9 +1,14 @@
 package components.main;
 
+import DTO.CustomerDTO;
+import DTO.StoreDTO;
 import common.SDMResourcesConstants;
 import components.customer.CustomerController;
 import components.file.FileLoaderController;
 import components.item.ItemsController;
+import components.itemUpdate.ItemUpdateController;
+import components.map.CustomerButton;
+import components.map.StoreButton;
 import components.order.MakeOrderController;
 import components.order.OrdersController;
 import components.store.StoresController;
@@ -11,9 +16,9 @@ import javafx.beans.property.SimpleBooleanProperty;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.scene.control.*;
 import javafx.scene.control.Button;
-import javafx.scene.control.CheckBox;
-import javafx.scene.control.ComboBox;
+import javafx.scene.control.ScrollPane;
 import javafx.scene.layout.*;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
@@ -26,6 +31,7 @@ public class MainController {
 
     // View;
     @FXML private AnchorPane anchorPaneRight;
+    @FXML private SplitPane splitPane;
 
     // Buttons:
     @FXML private Button openFileButton;
@@ -46,7 +52,7 @@ public class MainController {
 
     // Properties:
     private SimpleBooleanProperty isFileLoaded;
-    private SimpleBooleanProperty inOrderProcedure;
+    private SimpleBooleanProperty inDynamicProcedure;
 
     // Secondary Controllers:
     private FileLoaderController fileLoaderController;
@@ -67,21 +73,24 @@ public class MainController {
     private OrdersController ordersController;
     private AnchorPane ordersAnchorPane;
 
+    private ItemUpdateController itemUpdateController;
+    private AnchorPane itemUpdateAnchorPane;
+
     public MainController(){
         isFileLoaded = new SimpleBooleanProperty(false);
-        inOrderProcedure = new SimpleBooleanProperty(false);
+        inDynamicProcedure = new SimpleBooleanProperty(false);
     }
 
     @FXML
     private void initialize(){
-        openFileButton.disableProperty().bind(inOrderProcedure);
-        displayStoresButton.disableProperty().bind(isFileLoaded.not().or(inOrderProcedure));
-        displayItemsButton.disableProperty().bind(isFileLoaded.not().or(inOrderProcedure));
-        showCustomersButton.disableProperty().bind(isFileLoaded.not().or(inOrderProcedure));
-        makeOrderButton.disableProperty().bind(isFileLoaded.not().or(inOrderProcedure));
-        showOrdersHistoryButton.disableProperty().bind(isFileLoaded.not().or(inOrderProcedure));
-        updateStoreItemsButton.disableProperty().bind(isFileLoaded.not().or(inOrderProcedure));
-        showMapButton.disableProperty().bind(isFileLoaded.not().or(inOrderProcedure));
+        openFileButton.disableProperty().bind(inDynamicProcedure);
+        displayStoresButton.disableProperty().bind(isFileLoaded.not().or(inDynamicProcedure));
+        displayItemsButton.disableProperty().bind(isFileLoaded.not().or(inDynamicProcedure));
+        showCustomersButton.disableProperty().bind(isFileLoaded.not().or(inDynamicProcedure));
+        makeOrderButton.disableProperty().bind(isFileLoaded.not().or(inDynamicProcedure));
+        showOrdersHistoryButton.disableProperty().bind(isFileLoaded.not().or(inDynamicProcedure));
+        updateStoreItemsButton.disableProperty().bind(isFileLoaded.not().or(inDynamicProcedure));
+        showMapButton.disableProperty().bind(isFileLoaded.not().or(inDynamicProcedure));
     }
 
     public void setPrimaryStage(Stage primaryStage) {
@@ -92,8 +101,8 @@ public class MainController {
         this.engine = engine;
     }
 
-    public void setInOrderProcedure(boolean inOrderProcedure) {
-        this.inOrderProcedure.set(inOrderProcedure);
+    public void setInDynamicProcedure(boolean inDynamicProcedure) {
+        this.inDynamicProcedure.set(inDynamicProcedure);
     }
 
     public AnchorPane getAnchorPaneRight() {
@@ -152,7 +161,7 @@ public class MainController {
 
     @FXML
     public void makeOrderButtonAction(ActionEvent event) {
-        inOrderProcedure.set(true);
+        inDynamicProcedure.set(true);
 
         // Load make order FXML file:
         ordersController = createOrderSController();
@@ -206,7 +215,43 @@ public class MainController {
 
     @FXML
     public void showMapButtonAction(ActionEvent event) {
+        anchorPaneRight.getChildren().clear();
 
+        ScrollPane scrollPane = new ScrollPane();
+        GridPane gridPane = new GridPane();
+        gridPane.setGridLinesVisible(true);
+
+        for (int x = 0; x <= engine.getSDM().findMaxXCoordinate()+1; x++) {
+            Pane paneDummy = new Pane();
+            paneDummy.setMinHeight(20);
+            paneDummy.setMinWidth(20);
+            gridPane.addColumn(x, paneDummy);
+        }
+        for (int y = 0; y <= engine.getSDM().findMaxYCoordinate()+1; y++) {
+            Pane paneDummy = new Pane();
+            paneDummy.setMinHeight(20);
+            paneDummy.setMinWidth(20);
+            gridPane.addRow(y, paneDummy);
+        }
+
+        for(CustomerDTO customer : engine.getAllCustomersList()){
+            CustomerButton customerButton = new CustomerButton(customer.getId(),
+                    customer.getName(), customer.getNumberOfOrders());
+            gridPane.add(customerButton,customer.getXLocation()-1, customer.getYLocation()-1);
+        }
+
+        for(StoreDTO store : engine.getAllStoreList()){
+            StoreButton storeButton = new StoreButton(store.getId(),
+                    store.getName(), store.getPPK(), store.getOrders().size());
+            gridPane.add(storeButton, store.getxLocation()-1, store.getyLocation()-1);
+        }
+
+        scrollPane.setContent(gridPane);
+        anchorPaneRight.getChildren().add(scrollPane);
+        AnchorPane.setTopAnchor(scrollPane, 0.0);
+        AnchorPane.setBottomAnchor(scrollPane, 0.0);
+        AnchorPane.setRightAnchor(scrollPane, 0.0);
+        AnchorPane.setLeftAnchor(scrollPane, 0.0);
     }
 
     @FXML
@@ -229,7 +274,23 @@ public class MainController {
 
     @FXML
     public void updateStoreItemsButtonAction(ActionEvent event) {
+        inDynamicProcedure.set(true);
 
+        // Load make order FXML file:
+        itemUpdateController = createItemUpdateController();
+
+        // Wire up controller:
+        itemUpdateController.setMainController(this);
+        itemUpdateController.setEngine(engine);
+        itemUpdateController.fillItemUpdateDetails(engine);
+
+        // Place show orders history scene:
+        anchorPaneRight.getChildren().clear();
+        anchorPaneRight.getChildren().add(itemUpdateAnchorPane);
+        AnchorPane.setTopAnchor(itemUpdateAnchorPane, 0.0);
+        AnchorPane.setBottomAnchor(itemUpdateAnchorPane, 0.0);
+        AnchorPane.setRightAnchor(itemUpdateAnchorPane, 0.0);
+        AnchorPane.setLeftAnchor(itemUpdateAnchorPane, 0.0);
     }
 
     public ItemsController createItemsController()
@@ -311,6 +372,20 @@ public class MainController {
 
             loader.setLocation(SDMResourcesConstants.FILE_LOADER_ANCHOR_PANE);
             fileLoaderAnchorPane = loader.load();
+            return loader.getController();
+        }
+        catch (IOException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    public ItemUpdateController createItemUpdateController(){
+        try {
+            FXMLLoader loader = new FXMLLoader();
+
+            loader.setLocation(SDMResourcesConstants.ITEM_UPDATE_ANCHOR_PANE);
+            itemUpdateAnchorPane = loader.load();
             return loader.getController();
         }
         catch (IOException e) {

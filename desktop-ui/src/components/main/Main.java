@@ -4,6 +4,7 @@ import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.control.ScrollPane;
+import javafx.scene.image.Image;
 import javafx.stage.Stage;
 import engine.Engine;
 import engine.EngineImpl;
@@ -30,6 +31,7 @@ public class Main extends Application {
 
         // Set stage:
         primaryStage.setTitle("Super Duper Market");
+        primaryStage.getIcons().add(new Image("/image/sdm.png"));
         Scene scene = new Scene(root, 950, 650);
         primaryStage.setScene(scene);
         primaryStage.setMinHeight(450);

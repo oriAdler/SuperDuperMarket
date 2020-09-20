@@ -70,7 +70,7 @@ public class DiscountController implements Initializable {
             offerComboBox.setVisible(false);
             offerComboBox.setDisable(true);
         }
-        else{
+        else{   // Operator = "ONE-OF"
             addButton.setDisable(true);
         }
 

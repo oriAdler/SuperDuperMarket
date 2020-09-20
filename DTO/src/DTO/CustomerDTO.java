@@ -1,6 +1,6 @@
 package DTO;
 
-public class CustomerDTO {
+public class CustomerDTO implements LocationDTO{
     final private int id;
     final private String name;
     final private int xLocation;
@@ -8,7 +8,6 @@ public class CustomerDTO {
     final private int numberOfOrders;
     final private double averageItemsPrice;
     final private double averageDeliveryPrice;
-
 
     public CustomerDTO(int id, String name, int xLocation, int yLocation,
                        int numberOfOrders, double averageItemsPrice, double averageDeliveryPrice) {
