@@ -13,6 +13,7 @@ public class CustomerButton extends Button {
     public CustomerButton(int customerId, String customerName, int numberOfOrders) {
         ImageView image = new ImageView("/image/customer.png");
         super.setGraphic(image);
+        super.getStyleClass().setAll("LocationButton");
         isDetailShown = false;
 
         this.customerId = customerId;
@@ -22,8 +23,8 @@ public class CustomerButton extends Button {
         super.setOnAction(event -> {
             if(!isDetailShown){
                 isDetailShown = true;
-                super.setText(String.format("Id: %d\nName: %s\nOrders: %d",
-                        customerId, customerName, numberOfOrders));
+                super.setText(String.format("%s\nId: %d\nOrders: %d",
+                        customerName, customerId, numberOfOrders));
             }
             else{
                 isDetailShown = false;

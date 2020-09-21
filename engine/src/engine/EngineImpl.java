@@ -145,7 +145,7 @@ public class EngineImpl implements Engine{
         Map<Integer, Item> itemIdToItem = new HashMap<>();
         List<SDMItem> SDMItemsList = superDuperMarketDescriptor.getSDMItems().getSDMItem();
         for(SDMItem item : SDMItemsList){
-            itemIdToItem.put(item.getId(), new Item(item.getId(), item.getName(), item.getPurchaseCategory(), 0));
+            itemIdToItem.put(item.getId(), new Item(item.getId(), item.getName().trim(), item.getPurchaseCategory().trim(), 0));
         }
         // Convert stores list:
         Map<Integer, Store> storeIdToStore = new HashMap<>();
@@ -160,14 +160,14 @@ public class EngineImpl implements Engine{
             // Convert store's discounts:
             List<Discount> discountList = convertStoreDiscounts(store.getSDMDiscounts());
             // Generate a new store in the system:
-            storeIdToStore.put(store.getId(), new Store(store.getId(), store.getName(), storeItems,
+            storeIdToStore.put(store.getId(), new Store(store.getId(), store.getName().trim(), storeItems,
                     new Point(store.getLocation().getX(), store.getLocation().getY()), store.getDeliveryPpk(), discountList));
         }
         // Convert customers list:
         Map<Integer, Customer> customerIdToCustomer = new HashMap<>();
         List<SDMCustomer> SDMCustomerList = superDuperMarketDescriptor.getSDMCustomers().getSDMCustomer();
         for(SDMCustomer customer : SDMCustomerList){
-            customerIdToCustomer.put(customer.getId(), new Customer(customer.getId(), customer.getName(),
+            customerIdToCustomer.put(customer.getId(), new Customer(customer.getId(), customer.getName().trim(),
                     new Point(customer.getLocation().getX(), customer.getLocation().getY())));
         }
 
@@ -182,10 +182,10 @@ public class EngineImpl implements Engine{
         if(sdmDiscounts != null){
             List<SDMDiscount> sdmDiscountList = sdmDiscounts.getSDMDiscount();
             for(SDMDiscount discount : sdmDiscountList){
-                discountList.add(new Discount(discount.getName(),
+                discountList.add(new Discount(discount.getName().trim(),
                         discount.getIfYouBuy().getItemId(),
                         discount.getIfYouBuy().getQuantity(),
-                        discount.getThenYouGet().getOperator(),
+                        discount.getThenYouGet().getOperator().trim(),
                         convertDiscountOffers(discount.getThenYouGet().getSDMOffer())));
             }
         }
@@ -202,25 +202,4 @@ public class EngineImpl implements Engine{
         }
         return offerList;
     }
-
-//    @Override
-//    public void saveOrders(Path path) {
-//        try {
-//            Serialization.writeOrdersToFile(superDuperMarketImpl.getOrderIdToOrder(), path);
-//        }
-//        catch (IOException ioException){
-//            throw new DatFileException("An unknown error has occurred during saving orders to the file");
-//        }
-//    }
-//
-//    @Override
-//    public void loadOrders(Path path) {
-//        try {
-//            Map<Integer, OrderStatic> orderIdToOrder = Serialization.readOrdersFromFile(path);
-//            superDuperMarketImpl.addOrdersFromFileToSDM(orderIdToOrder);
-//        }
-//        catch (Exception exception){
-//            throw new DatFileException("An unknown error has occurred during loading orders from the file");
-//        }
-//    }
 }

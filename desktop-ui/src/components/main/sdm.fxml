@@ -24,7 +24,7 @@
                               <Insets bottom="5.0" left="10.0" right="10.0" top="5.0" />
                            </VBox.margin>
                         </ComboBox>
-                        <CheckBox fx:id="animationLabel" maxWidth="1.7976931348623157E308" mnemonicParsing="false" text="Animation">
+                        <CheckBox fx:id="animationCheckBox" maxWidth="1.7976931348623157E308" mnemonicParsing="false" text="Animation">
                            <VBox.margin>
                               <Insets bottom="5.0" left="10.0" right="10.0" top="5.0" />
                            </VBox.margin>
@@ -33,7 +33,7 @@
                   </VBox>
                   <VBox alignment="CENTER" maxWidth="165.0" prefHeight="296.0" prefWidth="165.0" AnchorPane.leftAnchor="0.0" AnchorPane.topAnchor="50.0">
                      <children>
-                        <Button fx:id="openFileButton" alignment="CENTER" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#openFileButtonAction" prefWidth="177.0" text="Open File">
+                        <Button fx:id="openFileButton" alignment="CENTER" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#openFileButtonAction" text="Open File">
                            <VBox.margin>
                               <Insets />
                            </VBox.margin>
@@ -93,6 +93,11 @@
                            <VBox.margin>
                               <Insets />
                            </VBox.margin>
+                           <padding>
+                              <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+                           </padding>
+                        </Button>
+                        <Button fx:id="addStoreButton" disable="true" layoutX="10.0" layoutY="297.0" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#addStoreButtonAction" text="Add Store">
                            <padding>
                               <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
                            </padding>

@@ -27,6 +27,7 @@ import javafx.scene.control.ScrollPane;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.GridPane;
+import javafx.stage.Stage;
 
 import java.io.IOException;
 import java.net.URL;
@@ -112,6 +113,8 @@ public class MakeOrderController implements Initializable {
     private SimpleStringProperty taskMessageProperty;
     private SimpleBooleanProperty isOrderReadyProperty;
 
+    private SimpleBooleanProperty isAnimationCheckBoxChosen;
+
     // Order details:
     LocalDate date;
     CustomerDTO customer;
@@ -196,6 +199,10 @@ public class MakeOrderController implements Initializable {
         this.engine = engine;
     }
 
+    public void setIsAnimationCheckBoxChosen(SimpleBooleanProperty isAnimationCheckBoxChosen) {
+        this.isAnimationCheckBoxChosen = isAnimationCheckBoxChosen;
+    }
+
     public void fillMakeOrderData(Engine engine){
         // View:
         scrollPaneCenter.setContent(gridPaneTop);
@@ -203,6 +210,7 @@ public class MakeOrderController implements Initializable {
         checkoutButton.setVisible(false);
         approveButton.setVisible(false);
         itemsController.setProceedToCheckout(false);
+        itemsController.setIsAnimationCheckBoxChosen(isAnimationCheckBoxChosen);
         approveButton.setDisable(true);
 
         // Choose customer:

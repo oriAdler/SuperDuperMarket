@@ -47,4 +47,6 @@ public interface SuperDuperMarket {
 
     double findMaxXCoordinate();
     double findMaxYCoordinate();
+
+    boolean isLocationOccupied(Point location);
 }

@@ -674,4 +674,20 @@ public class SuperDuperMarketImpl implements SuperDuperMarket {
 
         return Math.max(storeMaxYCoordinate, customerMaxYCoordinate);
     }
+
+    public boolean isLocationOccupied(Point newLocation){
+        for(Store store : storeIdToStore.values()){
+            if(newLocation.equals(store.getLocation())){
+                return true;
+            }
+        }
+        for(Customer customer : customerIdToCustomer.values()){
+            if(newLocation.equals(customer.getLocation())){
+                return true;
+            }
+        }
+
+        return false;
+    }
+
 }
