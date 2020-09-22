@@ -7,15 +7,17 @@
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.ScrollPane?>
 <?import javafx.scene.control.SplitPane?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.Pane?>
 <?import javafx.scene.layout.VBox?>
 
-<ScrollPane fitToHeight="true" fitToWidth="true" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="components.main.MainController">
+<ScrollPane fitToHeight="true" fitToWidth="true" stylesheets="@../style.css" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="components.main.MainController">
    <content>
-      <SplitPane fx:id="splitPane" dividerPositions="0.5" focusTraversable="true" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="500.0" minWidth="900.0" prefHeight="650.0" prefWidth="650.0">
+      <SplitPane fx:id="splitPane" dividerPositions="0.18819599109131402" focusTraversable="true" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="500.0" minWidth="900.0" prefHeight="650.0" prefWidth="650.0">
          <items>
-            <AnchorPane maxWidth="165.0" minHeight="300.0" minWidth="165.0" prefHeight="600.0" prefWidth="165.0">
+            <AnchorPane id="left-anchor" maxWidth="165.0" minHeight="300.0" minWidth="165.0" prefHeight="600.0" prefWidth="165.0">
                <children>
                   <VBox layoutY="400.0" prefHeight="59.0" prefWidth="165.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0">
                      <children>
@@ -33,82 +35,157 @@
                   </VBox>
                   <VBox alignment="CENTER" maxWidth="165.0" prefHeight="296.0" prefWidth="165.0" AnchorPane.leftAnchor="0.0" AnchorPane.topAnchor="50.0">
                      <children>
-                        <Button fx:id="openFileButton" alignment="CENTER" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#openFileButtonAction" text="Open File">
+                        <Button fx:id="openFileButton" alignment="BASELINE_LEFT" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#openFileButtonAction" text="Open File">
                            <VBox.margin>
                               <Insets />
                            </VBox.margin>
                            <padding>
                               <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
                            </padding>
+                           <graphic>
+                              <ImageView fitHeight="25.0" fitWidth="25.0" pickOnBounds="true" preserveRatio="true">
+                                 <image>
+                                    <Image url="@../../image/file.png.png" />
+                                 </image>
+                              </ImageView>
+                           </graphic>
                         </Button>
-                        <Button fx:id="displayStoresButton" disable="true" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#displayStoresButtonAction" text="Display Stores">
+                        <Button fx:id="displayStoresButton" alignment="BASELINE_LEFT" disable="true" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#displayStoresButtonAction" styleClass="button-menu" text="Stores">
                            <VBox.margin>
                               <Insets />
                            </VBox.margin>
                            <padding>
                               <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
                            </padding>
+                           <graphic>
+                              <ImageView fitHeight="25.0" fitWidth="25.0" pickOnBounds="true" preserveRatio="true">
+                                 <image>
+                                    <Image url="@../../image/store.png" />
+                                 </image>
+                              </ImageView>
+                           </graphic>
                         </Button>
-                        <Button fx:id="displayItemsButton" disable="true" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#displayItemsButtonAction" text="Display Items">
+                        <Button fx:id="displayItemsButton" alignment="BASELINE_LEFT" disable="true" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#displayItemsButtonAction" styleClass="button-menu" text="Items">
                            <VBox.margin>
                               <Insets />
                            </VBox.margin>
                            <padding>
                               <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
                            </padding>
+                           <graphic>
+                              <ImageView fitHeight="25.0" fitWidth="25.0" pickOnBounds="true" preserveRatio="true">
+                                 <image>
+                                    <Image url="@../../image/item.png.png" />
+                                 </image>
+                              </ImageView>
+                           </graphic>
                         </Button>
-                        <Button fx:id="showCustomersButton" disable="true" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#showCustomersButtonOnAction" text="Show Customers">
+                        <Button fx:id="showCustomersButton" alignment="BASELINE_LEFT" disable="true" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#showCustomersButtonOnAction" styleClass="button-menu" text="Customers">
                            <VBox.margin>
                               <Insets />
                            </VBox.margin>
                            <padding>
                               <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
                            </padding>
+                           <graphic>
+                              <ImageView fitHeight="25.0" fitWidth="25.0" pickOnBounds="true" preserveRatio="true">
+                                 <image>
+                                    <Image url="@../../image/customer.png" />
+                                 </image>
+                              </ImageView>
+                           </graphic>
                         </Button>
-                        <Button fx:id="makeOrderButton" disable="true" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#makeOrderButtonAction" text="Make Order">
+                        <Button fx:id="makeOrderButton" alignment="BASELINE_LEFT" disable="true" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#makeOrderButtonAction" styleClass="button-menu" text="Make Order">
                            <VBox.margin>
                               <Insets />
                            </VBox.margin>
                            <padding>
                               <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
                            </padding>
+                           <graphic>
+                              <ImageView fitHeight="25.0" fitWidth="25.0" pickOnBounds="true" preserveRatio="true">
+                                 <image>
+                                    <Image url="@../../image/order.png.png" />
+                                 </image>
+                              </ImageView>
+                           </graphic>
                         </Button>
-                        <Button fx:id="showOrdersHistoryButton" disable="true" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#showOrdersHistoryButtonAction" text="Show Orders History">
+                        <Button fx:id="showOrdersHistoryButton" alignment="BASELINE_LEFT" disable="true" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#showOrdersHistoryButtonAction" styleClass="button-menu" text="Orders History">
                            <VBox.margin>
                               <Insets />
                            </VBox.margin>
                            <padding>
                               <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
                            </padding>
+                           <graphic>
+                              <ImageView fitHeight="25.0" fitWidth="25.0" pickOnBounds="true" preserveRatio="true">
+                                 <image>
+                                    <Image url="@../../image/history.png.png" />
+                                 </image>
+                              </ImageView>
+                           </graphic>
                         </Button>
-                        <Button fx:id="updateStoreItemsButton" disable="true" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#updateStoreItemsButtonAction" text="Update Store Items">
+                        <Button fx:id="updateStoreItemsButton" alignment="BASELINE_LEFT" disable="true" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#updateStoreItemsButtonAction" styleClass="button-menu" text="Update Items">
                            <VBox.margin>
                               <Insets />
                            </VBox.margin>
                            <padding>
                               <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
                            </padding>
+                           <graphic>
+                              <ImageView fitHeight="25.0" fitWidth="25.0" pickOnBounds="true" preserveRatio="true">
+                                 <image>
+                                    <Image url="@../../image/update.png.png" />
+                                 </image>
+                              </ImageView>
+                           </graphic>
                         </Button>
-                        <Button fx:id="showMapButton" disable="true" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#showMapButtonAction" text="Show Map">
+                        <Button fx:id="showMapButton" alignment="BASELINE_LEFT" disable="true" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#showMapButtonAction" styleClass="button-menu" text="Show Map">
                            <VBox.margin>
                               <Insets />
                            </VBox.margin>
                            <padding>
                               <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
                            </padding>
+                           <graphic>
+                              <ImageView fitHeight="25.0" fitWidth="25.0" pickOnBounds="true" preserveRatio="true">
+                                 <image>
+                                    <Image url="@../../image/map.png.png" />
+                                 </image>
+                              </ImageView>
+                           </graphic>
                         </Button>
-                        <Button fx:id="addStoreButton" disable="true" layoutX="10.0" layoutY="297.0" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#addStoreButtonAction" text="Add Store">
+                        <Button fx:id="addStoreButton" alignment="BASELINE_LEFT" disable="true" layoutX="10.0" layoutY="297.0" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#addStoreButtonAction" styleClass="button-menu" text="Add Store">
                            <padding>
                               <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
                            </padding>
+                           <graphic>
+                              <ImageView fitHeight="25.0" fitWidth="25.0" pickOnBounds="true" preserveRatio="true">
+                                 <image>
+                                    <Image url="@../../image/add.png.png" />
+                                 </image>
+                              </ImageView>
+                           </graphic>
+                        </Button>
+                        <Button fx:id="addItemButton" alignment="BASELINE_LEFT" disable="true" layoutX="10.0" layoutY="370.0" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#addItemButtonAction" styleClass="button-menu" text="Add Item">
+                           <padding>
+                              <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+                           </padding>
+                           <graphic>
+                              <ImageView fitHeight="25.0" fitWidth="25.0" pickOnBounds="true" preserveRatio="true">
+                                 <image>
+                                    <Image url="@../../image/add.png.png" />
+                                 </image>
+                              </ImageView>
+                           </graphic>
                         </Button>
                      </children>
                   </VBox>
-                  <Pane prefHeight="45.0" prefWidth="175.0">
+                  <Pane id="pane" prefHeight="45.0" prefWidth="175.0" styleClass="pane">
                      <children>
-                        <Label contentDisplay="CENTER" layoutX="10.0" layoutY="7.0" text="Super Duper Market">
+                        <Label contentDisplay="CENTER" layoutX="6.0" layoutY="7.0" text="Super Duper Market">
                            <padding>
-                              <Insets bottom="5.0" left="10.0" right="10.0" top="5.0" />
+                              <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
                            </padding>
                         </Label>
                      </children>

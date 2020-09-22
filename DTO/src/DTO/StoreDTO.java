@@ -12,6 +12,8 @@ public class StoreDTO implements LocationDTO{
     final private double PPK;
     final private double totalDeliveryIncome;
 
+    private String newItemPrice;
+
     public StoreDTO(int id, String name, List<ItemDTO> items,
                     List<OrderDTO> orders, Integer xLocation, Integer yLocation,
                     double PPK, double totalDeliveryIncome) {
@@ -23,6 +25,8 @@ public class StoreDTO implements LocationDTO{
         this.yLocation = yLocation;
         this.PPK = PPK;
         this.totalDeliveryIncome = totalDeliveryIncome;
+
+        newItemPrice = "0";
     }
 
     public int getId() {
@@ -55,6 +59,14 @@ public class StoreDTO implements LocationDTO{
 
     public Integer getyLocation() {
         return yLocation;
+    }
+
+    public String getNewItemPrice() {
+        return newItemPrice;
+    }
+
+    public void setNewItemPrice(String newItemPrice) {
+        this.newItemPrice = newItemPrice;
     }
 
     @Override

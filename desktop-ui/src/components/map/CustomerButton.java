@@ -1,6 +1,7 @@
 package components.map;
 
 import javafx.scene.control.Button;
+import javafx.scene.control.Tooltip;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 
@@ -10,11 +11,13 @@ public class CustomerButton extends Button {
     final private int numberOfOrders;
     private boolean isDetailShown;
 
-    public CustomerButton(int customerId, String customerName, int numberOfOrders) {
+    public CustomerButton(int customerId, String customerName, int numberOfOrders, int xLocation, int yLocation) {
         ImageView image = new ImageView("/image/customer.png");
         super.setGraphic(image);
-        super.getStyleClass().setAll("LocationButton");
         isDetailShown = false;
+
+        Tooltip tooltip = new Tooltip(String.format("(%d,%d)", xLocation, yLocation));
+        super.setTooltip(tooltip);
 
         this.customerId = customerId;
         this.customerName = customerName;

@@ -542,6 +542,17 @@ public class SuperDuperMarketImpl implements SuperDuperMarket {
         return discountDTOList;
     }
 
+    public List<DiscountDTO> getStoreDiscounts(Integer storeId){
+        List<DiscountDTO> discountDTOList = new ArrayList<>();
+        List<Discount> discountList = storeIdToStore.get(storeId).getDiscounts();
+
+        for(Discount discount : discountList){
+                discountDTOList.add(discountToDiscountDTO(discount, storeId));
+        }
+
+        return discountDTOList;
+    }
+
     // Get discounts for static order:
     private DiscountDTO discountToDiscountDTO(Discount discount, int storeId){
         List<OfferDTO> offerDTOList = new ArrayList<>();
@@ -690,4 +701,22 @@ public class SuperDuperMarketImpl implements SuperDuperMarket {
         return false;
     }
 
+    public void createNewStore(int id, String name, int ppk, Point location, Map<Integer, Integer> itemIdToPrice){
+        storeIdToStore.put(id, new Store(id, name, itemIdToPrice, location, ppk, new ArrayList<>()));
+    }
+
+    public boolean isItemExistById(int id){
+        return itemIdToItem.containsKey(id);
+    }
+
+    public void addItemToSDM(int itemId, String itemName, String purchaseCategory,
+                             Map<Integer, Integer> storeIdToItemPrice){
+        // Add new item to SDM:
+        itemIdToItem.put(itemId, new Item(itemId, itemName, purchaseCategory, 0.0));
+
+        // Add new items to stores:
+        storeIdToItemPrice.forEach((storeId,itemPrice)->{
+            addItemToStore(storeId, itemId, itemPrice);
+        });
+    }
 }

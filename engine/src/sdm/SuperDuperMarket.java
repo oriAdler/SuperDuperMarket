@@ -4,6 +4,7 @@ import DTO.CartDTO;
 import DTO.DiscountDTO;
 import DTO.ItemDTO;
 import DTO.OfferDTO;
+import sdm.discount.Discount;
 import sdm.item.PurchaseCategory;
 import sdm.order.OrderStatic;
 
@@ -39,6 +40,7 @@ public interface SuperDuperMarket {
     Double calculateDeliveryPrice(Integer storeId, Integer customerId);
     Double calculateDistanceStoreToCustomer(Integer storeId, Integer customerId);
 
+    List<DiscountDTO> getStoreDiscounts(Integer storeId);
     List<DiscountDTO> getStoreDiscounts(Map <Integer, Double> itemIdToAmount, Integer storeId);
     List<DiscountDTO> getDiscounts(Map<Integer, Double> itemIdToAmount);
 
@@ -49,4 +51,7 @@ public interface SuperDuperMarket {
     double findMaxYCoordinate();
 
     boolean isLocationOccupied(Point location);
+    void createNewStore(int id, String name, int ppk, Point location, Map<Integer, Integer> itemIdToPrice);
+    boolean isItemExistById(int id);
+    void addItemToSDM(int itemId, String itemName, String purchaseMethod, Map<Integer, Integer> storeIdToItemPrice);
 }

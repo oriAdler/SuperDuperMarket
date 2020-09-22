@@ -16,7 +16,6 @@ import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import javafx.scene.layout.AnchorPane;
-import javafx.scene.layout.FlowPane;
 
 import java.io.IOException;
 import java.net.URL;
@@ -119,7 +118,7 @@ public class StoresController implements Initializable {
         discountsRadioButton.setOnAction(e->{
             AllDiscountsController allDiscountsController = createAllDiscountsController();
             allDiscountsController.setEngine(engine);
-            allDiscountsController.fillAllDiscountData(store.getId());
+            allDiscountsController.fillAllDiscountsDataInShowStore(store.getId());
             anchorPaneBottom.getChildren().clear();
             anchorPaneBottom.getChildren().add(allDiscountsController.getScrollPane());
         });

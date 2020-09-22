@@ -32,7 +32,7 @@ public class Main extends Application {
         // Set stage:
         primaryStage.setTitle("Super Duper Market");
         primaryStage.getIcons().add(new Image("/image/sdm.png"));
-        Scene scene = new Scene(root, 950, 650);
+        Scene scene = new Scene(root, 1100, 650);
         primaryStage.setScene(scene);
         primaryStage.setMinHeight(450);
         primaryStage.setMinWidth(450);

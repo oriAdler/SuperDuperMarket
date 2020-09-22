@@ -1,20 +1,29 @@
 package components.store;
 
+import DTO.ItemDTO;
 import common.Input;
+import common.SDMResourcesConstants;
+import components.item.ItemsController;
 import components.main.MainController;
 import engine.Engine;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
+import javafx.scene.control.cell.TextFieldTableCell;
 import javafx.scene.layout.AnchorPane;
 
 import java.awt.*;
+import java.io.IOException;
 import java.net.URL;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.ResourceBundle;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -34,6 +43,7 @@ public class AddStoreController implements Initializable {
     @FXML private Label locationMessageLabel;
     @FXML private Label ppkMessageLabel;
 
+    // Properties:
     private SimpleBooleanProperty idTextFieldIsValid;
     private SimpleBooleanProperty nameTextFieldIsValid;
     private SimpleBooleanProperty ppkTextFieldIsValid;
@@ -44,10 +54,14 @@ public class AddStoreController implements Initializable {
     private MainController mainController;
     private Engine engine;
 
+    private ItemsController itemsController;
+    private AnchorPane itemsAnchorPane;
+
     private int storeId;
     private String storeName;
     private int ppk;
-    Point location;
+    private Point location;
+    private Map<Integer, Integer> itemIdToPrice;
 
     public AddStoreController(){
         idTextFieldIsValid = new SimpleBooleanProperty(false);
@@ -56,14 +70,17 @@ public class AddStoreController implements Initializable {
         xComboBoxIsChosen = new SimpleBooleanProperty(false);
         yComboBoxIsChosen = new SimpleBooleanProperty(false);
         isLocationIsValid = new SimpleBooleanProperty(false);
+
+        itemsController = createItemsController();
     }
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         okButton.disableProperty().bind(idTextFieldIsValid.not()
-                .or(nameTextFieldIsValid).not()
-                .or(ppkTextFieldIsValid).not()
-                .or(isLocationIsValid.not()));
+                .or((nameTextFieldIsValid).not())
+                .or((ppkTextFieldIsValid).not())
+                .or((isLocationIsValid.not()))
+                .or((itemsController.getIsItemSelectedProperty().not())));
     }
 
     public void setMainController(MainController mainController) {
@@ -82,7 +99,17 @@ public class AddStoreController implements Initializable {
 
     @FXML
     void okButtonAction(ActionEvent event) {
+        // Collect items from table.
+        itemIdToPrice = new HashMap<>();
+        itemsController.getTableView().getItems().forEach(item -> {
+            if(Input.isPositiveInteger(item.getPrice())){
+                itemIdToPrice.put(item.getId(), Integer.parseInt(item.getPrice()));
+            }
+        });
 
+        engine.getSDM().createNewStore(storeId, storeName, ppk, location, itemIdToPrice);
+        mainController.setInDynamicProcedure(false);
+        mainController.getAnchorPaneRight().getChildren().clear();
     }
 
     public void fillAddStoreData(Engine engine){
@@ -134,8 +161,8 @@ public class AddStoreController implements Initializable {
         });
 
         // Set combo box data:
-        xComboBox.getItems().setAll(IntStream.range(1,50).boxed().collect(Collectors.toList()));
-        yComboBox.getItems().setAll(IntStream.range(1,50).boxed().collect(Collectors.toList()));
+        xComboBox.getItems().setAll(IntStream.range(1,51).boxed().collect(Collectors.toList()));
+        yComboBox.getItems().setAll(IntStream.range(1,51).boxed().collect(Collectors.toList()));
 
         xComboBox.setOnAction(event -> {
             xComboBoxIsChosen.set(true);
@@ -168,5 +195,37 @@ public class AddStoreController implements Initializable {
                 }
             }
         });
+
+        // Set the items view table:
+        List<ItemDTO> itemDTOList = engine.getAllItemList();
+        itemDTOList.forEach(itemDTO -> itemDTO.setPrice("0"));
+        itemsController.fillTableViewData(itemDTOList);
+
+        itemsController.getSellersColumn().setVisible(false);
+        itemsController.getSalesColumn().setVisible(false);
+        itemsController.getPriceColumn().setCellFactory(TextFieldTableCell.forTableColumn());
+        itemsController.getTableView().setEditable(true);
+
+        anchorPaneItems.getChildren().clear();
+        anchorPaneItems.getChildren().add(itemsAnchorPane);
+        AnchorPane.setTopAnchor(itemsAnchorPane, 0.0);
+        AnchorPane.setBottomAnchor(itemsAnchorPane, 0.0);
+        AnchorPane.setRightAnchor(itemsAnchorPane, 0.0);
+        AnchorPane.setLeftAnchor(itemsAnchorPane, 0.0);
+    }
+
+    public ItemsController createItemsController()
+    {
+        try {
+            FXMLLoader loader = new FXMLLoader();
+
+            loader.setLocation(SDMResourcesConstants.ITEMS_ANCHOR_PANE);
+            itemsAnchorPane = loader.load();
+            return loader.getController();
+        }
+        catch (IOException e) {
+            e.printStackTrace();
+            return null;
+        }
     }
 }

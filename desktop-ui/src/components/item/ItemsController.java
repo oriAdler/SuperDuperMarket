@@ -52,6 +52,7 @@ public class ItemsController implements Initializable{
     @FXML private TableColumn<ItemDTO, String> amountColumn;
 
     private SimpleBooleanProperty proceedToCheckout;
+    private SimpleBooleanProperty isItemSelected;
 
     private SimpleBooleanProperty isAnimationCheckBoxChosen;
 
@@ -73,6 +74,8 @@ public class ItemsController implements Initializable{
         //amountColumn.setOnEditCommit(this::userEditAmountCell);
         amountColumn.setVisible(false);
         proceedToCheckout = new SimpleBooleanProperty(false);
+
+        isItemSelected = new SimpleBooleanProperty(false);
 
         dummyButton = new Button();
         dummyButton.setOnAction(new dummyButtonListener());
@@ -115,9 +118,35 @@ public class ItemsController implements Initializable{
         // Check if at least one item was chosen:
         proceedToCheckout.set(false);
         tableView.getItems().forEach(item -> {
-            if(Input.isPositiveDouble(item.getAmount())) {
+            if(Input.isPositiveInteger(item.getAmount())) {
                 // User now can proceed to checkout
                 proceedToCheckout.set(true);
+            }
+        });
+
+        tableView.refresh();
+    }
+
+    @FXML
+    void priceColumnOnEditCommit(TableColumn.CellEditEvent<ItemDTO, String> event) {
+        // Get the selected item:
+        ItemDTO currentItem = event.getTableView()
+                .getItems()
+                .get(event.getTablePosition().getRow());
+
+        // Check input validation:
+        String newValue = event.getNewValue();
+        if(!Input.isPositiveInteger(newValue)){
+            newValue = "Enter whole positive number";
+        }
+        currentItem.setPrice(newValue);
+
+        // Check if at least one item was chosen:
+        isItemSelected.set(false);
+        tableView.getItems().forEach(item -> {
+            if(Input.isPositiveDouble(item.getPrice())) {
+                // User now can proceed to checkout
+                isItemSelected.set(true);
             }
         });
 
@@ -136,6 +165,14 @@ public class ItemsController implements Initializable{
         return priceColumn;
     }
 
+    public TableColumn<ItemDTO, Integer> getSellersColumn() {
+        return sellersColumn;
+    }
+
+    public TableColumn<ItemDTO, Double> getSalesColumn() {
+        return salesColumn;
+    }
+
     public TableColumn<ItemDTO, String> getAmountColumn() {
         return amountColumn;
     }
@@ -150,6 +187,10 @@ public class ItemsController implements Initializable{
 
     public SimpleBooleanProperty proceedToCheckoutProperty() {
         return proceedToCheckout;
+    }
+
+    public SimpleBooleanProperty getIsItemSelectedProperty(){
+        return isItemSelected;
     }
 
     public void setProceedToCheckout(boolean proceedToCheckout) {

@@ -27,7 +27,6 @@ import javafx.scene.control.ScrollPane;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.GridPane;
-import javafx.stage.Stage;
 
 import java.io.IOException;
 import java.net.URL;
@@ -271,9 +270,13 @@ public class MakeOrderController implements Initializable {
         // Get the items list:
         if(dynamicOrderRadioButtonClicked.getValue()){
             itemsController.getPriceColumn().setVisible(false);
+            itemsController.getSalesColumn().setVisible(false);
+            itemsController.getSellersColumn().setVisible(false);
             itemList = engine.getAllItemList();
         }
-        else{
+        else{   // Static order button clicked
+            itemsController.getSalesColumn().setVisible(false);
+            itemsController.getSellersColumn().setVisible(false);
             StoreDTO store = chooseStoreComboBox.getValue();
             itemList = store.getItems();
             dummyList = engine.getAllItemList();
@@ -377,7 +380,7 @@ public class MakeOrderController implements Initializable {
             else{   // Show customer available discounts
                 allDiscountsController.setStaticOrder(true);
                 allDiscountsController.setStoreId(store.getId());
-                allDiscountsController.fillAllDiscountData(store.getId());
+                allDiscountsController.fillAllDiscountDataInOrder(store.getId());
                 scrollPaneCenter.setContent(allDiscountsController.getBorderPane());
             }
         }
@@ -387,7 +390,7 @@ public class MakeOrderController implements Initializable {
             }
             else{
                 allDiscountsController.setStaticOrder(false);
-                allDiscountsController.fillAllDiscountData();
+                allDiscountsController.fillAllDiscountDataInOrder();
                 scrollPaneCenter.setContent(allDiscountsController.getBorderPane());
             }
         }

@@ -3,6 +3,7 @@ package components.main;
 import common.SDMResourcesConstants;
 import components.customer.CustomerController;
 import components.file.FileLoaderController;
+import components.item.AddItemController;
 import components.item.ItemsController;
 import components.itemUpdate.ItemUpdateController;
 import components.map.MapGenerator;
@@ -41,6 +42,7 @@ public class MainController {
     @FXML private Button updateStoreItemsButton;
     @FXML private Button showMapButton;
     @FXML private Button addStoreButton;
+    @FXML private Button addItemButton;
 
     @FXML private CheckBox animationCheckBox;
     @FXML private ComboBox<?> styleComboBox;
@@ -79,6 +81,9 @@ public class MainController {
     private AddStoreController addStoreController;
     private AnchorPane addStoreAnchorPane;
 
+    private AddItemController addItemController;
+    private AnchorPane addItemAnchorPane;
+
     public MainController(){
         isFileLoaded = new SimpleBooleanProperty(false);
         inDynamicProcedure = new SimpleBooleanProperty(false);
@@ -97,6 +102,7 @@ public class MainController {
         showMapButton.disableProperty().bind(isFileLoaded.not().or(inDynamicProcedure));
         animationCheckBox.selectedProperty().bindBidirectional(isAnimationCheckBoxChosen);
         addStoreButton.disableProperty().bind(isFileLoaded.not().or(inDynamicProcedure));
+        addItemButton.disableProperty().bind(isFileLoaded.not().or(inDynamicProcedure));
     }
 
     public void setPrimaryStage(Stage primaryStage) {
@@ -226,7 +232,7 @@ public class MainController {
 
         ScrollPane scrollPaneMap = MapGenerator.draw(engine);
 
-        anchorPaneRight.getChildren().add(scrollPaneMap);
+        anchorPaneRight.getChildren().addAll(scrollPaneMap);
         AnchorPane.setTopAnchor(scrollPaneMap, 0.0);
         AnchorPane.setBottomAnchor(scrollPaneMap, 0.0);
         AnchorPane.setRightAnchor(scrollPaneMap, 0.0);
@@ -284,13 +290,34 @@ public class MainController {
         addStoreController.setEngine(engine);
         addStoreController.fillAddStoreData(engine);
 
-        // Place show orders history scene:
+        // Place add store scene:
         anchorPaneRight.getChildren().clear();
         anchorPaneRight.getChildren().add(addStoreAnchorPane);
         AnchorPane.setTopAnchor(addStoreAnchorPane, 0.0);
         AnchorPane.setBottomAnchor(addStoreAnchorPane, 0.0);
         AnchorPane.setRightAnchor(addStoreAnchorPane, 0.0);
         AnchorPane.setLeftAnchor(addStoreAnchorPane, 0.0);
+    }
+
+    @FXML
+    void addItemButtonAction(ActionEvent event){
+        inDynamicProcedure.set(true);
+
+        // Load add store FXML file:
+        addItemController = createAddItemController();
+
+        // Wire up controller:
+        addItemController.setMainController(this);
+        addItemController.setEngine(engine);
+        addItemController.fillAddItemData(engine);
+
+        // Place add item scene:
+        anchorPaneRight.getChildren().clear();
+        anchorPaneRight.getChildren().add(addItemAnchorPane);
+        AnchorPane.setTopAnchor(addItemAnchorPane, 0.0);
+        AnchorPane.setBottomAnchor(addItemAnchorPane, 0.0);
+        AnchorPane.setRightAnchor(addItemAnchorPane, 0.0);
+        AnchorPane.setLeftAnchor(addItemAnchorPane, 0.0);
     }
 
     public ItemsController createItemsController()
@@ -400,6 +427,20 @@ public class MainController {
 
             loader.setLocation(SDMResourcesConstants.ADD_STORE_ANCHOR_PANE);
             addStoreAnchorPane = loader.load();
+            return loader.getController();
+        }
+        catch (IOException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    public AddItemController createAddItemController(){
+        try {
+            FXMLLoader loader = new FXMLLoader();
+
+            loader.setLocation(SDMResourcesConstants.ADD_ITEM_ANCHOR_PANE);
+            addItemAnchorPane = loader.load();
             return loader.getController();
         }
         catch (IOException e) {
