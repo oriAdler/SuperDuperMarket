@@ -32,6 +32,27 @@ public class Input {
         return isPositiveInteger;
     }
 
+    public static boolean isNonNegativeInteger(String input) {
+        boolean isNonNegativeInteger;
+
+        if (Input.countWordsUsingSplit(input) != 1) {
+            isNonNegativeInteger = false;
+        } else {
+            try {
+                int number = Integer.parseInt(input);
+                if (number < 0) {
+                    isNonNegativeInteger = false;
+                } else {
+                    isNonNegativeInteger = true;
+                }
+            } catch (NumberFormatException exception) {
+                isNonNegativeInteger = false;
+            }
+        }
+
+        return isNonNegativeInteger;
+    }
+
     public static boolean isPositiveDouble(String input) {
         boolean isPositiveDouble;
 

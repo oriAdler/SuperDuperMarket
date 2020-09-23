@@ -47,6 +47,7 @@ public class StoresController implements Initializable {
     private OrdersController ordersController;
     private AnchorPane ordersAnchorPane;
     private AnchorPane allDiscountAnchorPane;
+    AllDiscountsController allDiscountsController;
 
     Engine engine;
 
@@ -104,19 +105,21 @@ public class StoresController implements Initializable {
         anchorPaneBottom.getChildren().clear();
 
         itemsRadioButton.setOnAction(e->{
+            itemsController = createItemsController();
             itemsController.fillTableViewData(store.getItems());
             anchorPaneBottom.getChildren().clear();
             anchorPaneBottom.getChildren().add(itemsController.getTableView());
         });
 
         ordersRadioButton.setOnAction(e->{
+            ordersController = createOrderSController();
             ordersController.fillTableViewData(store.getOrders());
             anchorPaneBottom.getChildren().clear();
             anchorPaneBottom.getChildren().add(ordersController.getTableView());
         });
 
         discountsRadioButton.setOnAction(e->{
-            AllDiscountsController allDiscountsController = createAllDiscountsController();
+            allDiscountsController = createAllDiscountsController();
             allDiscountsController.setEngine(engine);
             allDiscountsController.fillAllDiscountsDataInShowStore(store.getId());
             anchorPaneBottom.getChildren().clear();

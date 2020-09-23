@@ -2,6 +2,7 @@ package components.main;
 
 import common.SDMResourcesConstants;
 import components.customer.CustomerController;
+import components.discount.AddDiscountController;
 import components.file.FileLoaderController;
 import components.item.AddItemController;
 import components.item.ItemsController;
@@ -15,6 +16,7 @@ import javafx.beans.property.SimpleBooleanProperty;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.control.Button;
 import javafx.scene.control.ScrollPane;
@@ -25,6 +27,8 @@ import engine.Engine;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 public class MainController {
 
@@ -43,12 +47,14 @@ public class MainController {
     @FXML private Button showMapButton;
     @FXML private Button addStoreButton;
     @FXML private Button addItemButton;
+    @FXML private Button addDiscountButton;
 
     @FXML private CheckBox animationCheckBox;
-    @FXML private ComboBox<?> styleComboBox;
+    @FXML private ComboBox<String> styleComboBox;
 
     // Miscellaneous:
     private Stage primaryStage;
+    private Scene scene;
     private Engine engine;
 
     // Properties:
@@ -84,6 +90,13 @@ public class MainController {
     private AddItemController addItemController;
     private AnchorPane addItemAnchorPane;
 
+    private AddDiscountController addDiscountController;
+    private AnchorPane addDiscountAnchorPane;
+
+    private String themeDefaultUrl;
+    private String themeFlatBeeUrl;
+    private String themeModenaDarkUrl;
+
     public MainController(){
         isFileLoaded = new SimpleBooleanProperty(false);
         inDynamicProcedure = new SimpleBooleanProperty(false);
@@ -103,10 +116,25 @@ public class MainController {
         animationCheckBox.selectedProperty().bindBidirectional(isAnimationCheckBoxChosen);
         addStoreButton.disableProperty().bind(isFileLoaded.not().or(inDynamicProcedure));
         addItemButton.disableProperty().bind(isFileLoaded.not().or(inDynamicProcedure));
+        addDiscountButton.disableProperty().bind(isFileLoaded.not().or(inDynamicProcedure));
+
+        List<String> styleList = new ArrayList<>();
+        styleList.add("Default");
+        styleList.add("Dark Modena");
+        styleList.add("Flat Bee");
+        styleComboBox.getItems().setAll(styleList);
+
+        themeDefaultUrl = getClass().getResource("/css/default.css").toExternalForm();
+        themeFlatBeeUrl = getClass().getResource("/css/flatbee.css").toExternalForm();
+        themeModenaDarkUrl = getClass().getResource("/css/modenaDark.css").toExternalForm();
     }
 
     public void setPrimaryStage(Stage primaryStage) {
         this.primaryStage = primaryStage;
+    }
+
+    public void setScene(Scene scene) {
+        this.scene = scene;
     }
 
     public void setEngine(Engine engine) {
@@ -320,6 +348,46 @@ public class MainController {
         AnchorPane.setLeftAnchor(addItemAnchorPane, 0.0);
     }
 
+    @FXML
+    void addDiscountButtonAction(ActionEvent event){
+        inDynamicProcedure.set(true);
+
+        // Load add store FXML file:
+        addDiscountController = createAddDiscountController();
+
+        // Wire up controller:
+        addDiscountController.setMainController(this);
+        addDiscountController.setEngine(engine);
+        addDiscountController.fillAddDiscountData(engine);
+
+        // Place add item scene:
+        anchorPaneRight.getChildren().clear();
+        anchorPaneRight.getChildren().add(addDiscountAnchorPane);
+        AnchorPane.setTopAnchor(addDiscountAnchorPane, 0.0);
+        AnchorPane.setBottomAnchor(addDiscountAnchorPane, 0.0);
+        AnchorPane.setRightAnchor(addDiscountAnchorPane, 0.0);
+        AnchorPane.setLeftAnchor(addDiscountAnchorPane, 0.0);
+    }
+
+    @FXML
+    void styleComboBoxAction(ActionEvent event) {
+        scene.getStylesheets().remove(themeDefaultUrl);
+        scene.getStylesheets().remove(themeFlatBeeUrl);
+        scene.getStylesheets().remove(themeModenaDarkUrl);
+
+        switch (styleComboBox.getValue()) {
+            case "Default":
+                scene.getStylesheets().add(themeDefaultUrl);
+                break;
+            case "Dark Modena":
+                scene.getStylesheets().add(themeModenaDarkUrl);
+                break;
+            case "Flat Bee":
+                scene.getStylesheets().add(themeFlatBeeUrl);
+                break;
+        }
+    }
+
     public ItemsController createItemsController()
     {
         try {
@@ -441,6 +509,20 @@ public class MainController {
 
             loader.setLocation(SDMResourcesConstants.ADD_ITEM_ANCHOR_PANE);
             addItemAnchorPane = loader.load();
+            return loader.getController();
+        }
+        catch (IOException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    public AddDiscountController createAddDiscountController(){
+        try {
+            FXMLLoader loader = new FXMLLoader();
+
+            loader.setLocation(SDMResourcesConstants.ADD_DISCOUNT_ANCHOR_PANE);
+            addDiscountAnchorPane = loader.load();
             return loader.getController();
         }
         catch (IOException e) {

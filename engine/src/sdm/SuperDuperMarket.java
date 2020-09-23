@@ -54,4 +54,7 @@ public interface SuperDuperMarket {
     void createNewStore(int id, String name, int ppk, Point location, Map<Integer, Integer> itemIdToPrice);
     boolean isItemExistById(int id);
     void addItemToSDM(int itemId, String itemName, String purchaseMethod, Map<Integer, Integer> storeIdToItemPrice);
+    boolean isDiscountNameExist(String discountName);
+    void addDiscountToStore(int storeId, String discountName, int itemId, double itemAmount,
+                            String discountType, List<OfferDTO> offerDTOList);
 }

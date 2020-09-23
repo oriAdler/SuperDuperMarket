@@ -55,8 +55,8 @@ public class MapGenerator {
 
     private static Pane createDummyPane(){
         Pane pane = new Pane();
-        pane.setMinHeight(20);
-        pane.setMinWidth(20);
+        pane.setMinHeight(18);
+        pane.setMinWidth(18);
 
         return pane;
     }

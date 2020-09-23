@@ -719,4 +719,36 @@ public class SuperDuperMarketImpl implements SuperDuperMarket {
             addItemToStore(storeId, itemId, itemPrice);
         });
     }
+
+    public boolean isDiscountNameExist(String discountName) {
+        for(Store store : storeIdToStore.values()){
+            if(!store.getDiscounts().isEmpty()){
+                for(Discount discount : store.getDiscounts()){
+                    if(discount.getName().equals(discountName)){
+                        return true;
+                    }
+                }
+            }
+        }
+        return false;
+    }
+
+    public void addDiscountToStore(int storeId, String discountName, int itemId, double itemAmount,
+                            String operator, List<OfferDTO> offerDTOList){
+        storeIdToStore.get(storeId).getDiscounts().add(new Discount(discountName,
+                itemId,
+                itemAmount,
+                operator,
+                offerDTOListToOfferList(offerDTOList)));
+    }
+
+    private List<Offer> offerDTOListToOfferList(List<OfferDTO> offerDTOList){
+        List<Offer> offerList = new ArrayList<>();
+
+        offerDTOList.forEach(offerDTO -> offerList.add(new Offer(offerDTO.getItemId(),
+                offerDTO.getAmount(),
+                offerDTO.getPrice())));
+
+        return offerList;
+    }
 }

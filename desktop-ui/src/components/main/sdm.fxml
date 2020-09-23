@@ -13,7 +13,7 @@
 <?import javafx.scene.layout.Pane?>
 <?import javafx.scene.layout.VBox?>
 
-<ScrollPane fitToHeight="true" fitToWidth="true" stylesheets="@../style.css" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="components.main.MainController">
+<ScrollPane fitToHeight="true" fitToWidth="true" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="components.main.MainController">
    <content>
       <SplitPane fx:id="splitPane" dividerPositions="0.18819599109131402" focusTraversable="true" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="500.0" minWidth="900.0" prefHeight="650.0" prefWidth="650.0">
          <items>
@@ -21,7 +21,7 @@
                <children>
                   <VBox layoutY="400.0" prefHeight="59.0" prefWidth="165.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0">
                      <children>
-                        <ComboBox fx:id="styleComboBox" maxWidth="1.7976931348623157E308" promptText="Style">
+                        <ComboBox fx:id="styleComboBox" maxWidth="1.7976931348623157E308" onAction="#styleComboBoxAction" promptText="Style">
                            <VBox.margin>
                               <Insets bottom="5.0" left="10.0" right="10.0" top="5.0" />
                            </VBox.margin>
@@ -45,7 +45,7 @@
                            <graphic>
                               <ImageView fitHeight="25.0" fitWidth="25.0" pickOnBounds="true" preserveRatio="true">
                                  <image>
-                                    <Image url="@../../image/file.png.png" />
+                                    <Image url="@../../image/file.png" />
                                  </image>
                               </ImageView>
                            </graphic>
@@ -75,7 +75,7 @@
                            <graphic>
                               <ImageView fitHeight="25.0" fitWidth="25.0" pickOnBounds="true" preserveRatio="true">
                                  <image>
-                                    <Image url="@../../image/item.png.png" />
+                                    <Image url="@../../image/item.png" />
                                  </image>
                               </ImageView>
                            </graphic>
@@ -105,7 +105,7 @@
                            <graphic>
                               <ImageView fitHeight="25.0" fitWidth="25.0" pickOnBounds="true" preserveRatio="true">
                                  <image>
-                                    <Image url="@../../image/order.png.png" />
+                                    <Image url="@../../image/order.png" />
                                  </image>
                               </ImageView>
                            </graphic>
@@ -120,7 +120,7 @@
                            <graphic>
                               <ImageView fitHeight="25.0" fitWidth="25.0" pickOnBounds="true" preserveRatio="true">
                                  <image>
-                                    <Image url="@../../image/history.png.png" />
+                                    <Image url="@../../image/history.png" />
                                  </image>
                               </ImageView>
                            </graphic>
@@ -135,7 +135,7 @@
                            <graphic>
                               <ImageView fitHeight="25.0" fitWidth="25.0" pickOnBounds="true" preserveRatio="true">
                                  <image>
-                                    <Image url="@../../image/update.png.png" />
+                                    <Image url="@../../image/update.png" />
                                  </image>
                               </ImageView>
                            </graphic>
@@ -150,7 +150,7 @@
                            <graphic>
                               <ImageView fitHeight="25.0" fitWidth="25.0" pickOnBounds="true" preserveRatio="true">
                                  <image>
-                                    <Image url="@../../image/map.png.png" />
+                                    <Image url="@../../image/map.png" />
                                  </image>
                               </ImageView>
                            </graphic>
@@ -162,7 +162,7 @@
                            <graphic>
                               <ImageView fitHeight="25.0" fitWidth="25.0" pickOnBounds="true" preserveRatio="true">
                                  <image>
-                                    <Image url="@../../image/add.png.png" />
+                                    <Image url="@../../image/add.png" />
                                  </image>
                               </ImageView>
                            </graphic>
@@ -174,7 +174,19 @@
                            <graphic>
                               <ImageView fitHeight="25.0" fitWidth="25.0" pickOnBounds="true" preserveRatio="true">
                                  <image>
-                                    <Image url="@../../image/add.png.png" />
+                                    <Image url="@../../image/add.png" />
+                                 </image>
+                              </ImageView>
+                           </graphic>
+                        </Button>
+                        <Button fx:id="addDiscountButton" alignment="BASELINE_LEFT" disable="true" layoutX="10.0" layoutY="415.0" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#addDiscountButtonAction" styleClass="button-menu" text="Add Discount">
+                           <padding>
+                              <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+                           </padding>
+                           <graphic>
+                              <ImageView fitHeight="25.0" fitWidth="25.0" pickOnBounds="true" preserveRatio="true">
+                                 <image>
+                                    <Image url="@../../image/gift.png" />
                                  </image>
                               </ImageView>
                            </graphic>
