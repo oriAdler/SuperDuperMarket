@@ -2,13 +2,16 @@ package components.item;
 
 import DTO.StoreDTO;
 import common.Input;
+import common.SDMResourcesConstants;
 import components.main.MainController;
+import components.message.MessageGeneratorController;
 import engine.Engine;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import javafx.scene.control.Button;
@@ -16,7 +19,10 @@ import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.control.cell.TextFieldTableCell;
+import javafx.scene.image.ImageView;
+import javafx.scene.layout.AnchorPane;
 
+import java.io.IOException;
 import java.net.URL;
 import java.util.*;
 
@@ -36,8 +42,13 @@ public class AddItemController implements Initializable {
     @FXML private TableColumn<StoreDTO, String> storeColumn;
     @FXML private TableColumn<StoreDTO, String> priceColumn;
 
+    @FXML private ImageView questionImage;
+
     private MainController mainController;
     private Engine engine;
+
+    private MessageGeneratorController messageGeneratorController;
+    private AnchorPane messageAnchorPane;
 
     private SimpleBooleanProperty idTextFieldIsValid;
     private SimpleBooleanProperty nameTextFieldIsValid;
@@ -67,6 +78,8 @@ public class AddItemController implements Initializable {
         storeColumn.setCellValueFactory(new PropertyValueFactory<>("name"));
         priceColumn.setCellValueFactory(new PropertyValueFactory<>("newItemPrice"));
         priceColumn.setCellFactory(TextFieldTableCell.forTableColumn());
+
+        Tooltip.install(questionImage, new Tooltip("Fill all details & chose at least one store"));
     }
 
     @FXML
@@ -87,6 +100,15 @@ public class AddItemController implements Initializable {
 
         mainController.setInDynamicProcedure(false);
         mainController.getAnchorPaneRight().getChildren().clear();
+
+        messageGeneratorController = createMessageGenerator();
+        messageGeneratorController.setMessageLabelText(String.format("Item '%s' was added to Super Duper Market", itemName));
+
+        mainController.getAnchorPaneRight().getChildren().add(messageAnchorPane);
+        AnchorPane.setTopAnchor(messageAnchorPane, 0.0);
+        AnchorPane.setBottomAnchor(messageAnchorPane, 0.0);
+        AnchorPane.setRightAnchor(messageAnchorPane, 0.0);
+        AnchorPane.setLeftAnchor(messageAnchorPane, 0.0);
     }
 
     @FXML
@@ -174,5 +196,20 @@ public class AddItemController implements Initializable {
         storesOL.addAll(storeDTOList);
         storeTableView.setEditable(true);
         storeTableView.setItems(storesOL);
+    }
+
+    public MessageGeneratorController createMessageGenerator()
+    {
+        try {
+            FXMLLoader loader = new FXMLLoader();
+
+            loader.setLocation(SDMResourcesConstants.MESSAGE_GENERATOR_ANCHOR_PANE);
+            messageAnchorPane = loader.load();
+            return loader.getController();
+        }
+        catch (IOException e) {
+            e.printStackTrace();
+            return null;
+        }
     }
 }

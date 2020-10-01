@@ -32,6 +32,7 @@ public class ItemUpdateController implements Initializable {
     @FXML private Button cancelButton;
     @FXML private Label itemPriceLabel;
     @FXML private TextArea textArea;
+    @FXML private Label messageLabel;
 
     private SimpleBooleanProperty deleteItemRadioButtonClicked;
     private SimpleBooleanProperty addItemRadioButtonClicked;
@@ -134,9 +135,11 @@ public class ItemUpdateController implements Initializable {
         updatePriceTextField.setOnAction(e->{
             if(Input.isPositiveInteger(updatePriceTextField.getText()) &&
                     itemComboBoxClicked.getValue()){
+                messageLabel.setText("Valid price");
                 approveButton.setDisable(false);
             }
             else{
+                messageLabel.setText("Enter positive number");
                 approveButton.setDisable(true);
             }
         });
@@ -170,7 +173,7 @@ public class ItemUpdateController implements Initializable {
 
             if(addItemRadioButtonClicked.getValue()){
                 engine.getSDM().addItemToStore(store.getId(), item.getId(), newPrice);
-                messageLabelProperty.setValue(String.format("'%s' with price'%d' was added to store '%s' successfully.",
+                messageLabelProperty.setValue(String.format("'%s' with price '%d' was added to store '%s' successfully.",
                         item.getName(), newPrice, store.getName()));
             }
             else if(updatePriceRadioButtonClicked.getValue()){

@@ -5,17 +5,19 @@ import common.Input;
 import common.SDMResourcesConstants;
 import components.item.ItemsController;
 import components.main.MainController;
+import components.message.MessageGeneratorController;
 import engine.Engine;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
+import javafx.scene.control.*;
 import javafx.scene.control.Button;
-import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.control.cell.TextFieldTableCell;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.AnchorPane;
 
 import java.awt.*;
@@ -42,6 +44,7 @@ public class AddStoreController implements Initializable {
     @FXML private Label nameMessageLabel;
     @FXML private Label locationMessageLabel;
     @FXML private Label ppkMessageLabel;
+    @FXML private ImageView questionImage;
 
     // Properties:
     private SimpleBooleanProperty idTextFieldIsValid;
@@ -56,6 +59,9 @@ public class AddStoreController implements Initializable {
 
     private ItemsController itemsController;
     private AnchorPane itemsAnchorPane;
+
+    private MessageGeneratorController messageGeneratorController;
+    private AnchorPane messageAnchorPane;
 
     private int storeId;
     private String storeName;
@@ -81,6 +87,8 @@ public class AddStoreController implements Initializable {
                 .or((ppkTextFieldIsValid).not())
                 .or((isLocationIsValid.not()))
                 .or((itemsController.getIsItemSelectedProperty().not())));
+
+        Tooltip.install(questionImage, new Tooltip("Fill all details & chose at least one item"));
     }
 
     public void setMainController(MainController mainController) {
@@ -110,6 +118,15 @@ public class AddStoreController implements Initializable {
         engine.getSDM().createNewStore(storeId, storeName, ppk, location, itemIdToPrice);
         mainController.setInDynamicProcedure(false);
         mainController.getAnchorPaneRight().getChildren().clear();
+
+        messageGeneratorController = createMessageGenerator();
+        messageGeneratorController.setMessageLabelText(String.format("Store '%s' was added to Super Duper Market", storeName));
+
+        mainController.getAnchorPaneRight().getChildren().add(messageAnchorPane);
+        AnchorPane.setTopAnchor(messageAnchorPane, 0.0);
+        AnchorPane.setBottomAnchor(messageAnchorPane, 0.0);
+        AnchorPane.setRightAnchor(messageAnchorPane, 0.0);
+        AnchorPane.setLeftAnchor(messageAnchorPane, 0.0);
     }
 
     public void fillAddStoreData(Engine engine){
@@ -221,6 +238,21 @@ public class AddStoreController implements Initializable {
 
             loader.setLocation(SDMResourcesConstants.ITEMS_ANCHOR_PANE);
             itemsAnchorPane = loader.load();
+            return loader.getController();
+        }
+        catch (IOException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    public MessageGeneratorController createMessageGenerator()
+    {
+        try {
+            FXMLLoader loader = new FXMLLoader();
+
+            loader.setLocation(SDMResourcesConstants.MESSAGE_GENERATOR_ANCHOR_PANE);
+            messageAnchorPane = loader.load();
             return loader.getController();
         }
         catch (IOException e) {

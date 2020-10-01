@@ -7,6 +7,7 @@ import components.cart.CartController;
 import components.discount.AllDiscountsController;
 import components.item.ItemsController;
 import components.main.MainController;
+import components.message.MessageGeneratorController;
 import engine.Engine;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.SimpleBooleanProperty;
@@ -24,6 +25,7 @@ import javafx.scene.control.*;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.GridPane;
@@ -57,6 +59,7 @@ public class MakeOrderController implements Initializable {
     @FXML private Label locationLabel;
     @FXML private Label deliveryPriceLabel;
     @FXML private Label chooseItemLabel;
+    @FXML private Label chooseItemLabel2;
 
     @FXML private Button okButton;
     @FXML private Button checkoutButton;
@@ -74,6 +77,9 @@ public class MakeOrderController implements Initializable {
     @FXML private Label taskMessageLabel;
     @FXML private Label progressPercentLabel;
 
+    @FXML private ImageView questionImage;
+    @FXML private ImageView questionImageOrder;
+
     // Secondary Controllers:
     private MainController mainController;
 
@@ -88,6 +94,9 @@ public class MakeOrderController implements Initializable {
 
     private AllDiscountsController allDiscountsController;
     private AnchorPane  allDiscountAnchorPane;
+
+    private MessageGeneratorController messageGeneratorController;
+    private AnchorPane messageAnchorPane;
 
     private Engine engine;
 
@@ -177,6 +186,7 @@ public class MakeOrderController implements Initializable {
         datePicker.disableProperty().bind(okButtonIsClicked);
 
         chooseItemLabel.setVisible(false);
+        chooseItemLabel2.setVisible(false);
 
         okButton.disableProperty().bind(datePickerClicked.not().or(storeComboBoxClicked.not().and(dynamicOrderRadioButtonClicked.not())));
         checkoutButton.disableProperty().bind(itemsController.proceedToCheckoutProperty().not());
@@ -188,6 +198,11 @@ public class MakeOrderController implements Initializable {
 
         taskGridPane.setVisible(false);
         taskMessageLabel.textProperty().bind(taskMessageProperty);
+
+        Tooltip.install(questionImage, new Tooltip("Chose at least one item to continue"));
+        questionImage.setVisible(false);
+        Tooltip.install(questionImageOrder, new Tooltip("Static order - buy from one store\n" +
+                "Dynamic order - let SDM find the best price for you"));
     }
 
     public void setMainController(MainController mainController) {
@@ -257,6 +272,15 @@ public class MakeOrderController implements Initializable {
     void cancelButtonAction(ActionEvent event) {
         mainController.setInDynamicProcedure(false);
         mainController.getAnchorPaneRight().getChildren().clear();
+
+        messageGeneratorController = createMessageGenerator();
+        messageGeneratorController.setMessageLabelText("You decided to cancel your order");
+
+        mainController.getAnchorPaneRight().getChildren().add(messageAnchorPane);
+        AnchorPane.setTopAnchor(messageAnchorPane, 0.0);
+        AnchorPane.setBottomAnchor(messageAnchorPane, 0.0);
+        AnchorPane.setRightAnchor(messageAnchorPane, 0.0);
+        AnchorPane.setLeftAnchor(messageAnchorPane, 0.0);
     }
 
     @FXML
@@ -265,6 +289,8 @@ public class MakeOrderController implements Initializable {
         okButton.setVisible(false);
         checkoutButton.setVisible(true);
         chooseItemLabel.setVisible(true);
+        chooseItemLabel2.setVisible(true);
+        questionImage.setVisible(true);
 
         List<ItemDTO> itemList, dummyList;
         // Get the items list:
@@ -300,6 +326,7 @@ public class MakeOrderController implements Initializable {
         checkoutButton.setVisible(false);
         nextToDiscountButton.setVisible(true);
         nextToDiscountButton.setDisable(false);
+        questionImage.setVisible(false);
 
         // Collect data from controllers:
         date = datePicker.getValue();
@@ -453,6 +480,16 @@ public class MakeOrderController implements Initializable {
 
         mainController.setInDynamicProcedure(false);
         mainController.getAnchorPaneRight().getChildren().clear();
+
+        messageGeneratorController = createMessageGenerator();
+        messageGeneratorController.setMessageLabelText(String.format("Thank you %s for buying Super Duper Market",
+                customer.getName()));
+
+        mainController.getAnchorPaneRight().getChildren().add(messageAnchorPane);
+        AnchorPane.setTopAnchor(messageAnchorPane, 0.0);
+        AnchorPane.setBottomAnchor(messageAnchorPane, 0.0);
+        AnchorPane.setRightAnchor(messageAnchorPane, 0.0);
+        AnchorPane.setLeftAnchor(messageAnchorPane, 0.0);
     }
 
     public ItemsController createItemsController()
@@ -505,6 +542,21 @@ public class MakeOrderController implements Initializable {
 
             loader.setLocation(SDMResourcesConstants.ALL_DISCOUNT_ANCHOR_PANE);
             allDiscountAnchorPane = loader.load();
+            return loader.getController();
+        }
+        catch (IOException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    public MessageGeneratorController createMessageGenerator()
+    {
+        try {
+            FXMLLoader loader = new FXMLLoader();
+
+            loader.setLocation(SDMResourcesConstants.MESSAGE_GENERATOR_ANCHOR_PANE);
+            messageAnchorPane = loader.load();
             return loader.getController();
         }
         catch (IOException e) {

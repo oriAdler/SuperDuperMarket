@@ -1,4 +1,4 @@
-package sdm.customer;
+package sdm.user;
 
 import sdm.order.OrderStatic;
 
@@ -6,16 +6,19 @@ import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Customer {
+public class User {
+    static private int idCounter = 0;
     final private int id;
-    final private String name;
+    final private String name;  // name is unique
     final private Point location;
     final private List<Integer> ordersIdList;
     private double averageOrdersPrice;
     private double averageDeliveryPrice;
     private double averageItemsPrice;
+    //final private String type;
 
-    public Customer(int id, String name, Point location) {
+    //TODO: delete old constructor, type attribute
+    public User(int id, String name, Point location) {
         this.id = id;
         this.name = name;
         this.location = location;
@@ -23,6 +26,17 @@ public class Customer {
         averageOrdersPrice = 0;
         averageDeliveryPrice = 0;
         averageItemsPrice = 0;
+    }
+
+    public User(String name, Point location, String type) {
+        this.id = idCounter++;
+        this.name = name;
+        this.location = location;
+        this.ordersIdList = new ArrayList<>();
+        averageOrdersPrice = 0;
+        averageDeliveryPrice = 0;
+        averageItemsPrice = 0;
+        //this.type = type;
     }
 
     public int getId() {

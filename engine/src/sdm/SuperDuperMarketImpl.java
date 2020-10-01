@@ -4,7 +4,7 @@ import DTO.*;
 import engine.XmlFileHandler;
 import exception.invalidLocationException;
 import exception.invalidItemException;
-import sdm.customer.Customer;
+import sdm.user.User;
 import sdm.discount.Discount;
 import sdm.discount.Offer;
 import sdm.item.PurchaseCategory;
@@ -26,9 +26,9 @@ public class SuperDuperMarketImpl implements SuperDuperMarket {
     final private Map<Integer, Store> storeIdToStore;
     final private Map<Integer, Item> itemIdToItem;
     final private Map<Integer, OrderStatic> orderIdToOrder;
-    final private Map<Integer, Customer> customerIdToCustomer;
+    final private Map<Integer, User> customerIdToCustomer;
 
-    public SuperDuperMarketImpl(Map<Integer, Store> storeIdToStore, Map<Integer, Item> itemIdToItem, Map<Integer, Customer> customerIdToCustomer) {
+    public SuperDuperMarketImpl(Map<Integer, Store> storeIdToStore, Map<Integer, Item> itemIdToItem, Map<Integer, User> customerIdToCustomer) {
         this.storeIdToStore = storeIdToStore;
         this.itemIdToItem = itemIdToItem;
         this.customerIdToCustomer = customerIdToCustomer;
@@ -47,7 +47,7 @@ public class SuperDuperMarketImpl implements SuperDuperMarket {
         return orderIdToOrder;
     }
 
-    public Map<Integer, Customer> getCustomerIdToCustomer() {
+    public Map<Integer, User> getCustomerIdToCustomer() {
         return customerIdToCustomer;
     }
 
@@ -659,7 +659,7 @@ public class SuperDuperMarketImpl implements SuperDuperMarket {
         // Find customer max X coordinate:
         OptionalDouble customerMaxXCoordinateOD = customerIdToCustomer.values()
                 .stream()
-                .mapToDouble(customer->customer.getLocation().getX())
+                .mapToDouble(user -> user.getLocation().getX())
                 .max();
         customerMaxXCoordinate = customerMaxXCoordinateOD.isPresent() ? customerMaxXCoordinateOD.getAsDouble() : 0;
 
@@ -679,7 +679,7 @@ public class SuperDuperMarketImpl implements SuperDuperMarket {
         // Find customer max X coordinate:
         OptionalDouble customerMaxYCoordinateOD = customerIdToCustomer.values()
                 .stream()
-                .mapToDouble(customer->customer.getLocation().getY())
+                .mapToDouble(user -> user.getLocation().getY())
                 .max();
         customerMaxYCoordinate = customerMaxYCoordinateOD.isPresent() ? customerMaxYCoordinateOD.getAsDouble() : 0;
 
@@ -692,8 +692,8 @@ public class SuperDuperMarketImpl implements SuperDuperMarket {
                 return true;
             }
         }
-        for(Customer customer : customerIdToCustomer.values()){
-            if(newLocation.equals(customer.getLocation())){
+        for(User user : customerIdToCustomer.values()){
+            if(newLocation.equals(user.getLocation())){
                 return true;
             }
         }

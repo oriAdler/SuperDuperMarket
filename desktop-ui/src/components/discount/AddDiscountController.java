@@ -4,23 +4,24 @@ import DTO.ItemDTO;
 import DTO.OfferDTO;
 import DTO.StoreDTO;
 import common.Input;
+import common.SDMResourcesConstants;
 import components.main.MainController;
+import components.message.MessageGeneratorController;
 import engine.Engine;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
-import javafx.scene.control.Button;
-import javafx.scene.control.ComboBox;
-import javafx.scene.control.Label;
-import javafx.scene.control.TableColumn;
-import javafx.scene.control.TableView;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.control.cell.TextFieldTableCell;
+import javafx.scene.image.ImageView;
+import javafx.scene.layout.AnchorPane;
 
+import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
@@ -43,9 +44,14 @@ public class AddDiscountController implements Initializable {
     @FXML private TextField amountTextField;
     @FXML private ComboBox<String> discountComboBox;
     @FXML private Label addItemLabel;
+    @FXML private Label addItemLabel2;
+    @FXML private ImageView questionImage;
 
     private MainController mainController;
     private Engine engine;
+
+    private MessageGeneratorController messageGeneratorController;
+    private AnchorPane messageAnchorPane;
 
     private SimpleBooleanProperty isOfferItemsChosen;
     private SimpleBooleanProperty discountTextFieldIsValid;
@@ -80,6 +86,9 @@ public class AddDiscountController implements Initializable {
         priceColumn.setVisible(false);
 
         addItemLabel.setVisible(false);
+        addItemLabel2.setVisible(false);
+
+        Tooltip.install(questionImage, new Tooltip("Fill all details & chose at least one item"));
     }
 
     @FXML
@@ -111,6 +120,15 @@ public class AddDiscountController implements Initializable {
 
         mainController.setInDynamicProcedure(false);
         mainController.getAnchorPaneRight().getChildren().clear();
+
+        messageGeneratorController = createMessageGenerator();
+        messageGeneratorController.setMessageLabelText(String.format("Discount '%s' was added to Super Duper Market", discountName));
+
+        mainController.getAnchorPaneRight().getChildren().add(messageAnchorPane);
+        AnchorPane.setTopAnchor(messageAnchorPane, 0.0);
+        AnchorPane.setBottomAnchor(messageAnchorPane, 0.0);
+        AnchorPane.setRightAnchor(messageAnchorPane, 0.0);
+        AnchorPane.setLeftAnchor(messageAnchorPane, 0.0);
     }
 
     @FXML
@@ -256,9 +274,25 @@ public class AddDiscountController implements Initializable {
 
         discountComboBox.setOnAction(event -> {
             addItemLabel.setVisible(true);
+            addItemLabel2.setVisible(true);
             amountColumn.setVisible(true);
             priceColumn.setVisible(true);
             storeTableView.setEditable(true);
         });
+    }
+
+    public MessageGeneratorController createMessageGenerator()
+    {
+        try {
+            FXMLLoader loader = new FXMLLoader();
+
+            loader.setLocation(SDMResourcesConstants.MESSAGE_GENERATOR_ANCHOR_PANE);
+            messageAnchorPane = loader.load();
+            return loader.getController();
+        }
+        catch (IOException e) {
+            e.printStackTrace();
+            return null;
+        }
     }
 }

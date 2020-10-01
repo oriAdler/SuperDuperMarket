@@ -4,22 +4,18 @@ import DTO.CustomerDTO;
 import DTO.ItemDTO;
 import DTO.OrderDTO;
 import DTO.StoreDTO;
-import exception.DatFileException;
 import jaxb.schema.generated.*;
 import sdm.SuperDuperMarket;
 import sdm.SuperDuperMarketImpl;
-import sdm.customer.Customer;
+import sdm.user.User;
 import sdm.discount.Discount;
 import sdm.discount.Offer;
-import sdm.discount.Operator;
 import sdm.item.Item;
 import sdm.order.OrderDynamic;
 import sdm.order.OrderStatic;
 import sdm.store.Store;
 
 import java.awt.*;
-import java.io.IOException;
-import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -95,13 +91,13 @@ public class EngineImpl implements Engine{
     public List<CustomerDTO> getAllCustomersList() {
         List<CustomerDTO> customerDTOList = new ArrayList<>();
         superDuperMarketImpl.getCustomerIdToCustomer()
-                .forEach((id, customer) -> customerDTOList.add(new CustomerDTO(id,
-                        customer.getName(),
-                        customer.getLocation().x,
-                        customer.getLocation().y,
-                        customer.getOrdersIdList().size(),
-                        customer.getAverageItemsPrice(),
-                        customer.getAverageDeliveryPrice())));
+                .forEach((id, user) -> customerDTOList.add(new CustomerDTO(id,
+                        user.getName(),
+                        user.getLocation().x,
+                        user.getLocation().y,
+                        user.getOrdersIdList().size(),
+                        user.getAverageItemsPrice(),
+                        user.getAverageDeliveryPrice())));
         return customerDTOList;
     }
 
@@ -164,10 +160,10 @@ public class EngineImpl implements Engine{
                     new Point(store.getLocation().getX(), store.getLocation().getY()), store.getDeliveryPpk(), discountList));
         }
         // Convert customers list:
-        Map<Integer, Customer> customerIdToCustomer = new HashMap<>();
+        Map<Integer, User> customerIdToCustomer = new HashMap<>();
         List<SDMCustomer> SDMCustomerList = superDuperMarketDescriptor.getSDMCustomers().getSDMCustomer();
         for(SDMCustomer customer : SDMCustomerList){
-            customerIdToCustomer.put(customer.getId(), new Customer(customer.getId(), customer.getName().trim(),
+            customerIdToCustomer.put(customer.getId(), new User(customer.getId(), customer.getName().trim(),
                     new Point(customer.getLocation().getX(), customer.getLocation().getY())));
         }
 

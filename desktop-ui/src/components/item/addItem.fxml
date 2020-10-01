@@ -22,13 +22,15 @@
             <ColumnConstraints hgrow="NEVER" maxWidth="195.0" minWidth="74.0" prefWidth="189.0" />
             <ColumnConstraints hgrow="NEVER" maxWidth="300.0" minWidth="27.0" prefWidth="33.0" />
             <ColumnConstraints hgrow="ALWAYS" maxWidth="1.7976931348623157E308" minWidth="119.0" prefWidth="119.0" />
-            <ColumnConstraints hgrow="ALWAYS" maxWidth="344.0" minWidth="22.0" prefWidth="22.0" />
+            <ColumnConstraints hgrow="ALWAYS" maxWidth="344.0" minWidth="22.0" prefWidth="35.0" />
+            <ColumnConstraints hgrow="NEVER" maxWidth="344.0" minWidth="33.0" prefWidth="33.0" />
             <ColumnConstraints hgrow="NEVER" maxWidth="344.0" minWidth="107.0" prefWidth="107.0" />
             <ColumnConstraints hgrow="NEVER" maxWidth="288.0" minWidth="99.0" prefWidth="99.0" />
             <ColumnConstraints hgrow="NEVER" maxWidth="288.0" minWidth="0.0" prefWidth="0.0" />
         </columnConstraints>
         <rowConstraints>
           <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="NEVER" />
+            <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="NEVER" />
             <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="NEVER" />
             <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="NEVER" />
             <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="NEVER" />
@@ -65,12 +67,12 @@
                </padding>
             </Label>
             <ComboBox fx:id="purchaseComboBox" minHeight="31.0" minWidth="171.0" prefHeight="31.0" prefWidth="171.0" promptText="Purchase method" GridPane.columnIndex="1" GridPane.rowIndex="2" />
-            <Button fx:id="cancelButton" maxHeight="30.0" maxWidth="90.0" minHeight="30.0" minWidth="90.0" mnemonicParsing="false" onAction="#cancelButtonAction" prefHeight="30.0" prefWidth="90.0" text="Cancel" GridPane.columnIndex="6" GridPane.rowIndex="7">
+            <Button fx:id="cancelButton" maxHeight="30.0" maxWidth="90.0" minHeight="30.0" minWidth="90.0" mnemonicParsing="false" onAction="#cancelButtonAction" prefHeight="30.0" prefWidth="90.0" text="Cancel" GridPane.columnIndex="7" GridPane.rowIndex="8">
                <GridPane.margin>
                   <Insets bottom="10.0" left="5.0" right="20.0" top="10.0" />
                </GridPane.margin>
             </Button>
-            <Button fx:id="okButton" maxHeight="30.0" maxWidth="90.0" minHeight="30.0" minWidth="90.0" mnemonicParsing="false" onAction="#okButtonAction" prefHeight="30.0" prefWidth="90.0" text="Ok" GridPane.columnIndex="5" GridPane.rowIndex="7">
+            <Button fx:id="okButton" maxHeight="30.0" maxWidth="90.0" minHeight="30.0" minWidth="90.0" mnemonicParsing="false" onAction="#okButtonAction" prefHeight="30.0" prefWidth="90.0" text="Ok" GridPane.columnIndex="6" GridPane.rowIndex="8">
                <GridPane.margin>
                   <Insets bottom="10.0" left="20.0" right="10.0" top="10.0" />
                </GridPane.margin>
@@ -107,7 +109,7 @@
                   <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
                </GridPane.margin>
             </Label>
-            <Label text="Add a number to the price column in order to add the item to the store" GridPane.columnSpan="5" GridPane.rowIndex="4">
+            <Label text="1. Click on store's row to chose store" GridPane.columnSpan="6" GridPane.rowIndex="4">
                <GridPane.margin>
                   <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
                </GridPane.margin>
@@ -115,17 +117,30 @@
                   <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
                </padding>
             </Label>
-            <TableView fx:id="storeTableView" prefHeight="200.0" prefWidth="200.0" GridPane.columnSpan="4" GridPane.rowIndex="5" GridPane.rowSpan="2">
+            <TableView fx:id="storeTableView" prefHeight="200.0" prefWidth="200.0" GridPane.columnSpan="4" GridPane.rowIndex="6" GridPane.rowSpan="2">
               <columns>
                 <TableColumn fx:id="storeColumn" prefWidth="258.0" text="Store" />
                 <TableColumn fx:id="priceColumn" onEditCommit="#priceColumnOnEditCommit" prefWidth="223.0" text="Price" />
               </columns>
             </TableView>
-            <ImageView fitHeight="135.0" fitWidth="158.0" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="5" GridPane.rowIndex="2">
+            <ImageView fitHeight="135.0" fitWidth="158.0" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="6" GridPane.rowIndex="2">
                <image>
                   <Image url="@../../image/addItemPicture.png" />
                </image>
             </ImageView>
+            <ImageView fx:id="questionImage" fitHeight="30.0" fitWidth="30.0" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="5" GridPane.rowIndex="8">
+               <image>
+                  <Image url="@../../image/questionMark.png" />
+               </image>
+            </ImageView>
+            <Label text="2. Double click on price column -&gt; type price -&gt; press enter" GridPane.columnSpan="5" GridPane.rowIndex="5">
+               <GridPane.margin>
+                  <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+               </GridPane.margin>
+               <padding>
+                  <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+               </padding>
+            </Label>
          </children>
       </GridPane>
    </children>
