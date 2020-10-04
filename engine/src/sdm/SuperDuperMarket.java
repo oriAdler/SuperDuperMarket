@@ -1,10 +1,6 @@
 package sdm;
 
-import DTO.CartDTO;
-import DTO.DiscountDTO;
-import DTO.ItemDTO;
-import DTO.OfferDTO;
-import sdm.discount.Discount;
+import DTO.*;
 import sdm.item.PurchaseCategory;
 import sdm.order.OrderStatic;
 
@@ -30,15 +26,15 @@ public interface SuperDuperMarket {
     void updateItemPriceInStore(int storeId, int itemId, int itemNewPrice);
 
     void executeStaticOrder(CartDTO cart, LocalDate date, int customerId);
-    void executeDynamicOrder(List<CartDTO> cartList, LocalDate orderDate, Integer customerId);
-    CartDTO summarizeStaticOrder(Map<Integer, Double> itemsMap, List<OfferDTO> offersToAddToCart, int storeId, Integer customerId);
-    List<CartDTO> summarizeDynamicOrder(Map<Integer, Double> itemsMap, List<OfferDTO> offersToAddToCart, Integer customerId);
+    void executeDynamicOrder(List<CartDTO> cartList, LocalDate orderDate, Integer customerId, Point customerLocation);
+    CartDTO summarizeStaticOrder(Map<Integer, Double> itemsMap, List<OfferDTO> offersToAddToCart, int storeId, Integer customerId, Point customerLocation);
+    List<CartDTO> summarizeDynamicOrder(Map<Integer, Double> itemsMap, List<OfferDTO> offersToAddToCart, Integer customerId, Point customerLocation);
     List<CartDTO> getDetailedOrder(Integer orderId);
 
     void addOrdersFromFileToSDM(Map<Integer, OrderStatic> orderIdToOrder);
-    void calculateDeliveryPrice(Integer storeId, Integer customerId, Consumer<Double> deliveryPrice);
-    Double calculateDeliveryPrice(Integer storeId, Integer customerId);
-    Double calculateDistanceStoreToCustomer(Integer storeId, Integer customerId);
+    void calculateDeliveryPrice(Integer storeId, Integer customerId, Point customerLocation, Consumer<Double> deliveryPrice);
+    Double calculateDeliveryPrice(Integer storeId, Integer customerId, Point customerLocation);
+    Double calculateDistanceStoreToCustomer(Integer storeId, Integer customerId, Point customerLocation);
 
     List<DiscountDTO> getStoreDiscounts(Integer storeId);
     List<DiscountDTO> getStoreDiscounts(Map <Integer, Double> itemIdToAmount, Integer storeId);
@@ -57,4 +53,8 @@ public interface SuperDuperMarket {
     boolean isDiscountNameExist(String discountName);
     void addDiscountToStore(int storeId, String discountName, int itemId, double itemAmount,
                             String discountType, List<OfferDTO> offerDTOList);
+
+    List<StoreDTO> getAllStoreList();
+    List<ItemDTO> getAllItemList();
+    List<OrderDTO> getOrdersHistory();
 }

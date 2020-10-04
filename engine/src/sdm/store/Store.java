@@ -19,6 +19,7 @@ public class Store implements Serializable {
     private final List<Integer> orders;
     private double totalDeliveryIncome;
     private final List<Discount> discounts;
+    //TODO: store owner, feedbacks
 
     public Store(int id, String name, Map<Integer, Integer> itemIdToPrice, Point location,
                  double PPK, List<Discount> discounts) {

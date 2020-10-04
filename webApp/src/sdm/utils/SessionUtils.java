@@ -12,4 +12,10 @@ public class SessionUtils {
         Object sessionAttribute = session != null ? session.getAttribute(Constants.USERNAME) : null;
         return sessionAttribute != null ? sessionAttribute.toString() : null;
     }
+
+    public static String getUserType(HttpServletRequest request){
+        HttpSession session = request.getSession(false);
+        Object sessionAttribute = session != null ? session.getAttribute(Constants.USER_TYPE) : null;
+        return sessionAttribute != null ? sessionAttribute.toString() : null;
+    }
 }

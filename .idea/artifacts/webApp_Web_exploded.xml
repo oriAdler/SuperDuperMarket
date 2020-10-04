@@ -10,6 +10,7 @@
         <element id="directory" name="lib">
           <element id="artifact" artifact-name="DTO:jar" />
           <element id="artifact" artifact-name="engine:jar" />
+          <element id="file-copy" path="$PROJECT_DIR$/webApp/web/WEB-INF/lib/gson-2.1.jar" />
         </element>
       </element>
     </root>

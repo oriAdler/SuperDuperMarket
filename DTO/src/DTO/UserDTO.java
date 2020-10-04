@@ -1,23 +1,20 @@
 package DTO;
 
-public class CustomerDTO implements LocationDTO{
+public class UserDTO implements LocationDTO{
     final private int id;
     final private String name;
-    final private int xLocation;
-    final private int yLocation;
     final private int numberOfOrders;
     final private double averageItemsPrice;
     final private double averageDeliveryPrice;
+    final private String type;
 
-    public CustomerDTO(int id, String name, int xLocation, int yLocation,
-                       int numberOfOrders, double averageItemsPrice, double averageDeliveryPrice) {
+    public UserDTO(int id, String name, int numberOfOrders, double averageItemsPrice, double averageDeliveryPrice, String type) {
         this.id = id;
         this.name = name;
-        this.xLocation = xLocation;
-        this.yLocation = yLocation;
         this.numberOfOrders = numberOfOrders;
         this.averageItemsPrice = averageItemsPrice;
         this.averageDeliveryPrice = averageDeliveryPrice;
+        this.type = type;
     }
 
     public int getId() {
@@ -26,14 +23,6 @@ public class CustomerDTO implements LocationDTO{
 
     public String getName() {
         return name;
-    }
-
-    public int getXLocation() {
-        return xLocation;
-    }
-
-    public int getYLocation() {
-        return yLocation;
     }
 
     public int getNumberOfOrders() {

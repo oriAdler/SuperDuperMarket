@@ -20,6 +20,7 @@ public class OrderStatic implements Serializable {
     final private List<Item> itemList;
     final private int customerId;
     private CartDTO cart;
+    //TODO: customer name & location
 
     public OrderStatic(LocalDate date, int storeId, String storeName, int numOfItems, double itemsPrice,
                        double deliveryPrice, double totalOrderPrice, boolean advanceId,

@@ -35,18 +35,36 @@ public class XmlFileHandler {
         }
     }
 
+    public static SuperDuperMarketDescriptor generateJaxbClasses(InputStream fileInputStream){
+//        if(!pathName.toUpperCase().endsWith(XML_FILE_SUFFIX.toUpperCase())){
+//            throw new XmlFileException("File not loaded successfully: file is not a valid xml file");
+//        }
+//        else{
+            try {
+                //InputStream inputStream = new FileInputStream(new File(pathName));
+                return deserializeFrom(fileInputStream);
+//            } catch (FileNotFoundException e) {
+//                throw new XmlFileException("File not loaded successfully: file was not found");
+            } catch (JAXBException e){
+                throw new XmlFileException("File not loaded successfully: A JAXB error has occurred");
+            }
+        //}
+    }
+
     public static void checkValidXmlFile(SuperDuperMarketDescriptor SDMDescriptor){
         checkTwoItemsWithIdenticalId(SDMDescriptor.getSDMItems().getSDMItem());
         checkTwoStoresWithIdenticalId((SDMDescriptor.getSDMStores().getSDMStore()));
         checkAllReferencedItemsExist(SDMDescriptor.getSDMItems().getSDMItem(), SDMDescriptor.getSDMStores().getSDMStore());
         checkEveryItemIsReferencedByStore(SDMDescriptor.getSDMItems().getSDMItem(), SDMDescriptor.getSDMStores().getSDMStore());
         checkItemIsDefinedTwiceInStore(SDMDescriptor.getSDMStores().getSDMStore());
+
+        checkTwoStoresWithIdenticalLocation(SDMDescriptor.getSDMStores().getSDMStore());
         checkAllStoresInRange(SDMDescriptor.getSDMStores().getSDMStore());
 
-        checkTwoCustomersWithIdenticalId(SDMDescriptor.getSDMCustomers().getSDMCustomer());
-        checkAllCustomersInRange(SDMDescriptor.getSDMCustomers().getSDMCustomer());
+        //checkTwoCustomersWithIdenticalId(SDMDescriptor.getSDMCustomers().getSDMCustomer());
+        //checkAllCustomersInRange(SDMDescriptor.getSDMCustomers().getSDMCustomer());
 
-        checkTwoObjectsWithIdenticalLocation(SDMDescriptor.getSDMStores().getSDMStore(), SDMDescriptor.getSDMCustomers().getSDMCustomer());
+        //checkTwoObjectsWithIdenticalLocation(SDMDescriptor.getSDMStores().getSDMStore(), SDMDescriptor.getSDMCustomers().getSDMCustomer());
         checkAllDiscountsAreValid(SDMDescriptor.getSDMStores().getSDMStore(), SDMDescriptor.getSDMItems().getSDMItem());
     }
 
@@ -158,27 +176,27 @@ public class XmlFileHandler {
         }
     }
 
-    private static void checkTwoCustomersWithIdenticalId(List <SDMCustomer> customersList){
-        // Find duplicates via a dummy set:
-        Set<Integer> dummySet  = new HashSet<>();
-        Set<SDMCustomer> duplicateSet = customersList
-                .stream()
-                .filter(customer -> !dummySet.add(customer.getId()))
-                .collect(Collectors.toSet());
-        // If duplicates were found, generate an adequate exception:
-        if(!duplicateSet.isEmpty()){
-            // Get some duplicates id:
-            int duplicatedId = duplicateSet.iterator().next().getId();
-            List<SDMCustomer> duplicatedList = customersList
-                    .stream()
-                    .filter(customer->customer.getId()==duplicatedId)
-                    .collect(Collectors.toList());
-            throw new twoObjectsWithSameIdException(
-                    "customers", duplicatedList.get(0).getName(), duplicatedList.get(1).getName(), duplicatedId);
-        }
-    }
+//    private static void checkTwoCustomersWithIdenticalId(List <SDMCustomer> customersList){
+//        // Find duplicates via a dummy set:
+//        Set<Integer> dummySet  = new HashSet<>();
+//        Set<SDMCustomer> duplicateSet = customersList
+//                .stream()
+//                .filter(customer -> !dummySet.add(customer.getId()))
+//                .collect(Collectors.toSet());
+//        // If duplicates were found, generate an adequate exception:
+//        if(!duplicateSet.isEmpty()){
+//            // Get some duplicates id:
+//            int duplicatedId = duplicateSet.iterator().next().getId();
+//            List<SDMCustomer> duplicatedList = customersList
+//                    .stream()
+//                    .filter(customer->customer.getId()==duplicatedId)
+//                    .collect(Collectors.toList());
+//            throw new twoObjectsWithSameIdException(
+//                    "customers", duplicatedList.get(0).getName(), duplicatedList.get(1).getName(), duplicatedId);
+//        }
+//    }
 
-    private static void checkTwoObjectsWithIdenticalLocation(List<SDMStore> storesList, List<SDMCustomer> customersList) {
+        private static void checkTwoStoresWithIdenticalLocation(List<SDMStore> storesList) {
         // Find duplicates via dummy set:
         Set<Point> dummySet = new HashSet<>();
         // Find duplicates among stores:
@@ -189,29 +207,49 @@ public class XmlFileHandler {
                 .map(store->
                         new Point(store.getLocation().getX(), store.getLocation().getY()))
                 .collect(Collectors.toSet());
-        // Find duplicates among customers:
-        duplicateSet.addAll(customersList.
-                stream().filter(customer->!dummySet.add(
-                        new Point(customer.getLocation().getX(), customer.getLocation().getY())))
-                .map(customer->
-                        new Point(customer.getLocation().getX(), customer.getLocation().getY()))
-                .collect(Collectors.toSet()));
+
         if(!duplicateSet.isEmpty()){
             Point duplicatedLocation = duplicateSet.iterator().next();
             throw new invalidLocationException(
-                    String.format("Invalid File: Location [%.0f,%.0f] is inhibited by more than one customer/store",
+                    String.format("Invalid File: Location [%.0f,%.0f] is inhibited by more than one store",
                             duplicatedLocation.getX(), duplicatedLocation.getY()));
         }
     }
 
-    private static void checkAllCustomersInRange(List<SDMCustomer> customerList){
-        for(SDMCustomer customer : customerList){
-            if(!inRange(new Point(customer.getLocation().getX(), customer.getLocation().getY()))){
-                throw new ObjectNotInRangeException(customer.getName(),
-                        new Point(customer.getLocation().getX(), customer.getLocation().getY()));
-            }
-        }
-    }
+//    private static void checkTwoObjectsWithIdenticalLocation(List<SDMStore> storesList, List<SDMCustomer> customersList) {
+//        // Find duplicates via dummy set:
+//        Set<Point> dummySet = new HashSet<>();
+//        // Find duplicates among stores:
+//        Set<Point> duplicateSet = storesList
+//                .stream()
+//                .filter(store->!dummySet.add(
+//                        new Point(store.getLocation().getX(), store.getLocation().getY())))
+//                .map(store->
+//                        new Point(store.getLocation().getX(), store.getLocation().getY()))
+//                .collect(Collectors.toSet());
+//        // Find duplicates among customers:
+//        duplicateSet.addAll(customersList.
+//                stream().filter(customer->!dummySet.add(
+//                        new Point(customer.getLocation().getX(), customer.getLocation().getY())))
+//                .map(customer->
+//                        new Point(customer.getLocation().getX(), customer.getLocation().getY()))
+//                .collect(Collectors.toSet()));
+//        if(!duplicateSet.isEmpty()){
+//            Point duplicatedLocation = duplicateSet.iterator().next();
+//            throw new invalidLocationException(
+//                    String.format("Invalid File: Location [%.0f,%.0f] is inhibited by more than one customer/store",
+//                            duplicatedLocation.getX(), duplicatedLocation.getY()));
+//        }
+//    }
+
+//    private static void checkAllCustomersInRange(List<SDMCustomer> customerList){
+//        for(SDMCustomer customer : customerList){
+//            if(!inRange(new Point(customer.getLocation().getX(), customer.getLocation().getY()))){
+//                throw new ObjectNotInRangeException(customer.getName(),
+//                        new Point(customer.getLocation().getX(), customer.getLocation().getY()));
+//            }
+//        }
+//    }
 
     private static void checkAllDiscountsAreValid(List<SDMStore> storeList, List<SDMItem> itemsList){
         List<Integer> discountItemsIdList = new ArrayList<>();

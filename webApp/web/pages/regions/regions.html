@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <title>Stores regions</title>
+    <script src="../../common/jquery-2.0.3.min.js"></script>
+    <script src="../../common/context-path-helper.js"></script>
+    <script src="regions.js"></script>
+</head>
+<body>
+    <h1>Page 2</h1>
+    <div>
+        <h4>Online</h4>
+        <ul id="usersList">
+        </ul>
+    </div>
+
+    <form id="uploadForm" action="/upload" enctype="multipart/form-data" method="POST">
+        Enter file:
+        <br>
+        <input type="file" name="file" required><br>
+        <br>
+        Region Name:
+        <input name="name" required><br>
+        <br>
+        <input type="Submit" value="Upload File"><br>
+    </form>
+    <div id="result">
+    </div>
+</body>
+</html>

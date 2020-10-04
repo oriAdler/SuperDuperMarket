@@ -4,7 +4,7 @@ import DTO.*;
 import engine.XmlFileHandler;
 import exception.invalidLocationException;
 import exception.invalidItemException;
-import sdm.user.User;
+import engine.users.Customer;
 import sdm.discount.Discount;
 import sdm.discount.Offer;
 import sdm.item.PurchaseCategory;
@@ -26,12 +26,12 @@ public class SuperDuperMarketImpl implements SuperDuperMarket {
     final private Map<Integer, Store> storeIdToStore;
     final private Map<Integer, Item> itemIdToItem;
     final private Map<Integer, OrderStatic> orderIdToOrder;
-    final private Map<Integer, User> customerIdToCustomer;
+    //TODO: erase 'customerIdToCustomer' and update relevant code.
+    private Map<Integer, Customer> customerIdToCustomer;
 
-    public SuperDuperMarketImpl(Map<Integer, Store> storeIdToStore, Map<Integer, Item> itemIdToItem, Map<Integer, User> customerIdToCustomer) {
+    public SuperDuperMarketImpl(Map<Integer, Store> storeIdToStore, Map<Integer, Item> itemIdToItem) {
         this.storeIdToStore = storeIdToStore;
         this.itemIdToItem = itemIdToItem;
-        this.customerIdToCustomer = customerIdToCustomer;
         this.orderIdToOrder = new HashMap<>();
     }
 
@@ -47,9 +47,9 @@ public class SuperDuperMarketImpl implements SuperDuperMarket {
         return orderIdToOrder;
     }
 
-    public Map<Integer, User> getCustomerIdToCustomer() {
-        return customerIdToCustomer;
-    }
+//    public Map<Integer, User> getCustomerIdToCustomer() {
+//        return customerIdToCustomer;
+//    }
 
     public int getNumOfSellersById(int id){
         return (int) storeIdToStore
@@ -256,7 +256,7 @@ public class SuperDuperMarketImpl implements SuperDuperMarket {
     }
 
     @Override
-    public void executeDynamicOrder(List<CartDTO> cartList, LocalDate date, Integer customerId) {
+    public void executeDynamicOrder(List<CartDTO> cartList, LocalDate date, Integer customerId, Point customerLocation) {
         //Get all id's of all stores participating in order:
         Set<Integer> storesIdSet = cartList
                 .stream()
@@ -268,7 +268,7 @@ public class SuperDuperMarketImpl implements SuperDuperMarket {
         cartList.forEach(cart-> {
             Integer storeId = cart.getStoreId();
             Store store = storeIdToStore.get(storeId);
-            double deliveryPrice = store.calculateDeliveryPrice(customerIdToCustomer.get(customerId).getLocation());
+            double deliveryPrice = store.calculateDeliveryPrice(customerLocation);
             double itemsPrice = calculateItemsPriceFromStoreInCart(cart, storeId);
 
             OrderStatic orderStatic = new OrderStatic(date, storeId,
@@ -347,7 +347,7 @@ public class SuperDuperMarketImpl implements SuperDuperMarket {
 
     @Override
     public CartDTO summarizeStaticOrder(Map<Integer, Double> itemsToAddToCart, List<OfferDTO> offersToAddToCart,
-                                        int storeId, Integer customerId) {
+                                        int storeId, Integer customerId, Point customerLocation) {
         List<ItemExtendedDTO> itemExtendedDTOList = new ArrayList<>();
         Store store = storeIdToStore.get(storeId);
 
@@ -355,7 +355,7 @@ public class SuperDuperMarketImpl implements SuperDuperMarket {
                 itemId,
                 itemIdToItem.get(itemId).getName(),
                 itemIdToItem.get(itemId).getPurchaseCategory().toString(),
-                0, // Number of sellers has no meaning and therefor get an arbitrary number.
+                0, // Number of sellers has no meaning and there for get an arbitrary number.
                 store.getItemIdToPrice().get(itemId),
                 amount,
                 store.getName(),
@@ -376,15 +376,15 @@ public class SuperDuperMarketImpl implements SuperDuperMarket {
         }
 
         return new CartDTO(itemExtendedDTOList,
-                store.calculateDistanceFromStoreToCustomer(customerIdToCustomer.get(customerId).getLocation()),
+                store.calculateDistanceFromStoreToCustomer(customerLocation),
                 store.getPPK(),
-                store.calculateDeliveryPrice(customerIdToCustomer.get(customerId).getLocation()), storeId, store.getName(),
+                store.calculateDeliveryPrice(customerLocation), storeId, store.getName(),
                 store.getLocation().x, store.getLocation().y);
     }
 
     @Override
     public List<CartDTO> summarizeDynamicOrder(Map<Integer, Double> itemsToAddToCart, List<OfferDTO> offersToAddToCart,
-                                               Integer customerId) {
+                                               Integer customerId, Point customerLocation) {
         List<CartDTO> cartDTOList = new ArrayList<>();
         List<ItemExtendedDTO> itemExtendedDTOList = new ArrayList<>();
 
@@ -426,9 +426,9 @@ public class SuperDuperMarketImpl implements SuperDuperMarket {
                 Store currentStore = storeIdToStore.get(storeId);
 
                 cartDTOList.add(new CartDTO(currentStoreItems,
-                        calculateDistanceStoreToCustomer(storeId, customerId),
+                        calculateDistanceStoreToCustomer(storeId, customerId, customerLocation),
                         currentStore.getPPK(),
-                        calculateDeliveryPrice(storeId, customerId), storeId,
+                        calculateDeliveryPrice(storeId, customerId, customerLocation), storeId,
                         currentStore.getName(),
                         currentStore.getLocation().x,
                         currentStore.getLocation().y));
@@ -491,18 +491,18 @@ public class SuperDuperMarketImpl implements SuperDuperMarket {
     }
 
     @Override
-    public void calculateDeliveryPrice(Integer storeId, Integer customerId, Consumer<Double> deliveryPrice) {
-        deliveryPrice.accept(storeIdToStore.get(storeId).calculateDeliveryPrice(customerIdToCustomer.get(customerId).getLocation()));
+    public void calculateDeliveryPrice(Integer storeId, Integer customerId, Point customerLocation, Consumer<Double> deliveryPrice) {
+        deliveryPrice.accept(storeIdToStore.get(storeId).calculateDeliveryPrice(customerLocation));
     }
 
-    public Double calculateDeliveryPrice(Integer storeId, Integer customerId){
+    public Double calculateDeliveryPrice(Integer storeId, Integer customerId, Point customerLocation){
         return storeIdToStore.get(storeId)
-                .calculateDeliveryPrice(customerIdToCustomer.get(customerId).getLocation());
+                .calculateDeliveryPrice(customerLocation);
     }
 
-    public Double calculateDistanceStoreToCustomer(Integer storeId, Integer customerId){
+    public Double calculateDistanceStoreToCustomer(Integer storeId, Integer customerId, Point customerLocation){
         return this.storeIdToStore.get(storeId)
-                .calculateDistanceFromStoreToCustomer(customerIdToCustomer.get(customerId).getLocation());
+                .calculateDistanceFromStoreToCustomer(customerLocation);
     }
 
     // Gets an order number and returns a list of 'CartDTO' objects representing the order.
@@ -656,14 +656,16 @@ public class SuperDuperMarketImpl implements SuperDuperMarket {
                 .max();
         storeMaxXCoordinate = storeMaxXCoordinateOD.isPresent() ? storeMaxXCoordinateOD.getAsDouble() : 0;
 
-        // Find customer max X coordinate:
-        OptionalDouble customerMaxXCoordinateOD = customerIdToCustomer.values()
-                .stream()
-                .mapToDouble(user -> user.getLocation().getX())
-                .max();
-        customerMaxXCoordinate = customerMaxXCoordinateOD.isPresent() ? customerMaxXCoordinateOD.getAsDouble() : 0;
+        return storeMaxXCoordinate;
 
-        return Math.max(storeMaxXCoordinate, customerMaxXCoordinate);
+//        // Find customer max X coordinate:
+//        OptionalDouble customerMaxXCoordinateOD = customerIdToCustomer.values()
+//                .stream()
+//                .mapToDouble(customer -> customer.getLocation().getX())
+//                .max();
+//        customerMaxXCoordinate = customerMaxXCoordinateOD.isPresent() ? customerMaxXCoordinateOD.getAsDouble() : 0;
+
+        //return Math.max(storeMaxXCoordinate, customerMaxXCoordinate);
     }
 
     public double findMaxYCoordinate(){
@@ -676,14 +678,16 @@ public class SuperDuperMarketImpl implements SuperDuperMarket {
                 .max();
         storeMaxYCoordinate = storeMaxYCoordinateOD.isPresent() ? storeMaxYCoordinateOD.getAsDouble() : 0;
 
-        // Find customer max X coordinate:
-        OptionalDouble customerMaxYCoordinateOD = customerIdToCustomer.values()
-                .stream()
-                .mapToDouble(user -> user.getLocation().getY())
-                .max();
-        customerMaxYCoordinate = customerMaxYCoordinateOD.isPresent() ? customerMaxYCoordinateOD.getAsDouble() : 0;
+        return storeMaxYCoordinate;
 
-        return Math.max(storeMaxYCoordinate, customerMaxYCoordinate);
+//        // Find customer max Y coordinate:
+//        OptionalDouble customerMaxYCoordinateOD = customerIdToCustomer.values()
+//                .stream()
+//                .mapToDouble(customer -> customer.getLocation().getY())
+//                .max();
+//        customerMaxYCoordinate = customerMaxYCoordinateOD.isPresent() ? customerMaxYCoordinateOD.getAsDouble() : 0;
+//
+//        return Math.max(storeMaxYCoordinate, customerMaxYCoordinate);
     }
 
     public boolean isLocationOccupied(Point newLocation){
@@ -692,11 +696,11 @@ public class SuperDuperMarketImpl implements SuperDuperMarket {
                 return true;
             }
         }
-        for(User user : customerIdToCustomer.values()){
-            if(newLocation.equals(user.getLocation())){
-                return true;
-            }
-        }
+//        for(Customer customer : customerIdToCustomer.values()){
+//            if(newLocation.equals(customer.getLocation())){
+//                return true;
+//            }
+//        }
 
         return false;
     }
@@ -750,5 +754,72 @@ public class SuperDuperMarketImpl implements SuperDuperMarket {
                 offerDTO.getPrice())));
 
         return offerList;
+    }
+
+    @Override
+    public List<StoreDTO> getAllStoreList() {
+        List<StoreDTO> storesDTOList = new ArrayList<>();
+        storeIdToStore.forEach((id, store) -> storesDTOList.add(new StoreDTO(id,
+                        store.getName(),
+                        this.getItemsSoldByStore(store),
+                        this.getStoreOrdersList(id),
+                        store.getLocation().x,
+                        store.getLocation().y,
+                        store.getPPK(),
+                        store.getTotalDeliveryIncome()
+                )));
+        return storesDTOList;
+    }
+
+    private List<ItemDTO> getItemsSoldByStore(Store store){
+        List<ItemDTO> itemsDTOList = new ArrayList<>();
+        store.getItemIdToPrice()
+                .forEach((id, price) -> itemsDTOList.add(new ItemDTO(id,
+                        itemIdToItem.get(id).getName(),
+                        itemIdToItem.get(id).getPurchaseCategory().toString(),
+                        0, // Inside store number of sellers is irrelevant
+                        price,
+                        store.getItemIdToNumberOfSales().get(id))));
+        return itemsDTOList;
+    }
+
+    //Gets a store's id and returns a list of orders from this store.
+    private List<OrderDTO> getStoreOrdersList(int storeId){
+        List<OrderDTO> orderDTOList = new ArrayList<>();
+
+        storeIdToStore.get(storeId)
+                .getOrders()
+                .forEach((orderId)-> {
+                    OrderStatic currentOrder = orderIdToOrder.get(orderId);
+                    if(currentOrder instanceof OrderDynamic){
+                        orderDTOList.add(
+                                ((OrderDynamic)currentOrder)    //Casting to Order Dynamic
+                                        .getStoreIdToOrder().get(storeId)   //Get store's part in order
+                                        .convertOrderToOrderDTO(orderId));     //Convert to DTO object
+                    }
+                    else{
+                        orderDTOList.add(currentOrder.convertOrderToOrderDTO(orderId)); //NOTE: exception has occurred
+                    }
+                });
+        return orderDTOList;
+    }
+
+    @Override
+    public List<ItemDTO> getAllItemList() {
+        List<ItemDTO> itemsDTOList = new ArrayList<>();
+        itemIdToItem.forEach((id, item) -> itemsDTOList.add(new ItemDTO(id,
+                        item.getName(),
+                        item.getPurchaseCategory().toString(),
+                        this.getNumOfSellersById(id),
+                        this.getAveragePriceById(id),
+                        this.getNumOfSalesById(id))));
+        return itemsDTOList;
+    }
+
+    @Override
+    public List<OrderDTO> getOrdersHistory() {
+        List<OrderDTO> orderDTOList = new ArrayList<>();
+        orderIdToOrder.forEach((key, value) -> orderDTOList.add(value.convertOrderToOrderDTO(key)));
+        return orderDTOList;
     }
 }
