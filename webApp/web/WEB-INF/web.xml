@@ -9,7 +9,7 @@
     </servlet>
     <servlet-mapping>
         <servlet-name>LoginServlet</servlet-name>
-        <url-pattern>/pages/signup/login</url-pattern>
+        <url-pattern>/login</url-pattern>
     </servlet-mapping>
 
     <servlet>
@@ -28,6 +28,15 @@
     <servlet-mapping>
         <servlet-name>FileUploadServlet</servlet-name>
         <url-pattern>/upload</url-pattern>
+    </servlet-mapping>
+
+    <servlet>
+        <servlet-name>RegionsListServlet</servlet-name>
+        <servlet-class>sdm.servlets.RegionsListServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>RegionsListServlet</servlet-name>
+        <url-pattern>/regionList</url-pattern>
     </servlet-mapping>
 
 </web-app>

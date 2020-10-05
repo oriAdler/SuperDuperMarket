@@ -7,6 +7,7 @@ import sdm.item.Item;
 import java.io.Serializable;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.OptionalDouble;
 
 public class OrderStatic implements Serializable {
     static private int id = 0;
@@ -100,5 +101,9 @@ public class OrderStatic implements Serializable {
 
     public CartDTO getCart() {
         return cart;
+    }
+
+    public double getItemsAveragePrice() {
+        return this.getItemsPrice();
     }
 }

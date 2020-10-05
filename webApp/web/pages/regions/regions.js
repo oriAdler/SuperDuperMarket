@@ -1,6 +1,7 @@
-var refreshRate = 2000; //milli seconds
-var USER_LIST_URL = buildUrlWithContextPath("usersList");
-var UPLOAD_FILE_URL = buildUrlWithContextPath("upload");
+const refreshRate = 2000; //milli seconds
+const USER_LIST_URL = buildUrlWithContextPath("usersList");
+const REGION_TABLE_URL = buildUrlWithContextPath("regionList");
+const UPLOAD_FILE_URL = buildUrlWithContextPath("upload");
 
 //users = a map of usernames and user objects:
 // {"ori":
@@ -33,22 +34,52 @@ function ajaxUsersList() {
     });
 }
 
+//regions = a list of regionDTO objects:
+// [{"ownerName":"ori",
+// "regionName":"Hasharon",
+// "numOfItemsType":10,
+// "numOfStores":4,
+// "numOfOrders":0,
+// "ordersAveragePrice":-1.0}]
+function refreshRegionTable(regions){
+    //clear all current regions
+    //$('#regionTable').empty();
+
+    //rebuild the region's table:
+    $.each(regions || [], function (index, region){
+        console.log("Adding region #" + index + ": " + region);
+        //create a new table row and add it to #regionTable
+        // $('<tr>''<td>'region.'</tr>')
+    })
+}
+
+function ajaxRegionTable(){
+    $.ajax({
+        url: REGION_TABLE_URL,
+        success: function(regions){
+            refreshRegionTable(regions);
+        }
+    })
+}
+
 //activate the timer calls after the page is loaded
 $(function() {
 
     //The users list is refreshed automatically
     setInterval(ajaxUsersList, refreshRate);
+
+    //The region table is refreshed automatically
+    setInterval(ajaxRegionTable, refreshRate);
 });
 
 // step 1: onload - capture the submit event on the form.
 $(function() { // onload...do
     $("#uploadForm").submit(function() {
 
-        var file = this[0].files[0];
+        let file = this[0].files[0];
 
-        var formData = new FormData();
+        let formData = new FormData();
         formData.append("file-key", file);
-        formData.append("name-key", this[1].value);
 
         $.ajax({
             method:'POST',

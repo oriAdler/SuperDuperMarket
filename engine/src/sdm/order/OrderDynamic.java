@@ -6,6 +6,7 @@ import sdm.item.Item;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
+import java.util.OptionalDouble;
 
 public class OrderDynamic extends OrderStatic {
     Map<Integer, OrderStatic> storeIdToOrder;
@@ -25,5 +26,14 @@ public class OrderDynamic extends OrderStatic {
 
     public Map<Integer, OrderStatic> getStoreIdToOrder() {
         return storeIdToOrder;
+    }
+
+    public double getItemsAveragePrice() {
+        OptionalDouble averagePrice = storeIdToOrder
+                .values()
+                .stream()
+                .mapToDouble(OrderStatic::getItemsPrice)
+                .average();
+        return averagePrice.isPresent() ? averagePrice.getAsDouble() : 0;
     }
 }

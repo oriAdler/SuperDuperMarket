@@ -7,10 +7,11 @@ import java.io.InputStream;
 import java.util.List;
 
 public interface Engine {
-    void loadDataFromFile(InputStream fileInputStream, String regionName);
-    boolean isRegionNameExist(String regionName);
+    void loadDataFromFile(InputStream fileInputStream, String ownerName);
+    List<RegionDTO> getAllRegionList();
 
-    void loadDataFromFile(String pathName);
+    //void loadDataFromFile(String pathName);
+    boolean isRegionNameExist(String regionName);
     boolean validFileIsNotLoaded();
 
     //SuperDuperMarket getSDM();

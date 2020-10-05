@@ -16,9 +16,9 @@ import static sdm.constants.Constants.USER_TYPE;
 
 public class LoginServlet extends HttpServlet{
 
-    private final String STORES_REGION_URL = "../regions/regions.html";
+    private final String STORES_REGION_URL = "pages/regions/regions.html";
     private final String SIGN_UP_URL = "../signup/signup.html";
-    private final String LOGIN_ERROR_URL = "/pages/loginError/login_error.jsp";
+    private final String LOGIN_ERROR_URL = "/pages/loginError/login_error.html";
 
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {

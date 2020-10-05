@@ -1,9 +1,9 @@
 package exception;
 
-public class invalidItemException extends RuntimeException {
+public class invalidGeneralException extends RuntimeException {
     private final String exceptionMessage;
 
-    public invalidItemException(String exceptionMessage) {
+    public invalidGeneralException(String exceptionMessage) {
         this.exceptionMessage = exceptionMessage;
     }
 

@@ -3,7 +3,7 @@ package sdm;
 import DTO.*;
 import engine.XmlFileHandler;
 import exception.invalidLocationException;
-import exception.invalidItemException;
+import exception.invalidGeneralException;
 import engine.users.Customer;
 import sdm.discount.Discount;
 import sdm.discount.Offer;
@@ -26,12 +26,16 @@ public class SuperDuperMarketImpl implements SuperDuperMarket {
     final private Map<Integer, Store> storeIdToStore;
     final private Map<Integer, Item> itemIdToItem;
     final private Map<Integer, OrderStatic> orderIdToOrder;
-    //TODO: erase 'customerIdToCustomer' and update relevant code.
+    final private String regionName;
+    final private String ownerName;
+    //TODO: update customer order info in users
     private Map<Integer, Customer> customerIdToCustomer;
 
-    public SuperDuperMarketImpl(Map<Integer, Store> storeIdToStore, Map<Integer, Item> itemIdToItem) {
+    public SuperDuperMarketImpl(Map<Integer, Store> storeIdToStore, Map<Integer, Item> itemIdToItem, String regionName, String ownerName) {
         this.storeIdToStore = storeIdToStore;
         this.itemIdToItem = itemIdToItem;
+        this.regionName = regionName;
+        this.ownerName = ownerName;
         this.orderIdToOrder = new HashMap<>();
     }
 
@@ -47,7 +51,15 @@ public class SuperDuperMarketImpl implements SuperDuperMarket {
         return orderIdToOrder;
     }
 
-//    public Map<Integer, User> getCustomerIdToCustomer() {
+    public String getRegionName() {
+        return regionName;
+    }
+
+    public String getOwnerName() {
+        return ownerName;
+    }
+
+    //    public Map<Integer, User> getCustomerIdToCustomer() {
 //        return customerIdToCustomer;
 //    }
 
@@ -151,7 +163,7 @@ public class SuperDuperMarketImpl implements SuperDuperMarket {
     public void removeItemFromStore(int storeId, int itemId) {
         //Item is the last one in the chosen store
         if(storeIdToStore.get(storeId).getItemIdToPrice().size() == 1){
-            throw new invalidItemException(String.format(
+            throw new invalidGeneralException(String.format(
                     "Can't complete operation because '%s' is the only item in '%s'",
                     itemIdToItem.get(itemId).getName(),
                     storeIdToStore.get(storeId).getName()));
@@ -179,7 +191,7 @@ public class SuperDuperMarketImpl implements SuperDuperMarket {
             }
         }
         else{   //Item is sold by only one store -> update UI
-            throw new invalidItemException(String.format(
+            throw new invalidGeneralException(String.format(
                     "Can't complete operation because '%s' is sold only by '%s'",
                     itemIdToItem.get(itemId).getName(),
                     storeIdToStore.get(storeId).getName()));
@@ -252,7 +264,7 @@ public class SuperDuperMarketImpl implements SuperDuperMarket {
                                 store.getItemIdToNumberOfSales().get(item.getId()) + item.getNumOfSales()));
 
         // Update customer data:
-        customerIdToCustomer.get(customerId).addNewOrder(orderStatic, OrderStatic.getId());
+        //customerIdToCustomer.get(customerId).addNewOrder(orderStatic, OrderStatic.getId());
     }
 
     @Override
@@ -321,7 +333,7 @@ public class SuperDuperMarketImpl implements SuperDuperMarket {
         });
 
         // Update customer data:
-        customerIdToCustomer.get(customerId).addNewOrder(orderDynamic, OrderStatic.getId());
+        //customerIdToCustomer.get(customerId).addNewOrder(orderDynamic, OrderStatic.getId());
     }
 
     // TODO: Check after making orders that numbers make sense.
@@ -821,5 +833,24 @@ public class SuperDuperMarketImpl implements SuperDuperMarket {
         List<OrderDTO> orderDTOList = new ArrayList<>();
         orderIdToOrder.forEach((key, value) -> orderDTOList.add(value.convertOrderToOrderDTO(key)));
         return orderDTOList;
+    }
+
+    @Override
+    public RegionDTO superDuperMarketToRegionDTO() {
+        return new RegionDTO(ownerName,
+                regionName,
+                itemIdToItem.size(),
+                storeIdToStore.size(),
+                orderIdToOrder.size(),
+                getRegionAverageOrdersItemsPrice());
+    }
+
+    private double getRegionAverageOrdersItemsPrice(){
+        OptionalDouble averagePrice = orderIdToOrder
+                .values()
+                .stream()
+                .mapToDouble(OrderStatic::getItemsAveragePrice)
+                .average();
+        return averagePrice.isPresent() ? averagePrice.getAsDouble() : 0;
     }
 }

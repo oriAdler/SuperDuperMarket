@@ -9,23 +9,35 @@
 </head>
 <body>
     <h1>Page 2</h1>
+    <!--Users List-->
     <div>
         <h4>Online</h4>
         <ul id="usersList">
         </ul>
     </div>
-
+    <!--Upload file ford-->
     <form id="uploadForm" action="/upload" enctype="multipart/form-data" method="POST">
         Enter file:
         <br>
         <input type="file" name="file" required><br>
         <br>
-        Region Name:
-        <input name="name" required><br>
-        <br>
         <input type="Submit" value="Upload File"><br>
     </form>
     <div id="result">
     </div>
+    <!--Region info table-->
+    <div>
+        <table id="regionTable" style="width:50%">
+            <tr>
+                <th>Owner name</th>
+                <th>Region name</th>
+                <th>Items No.</th>
+                <th>Stores No.</th>
+                <th>Orders No.</th>
+                <th>Orders average price</th>
+            </tr>
+        </table>
+    </div>
+
 </body>
 </html>

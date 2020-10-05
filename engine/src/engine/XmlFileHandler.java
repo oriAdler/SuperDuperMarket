@@ -2,6 +2,7 @@ package engine;
 
 import exception.*;
 import jaxb.schema.generated.*;
+import sdm.SuperDuperMarket;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
@@ -51,7 +52,7 @@ public class XmlFileHandler {
         //}
     }
 
-    public static void checkValidXmlFile(SuperDuperMarketDescriptor SDMDescriptor){
+    public static void checkValidXmlFile(SuperDuperMarketDescriptor SDMDescriptor, Map<String, SuperDuperMarket> regionNameToSDM){
         checkTwoItemsWithIdenticalId(SDMDescriptor.getSDMItems().getSDMItem());
         checkTwoStoresWithIdenticalId((SDMDescriptor.getSDMStores().getSDMStore()));
         checkAllReferencedItemsExist(SDMDescriptor.getSDMItems().getSDMItem(), SDMDescriptor.getSDMStores().getSDMStore());
@@ -66,6 +67,7 @@ public class XmlFileHandler {
 
         //checkTwoObjectsWithIdenticalLocation(SDMDescriptor.getSDMStores().getSDMStore(), SDMDescriptor.getSDMCustomers().getSDMCustomer());
         checkAllDiscountsAreValid(SDMDescriptor.getSDMStores().getSDMStore(), SDMDescriptor.getSDMItems().getSDMItem());
+        checkRegionNameExist(SDMDescriptor.getSDMZone().getName(), regionNameToSDM);
     }
 
     //Checks that a given coordinates (x,y) are between (MIN,MAX) range.
@@ -132,7 +134,7 @@ public class XmlFileHandler {
             List<SDMSell> sellList = store.getSDMPrices().getSDMSell();
             for(SDMSell sell : sellList){
                 if(!itemsIdSet.contains(sell.getItemId())){
-                            throw new invalidItemException(String.format(
+                            throw new invalidGeneralException(String.format(
                                     "File not loaded successfully: " +
                                             "item with id '%d' referenced in store '%s' does not exist",
                                     sell.getItemId(), store.getName()));
@@ -151,7 +153,7 @@ public class XmlFileHandler {
         }
         for(SDMItem item : itemsList){
             if(!storesItemsIdsSet.contains(item.getId())){
-                throw new invalidItemException(
+                throw new invalidGeneralException(
                         String.format(
                                 "File not loaded successfully: item '%s' with id '%d' was not referenced in any store",
                                 item.getName(), item.getId()));
@@ -168,7 +170,7 @@ public class XmlFileHandler {
                     .collect(Collectors.toSet());
             if(!duplicateSet.isEmpty()){
                 int duplicatedId = duplicateSet.iterator().next().getItemId();
-                throw new invalidItemException(String.format(
+                throw new invalidGeneralException(String.format(
                         "File not loaded successfully: " +
                                 "item with id '%d' is defined twice in store %s",
                         duplicatedId, store.getName()));
@@ -308,6 +310,16 @@ public class XmlFileHandler {
                 itemId = dummyDiscountItemsIdList.iterator().next();
                 throw new invalidLocationException(String.format(
                         "Item with id '%d' defined in discount in store '%s' doesn't sold by the store", itemId, storeName));
+            }
+        }
+    }
+
+    private static void checkRegionNameExist(String newRegionName, Map<String, SuperDuperMarket> regionNameToSDM){
+        if(!regionNameToSDM.isEmpty()){
+            for(String regionName : regionNameToSDM.keySet()){
+                if(newRegionName.equals(regionName)){
+                    throw new invalidGeneralException(String.format("Region with name '%s' already exist", newRegionName));
+                }
             }
         }
     }

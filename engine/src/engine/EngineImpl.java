@@ -1,5 +1,6 @@
 package engine;
 
+import DTO.RegionDTO;
 import jaxb.schema.generated.*;
 import sdm.SuperDuperMarket;
 import sdm.SuperDuperMarketImpl;
@@ -19,7 +20,7 @@ public class EngineImpl implements Engine{
 
     static public final int MIN_RANGE = 1;
     static public final int MAX_RANGE = 50;
-    private final Map<String, SuperDuperMarketImpl> regionNameToSDM;
+    private final Map<String, SuperDuperMarket> regionNameToSDM;
     //private SuperDuperMarketImpl superDuperMarketImpl;
     private boolean validFileLoaded;
 
@@ -28,23 +29,34 @@ public class EngineImpl implements Engine{
         regionNameToSDM = new HashMap<>();
     }
 
+//    @Override
+//    public void loadDataFromFile(String pathName) {
+//        SuperDuperMarketDescriptor SDMDescriptor = XmlFileHandler.generateJaxbClasses(pathName);
+//        XmlFileHandler.checkValidXmlFile(SDMDescriptor);
+//        SDMDescriptorToSDMImpl(SDMDescriptor);
+//        validFileLoaded = true;
+//    }
+
     @Override
-    public void loadDataFromFile(String pathName) {
-        SuperDuperMarketDescriptor SDMDescriptor = XmlFileHandler.generateJaxbClasses(pathName);
-        XmlFileHandler.checkValidXmlFile(SDMDescriptor);
-        //TODO: put returned value in regionNameToSDM
-        SDMDescriptorToSDMImpl(SDMDescriptor);
+    public void loadDataFromFile(InputStream fileInputStream, String ownerName) {
+        SuperDuperMarketDescriptor SDMDescriptor = XmlFileHandler.generateJaxbClasses(fileInputStream);
+        XmlFileHandler.checkValidXmlFile(SDMDescriptor, regionNameToSDM);
+
+        SuperDuperMarketImpl superDuperMarket = SDMDescriptorToSDMImpl(SDMDescriptor, ownerName);
+
+        regionNameToSDM.put(superDuperMarket.getRegionName(), superDuperMarket);
         validFileLoaded = true;
     }
 
     @Override
-    public void loadDataFromFile(InputStream fileInputStream, String regionName) {
-        SuperDuperMarketDescriptor SDMDescriptor = XmlFileHandler.generateJaxbClasses(fileInputStream);
-        XmlFileHandler.checkValidXmlFile(SDMDescriptor);
+    public List<RegionDTO> getAllRegionList() {
+        List<RegionDTO> regionDTOList = new ArrayList<>();
 
-        SuperDuperMarketImpl superDuperMarket = SDMDescriptorToSDMImpl(SDMDescriptor);
-        regionNameToSDM.put(regionName, superDuperMarket);
-        validFileLoaded = true;
+        for(SuperDuperMarket SDM : regionNameToSDM.values()){
+            regionDTOList.add(SDM.superDuperMarketToRegionDTO());
+        }
+
+        return regionDTOList;
     }
 
     @Override
@@ -147,7 +159,7 @@ public class EngineImpl implements Engine{
 //        return itemsDTOList;
 //    }
 
-    private SuperDuperMarketImpl SDMDescriptorToSDMImpl(SuperDuperMarketDescriptor superDuperMarketDescriptor)
+    private SuperDuperMarketImpl SDMDescriptorToSDMImpl(SuperDuperMarketDescriptor superDuperMarketDescriptor, String ownerName)
     {
         // Convert items list:
         Map<Integer, Item> itemIdToItem = new HashMap<>();
@@ -179,7 +191,7 @@ public class EngineImpl implements Engine{
 //                    new Point(customer.getLocation().getX(), customer.getLocation().getY())));
 //        }
 
-        return new SuperDuperMarketImpl(storeIdToStore, itemIdToItem);
+        return new SuperDuperMarketImpl(storeIdToStore, itemIdToItem, superDuperMarketDescriptor.getSDMZone().getName(), ownerName);
     }
 
     // 'sdmDiscounts' can be null if store didn't define any discounts,
