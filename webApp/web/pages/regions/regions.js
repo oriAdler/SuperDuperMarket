@@ -21,7 +21,14 @@ function refreshUsersList(users) {
         console.log("Adding user #" + index + ": " + user);
         //create a new <option> tag with a value in it and
         //append it to the #userslist (div with id=userslist) element
-        $('<li>' + user.name + " - " + user.type + '</li>').appendTo($("#usersList"));
+        $('<li class="w3-bar">' +
+            '<img src="https://www.w3schools.com/w3css/img_avatar2.png" alt="" class="w3-bar-item w3-circle" style="width:85px">' +
+            '<div class="w3-bar-item">' +
+                user.name + '<br>' +
+                user.type +
+            '</div>' +
+            '</li>').appendTo($("#usersList"));
+        // $('<li>' + user.name + " - " + user.type + '</li>').appendTo($("#usersList"));
     });
 }
 
@@ -43,13 +50,32 @@ function ajaxUsersList() {
 // "ordersAveragePrice":-1.0}]
 function refreshRegionTable(regions){
     //clear all current regions
-    //$('#regionTable').empty();
+    let regionTable = $("#regionTable");
+
+    //TODO: after setting "clickableRow" where to place onClick?
+    regionTable.empty();
+    $('<tr>' +
+        '<th>Owner name</th>' +
+        '<th>Region name</th>' +
+        '<th>Items No.</th>' +
+        '<th>Stores No.</th>' +
+        '<th>Orders No.</th>' +
+        '<th>Orders average price</th>' +
+    '</tr>').appendTo(regionTable).addClass("clickableRow");
 
     //rebuild the region's table:
     $.each(regions || [], function (index, region){
         console.log("Adding region #" + index + ": " + region);
-        //create a new table row and add it to #regionTable
-        // $('<tr>''<td>'region.'</tr>')
+        //TODO: Unresolved variable 'ownerName' ? in refresh user works just fine
+        $('<tr>' +
+            '<td>' + region.ownerName + '</td>' +
+            '<td>' + region.regionName + '</td>' +
+            '<td>' + region.numOfItemsType + '</td>' +
+            '<td>' + region.numOfStores + '</td>' +
+            '<td>' + region.numOfOrders + '</td>' +
+            '<td>' + region.ordersAveragePrice + '</td>' +
+            '<td>' + '<button>Go to region >></button>' + '</td>' +
+            '</tr>').appendTo(regionTable).addClass("clickableRow");
     })
 }
 
@@ -69,7 +95,7 @@ $(function() {
     setInterval(ajaxUsersList, refreshRate);
 
     //The region table is refreshed automatically
-    setInterval(ajaxRegionTable, refreshRate);
+    setInterval(ajaxRegionTable, refreshRate*3);
 });
 
 // step 1: onload - capture the submit event on the form.
@@ -102,3 +128,17 @@ $(function() { // onload...do
         return false;
     })
 })
+
+//close the upload file modal and clean message
+$(function(){
+    $("#closeModal").click(function(){
+        $("#result").text("")
+        $("#uploadFileModal").fadeOut(500);
+    });
+});
+
+$(function(){
+    $(".clickableRow").click(function() {
+        $(this).hide();
+    });
+});

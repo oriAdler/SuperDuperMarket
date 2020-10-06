@@ -2,42 +2,109 @@
 <html lang="en">
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-    <title>Stores regions</title>
+    <title>Regions</title>
     <script src="../../common/jquery-2.0.3.min.js"></script>
     <script src="../../common/context-path-helper.js"></script>
     <script src="regions.js"></script>
+    <link rel="stylesheet" href="../../common/w3.css">
 </head>
 <body>
-    <h1>Page 2</h1>
-    <!--Users List-->
-    <div>
-        <h4>Online</h4>
-        <ul id="usersList">
-        </ul>
+<!-- Navbar -->
+<div class="w3-top w3-black">
+    <div class="w3-bar w3-black w3-card">
+        <a href="#" class="w3-bar-item w3-button w3-padding-large">Super Duper Market</a>
+        <a href="#users" class="w3-bar-item w3-button w3-padding-large">USERS</a>
+        <a href="#regions" class="w3-bar-item w3-button w3-padding-large">REGIONS</a>
+        <a href="#account" class="w3-bar-item w3-button w3-padding-large">ACCOUNT</a>
+        <button class="w3-bar-item w3-button w3-padding-large" onclick="document.getElementById('uploadFileModal').style.display='block'">UPLOAD FILE</button>
     </div>
-    <!--Upload file ford-->
-    <form id="uploadForm" action="/upload" enctype="multipart/form-data" method="POST">
-        Enter file:
-        <br>
-        <input type="file" name="file" required><br>
-        <br>
-        <input type="Submit" value="Upload File"><br>
-    </form>
-    <div id="result">
+</div>
+<!-- Page content -->
+<div class="w3-content" style="max-width:2000px;margin-top:46px">
+
+</div>
+<!-- Users List -->
+    <div class="w3-container w3-content w3-center w3-padding-64" style="max-width:450px" id="users">
+        <h2 class="w3-wide">USERS</h2>
+        <h4 class="w3-wide">Online</h4>
+        <div class="w3-row w3-padding-32">
+            <div class="w3-container">
+                <ul id="usersList" class="w3-ul w3-card-4">
+                </ul>
+            </div>
+        </div>
     </div>
-    <!--Region info table-->
-    <div>
-        <table id="regionTable" style="width:50%">
-            <tr>
-                <th>Owner name</th>
-                <th>Region name</th>
-                <th>Items No.</th>
-                <th>Stores No.</th>
-                <th>Orders No.</th>
-                <th>Orders average price</th>
-            </tr>
-        </table>
+
+<!-- Regions table -->
+<div id="regions" class="w3-sand">
+    <div class="w3-container w3-content w3-center w3-padding-64" style="max-width:1600px">
+        <h2 class="w3-wide">REGIONS</h2>
+        <div class="w3-row w3-padding-32">
+            <div class="w3-container">
+                <div class="w3-responsive">
+                    <table id="regionTable" class="w3-striped w3-border w3-table-all w3-large">
+                        <tr class="clickableRow">
+                            <th>Owner name</th>
+                            <th>Region name</th>
+                            <th>Items No.</th>
+                            <th>Stores No.</th>
+                            <th>Orders No.</th>
+                            <th>Orders average price</th>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+        </div>
     </div>
+</div>
+
+<!-- Account table -->
+<div id="account">
+    <div class="w3-container w3-content w3-center w3-padding-64" style="max-width:1600px">
+        <h2 class="w3-wide">ACCOUNT</h2>
+        <div class="w3-row w3-padding-32">
+            <div class="w3-container">
+                <div class="w3-responsive">
+                    <table id="accountTable" class="w3-striped w3-border w3-table-all w3-large">
+                        <tr>
+                            <th>Type</th>
+                            <th>Date</th>
+                            <th>Sum</th>
+                            <th>Balance before</th>
+                            <th>Balance after</th>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal - Upload file-->
+<div id="uploadFileModal" class="w3-modal">
+    <div class="w3-modal-content w3-card-4 w3-animate-zoom" style="max-width:600px">
+
+        <div class="w3-center"><br>
+            <span id="closeModal" class="w3-button w3-xlarge w3-hover-red w3-display-topright" title="Close Modal">&times;</span>
+<!--            onclick="document.getElementById('uploadFileModal').style.display='none'"-->
+        </div>
+
+        <form id="uploadForm" class="w3-container" method="GET" action="login">
+            <div class="w3-section">
+                <label><b>Please choose a valid xml file</b></label>
+                <input class="w3-input w3-border w3-margin-bottom" type="file" name="file" required>
+                <button class="w3-button w3-block w3-green w3-section w3-padding" type="submit">Upload File</button>
+            </div>
+            <div id="result">
+            </div>
+        </form>
+
+    </div>
+</div>
+
+<footer class="w3-container w3-black w3-right-align">
+    <h5>Super Duper Market</h5>
+</footer>
 
 </body>
 </html>
