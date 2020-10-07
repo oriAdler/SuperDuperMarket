@@ -39,4 +39,13 @@
         <url-pattern>/regionList</url-pattern>
     </servlet-mapping>
 
+    <servlet>
+        <servlet-name>UserInfoServlet</servlet-name>
+        <servlet-class>sdm.servlets.UserInfoServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>UserInfoServlet</servlet-name>
+        <url-pattern>/userInfo</url-pattern>
+    </servlet-mapping>
+
 </web-app>

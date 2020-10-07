@@ -1,6 +1,7 @@
 package engine;
 
 import DTO.RegionDTO;
+import DTO.UserDTO;
 import jaxb.schema.generated.*;
 import sdm.SuperDuperMarket;
 import sdm.SuperDuperMarketImpl;

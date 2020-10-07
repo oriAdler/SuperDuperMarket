@@ -1,5 +1,7 @@
 package engine.users;
 
+import DTO.UserDTO;
+
 import java.util.*;
 
 /*
@@ -37,5 +39,16 @@ public class UserManager {
 
     public boolean isUserExists(String username) {
         return usersMap.containsKey(username);
+    }
+
+    //TODO: different else condition
+    public UserDTO getUserInfo(String userName){
+        if(usersMap.containsKey(userName)){
+            User user = usersMap.get(userName);
+            return new UserDTO(user.getId(), user.getName(), 0,0,0,user.getType());
+        }
+        else{
+            return new UserDTO(0, "", 0, 0, 0, "");
+        }
     }
 }
