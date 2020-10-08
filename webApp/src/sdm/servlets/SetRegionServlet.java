@@ -13,19 +13,13 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.PrintWriter;
 
-public class UserInfoServlet extends HttpServlet {
+import static sdm.constants.Constants.REGION_NAME;
+
+public class SetRegionServlet extends HttpServlet {
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        //returning JSON objects
-        response.setContentType("application/json");
-        try (PrintWriter out = response.getWriter()) {
-            Gson gson = new Gson();
-            UserManager userManager = ServletUtils.getUserManager(getServletContext());
-            UserDTO userDTO = userManager.getUserInfo(request.getSession().getAttribute(Constants.USERNAME).toString());
-            String json = gson.toJson(userDTO);
-            out.println(json);
-            out.flush();
-        }
+        String regionNameFromParameter = request.getParameter(REGION_NAME);
+        request.getSession().setAttribute(REGION_NAME, regionNameFromParameter);
     }
 
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">

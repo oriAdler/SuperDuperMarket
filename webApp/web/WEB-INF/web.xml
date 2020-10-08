@@ -48,4 +48,40 @@
         <url-pattern>/userInfo</url-pattern>
     </servlet-mapping>
 
+    <servlet>
+        <servlet-name>UserTransactionServlet</servlet-name>
+        <servlet-class>sdm.servlets.UserTransactionsServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>UserTransactionServlet</servlet-name>
+        <url-pattern>/userTransactions</url-pattern>
+    </servlet-mapping>
+
+    <servlet>
+        <servlet-name>AddMoneyServlet</servlet-name>
+        <servlet-class>sdm.servlets.AddMoneyServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>AddMoneyServlet</servlet-name>
+        <url-pattern>/addMoney</url-pattern>
+    </servlet-mapping>
+
+    <servlet>
+        <servlet-name>SetRegionServlet</servlet-name>
+        <servlet-class>sdm.servlets.SetRegionServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>SetRegionServlet</servlet-name>
+        <url-pattern>/setRegion</url-pattern>
+    </servlet-mapping>
+
+    <servlet>
+        <servlet-name>GetRegionServlet</servlet-name>
+        <servlet-class>sdm.servlets.GetRegionServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>GetRegionServlet</servlet-name>
+        <url-pattern>/getRegion</url-pattern>
+    </servlet-mapping>
+
 </web-app>

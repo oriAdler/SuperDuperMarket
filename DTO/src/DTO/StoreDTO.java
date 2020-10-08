@@ -11,12 +11,13 @@ public class StoreDTO implements LocationDTO{
     final private Integer yLocation;
     final private double PPK;
     final private double totalDeliveryIncome;
+    final private String ownerName;
 
     private String newItemPrice;
 
     public StoreDTO(int id, String name, List<ItemDTO> items,
                     List<OrderDTO> orders, Integer xLocation, Integer yLocation,
-                    double PPK, double totalDeliveryIncome) {
+                    double PPK, double totalDeliveryIncome, String ownerName) {
         this.id = id;
         this.name = name;
         this.items = items;
@@ -25,6 +26,7 @@ public class StoreDTO implements LocationDTO{
         this.yLocation = yLocation;
         this.PPK = PPK;
         this.totalDeliveryIncome = totalDeliveryIncome;
+        this.ownerName = ownerName;
 
         newItemPrice = "0";
     }

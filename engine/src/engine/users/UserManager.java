@@ -1,5 +1,6 @@
 package engine.users;
 
+import DTO.TransactionDTO;
 import DTO.UserDTO;
 
 import java.util.*;
@@ -41,14 +42,22 @@ public class UserManager {
         return usersMap.containsKey(username);
     }
 
-    //TODO: different else condition
     public UserDTO getUserInfo(String userName){
         if(usersMap.containsKey(userName)){
             User user = usersMap.get(userName);
-            return new UserDTO(user.getId(), user.getName(), 0,0,0,user.getType());
+            return new UserDTO(user.getId(), user.getName(), user.getType());
         }
         else{
-            return new UserDTO(0, "", 0, 0, 0, "");
+            return null;
+        }
+    }
+
+    public List<TransactionDTO> getUserTransactions(String userName){
+        if(usersMap.containsKey(userName)){
+            return usersMap.get(userName).getAccount().getTransactionDTOList();
+        }
+        else{
+            return null;
         }
     }
 }

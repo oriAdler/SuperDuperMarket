@@ -1,11 +1,5 @@
 package sdm.servlets;
 
-import DTO.UserDTO;
-import com.google.gson.Gson;
-import engine.users.UserManager;
-import sdm.constants.Constants;
-import sdm.utils.ServletUtils;
-
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -13,17 +7,14 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.PrintWriter;
 
-public class UserInfoServlet extends HttpServlet {
+import static sdm.constants.Constants.REGION_NAME;
+
+public class GetRegionServlet  extends HttpServlet {
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        //returning JSON objects
-        response.setContentType("application/json");
-        try (PrintWriter out = response.getWriter()) {
-            Gson gson = new Gson();
-            UserManager userManager = ServletUtils.getUserManager(getServletContext());
-            UserDTO userDTO = userManager.getUserInfo(request.getSession().getAttribute(Constants.USERNAME).toString());
-            String json = gson.toJson(userDTO);
-            out.println(json);
+        try(PrintWriter out = response.getWriter()){
+            String regionNameFromSession = request.getSession().getAttribute((REGION_NAME)).toString();
+            out.println(regionNameFromSession);
             out.flush();
         }
     }

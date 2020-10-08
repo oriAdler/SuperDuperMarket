@@ -717,8 +717,8 @@ public class SuperDuperMarketImpl implements SuperDuperMarket {
         return false;
     }
 
-    public void createNewStore(int id, String name, int ppk, Point location, Map<Integer, Integer> itemIdToPrice){
-        storeIdToStore.put(id, new Store(id, name, itemIdToPrice, location, ppk, new ArrayList<>()));
+    public void createNewStore(int id, String name, int ppk, Point location, Map<Integer, Integer> itemIdToPrice, String storeOwner){
+        storeIdToStore.put(id, new Store(id, name, itemIdToPrice, location, ppk, new ArrayList<>(), storeOwner));
     }
 
     public boolean isItemExistById(int id){
@@ -778,8 +778,8 @@ public class SuperDuperMarketImpl implements SuperDuperMarket {
                         store.getLocation().x,
                         store.getLocation().y,
                         store.getPPK(),
-                        store.getTotalDeliveryIncome()
-                )));
+                        store.getTotalDeliveryIncome(),
+                ownerName)));
         return storesDTOList;
     }
 

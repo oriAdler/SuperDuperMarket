@@ -1,7 +1,7 @@
 package engine;
 
 import DTO.RegionDTO;
-import DTO.UserDTO;
+import engine.accounts.Account;
 import jaxb.schema.generated.*;
 import sdm.SuperDuperMarket;
 import sdm.SuperDuperMarketImpl;
@@ -182,7 +182,7 @@ public class EngineImpl implements Engine{
             List<Discount> discountList = convertStoreDiscounts(store.getSDMDiscounts());
             // Generate a new store in the system:
             storeIdToStore.put(store.getId(), new Store(store.getId(), store.getName().trim(), storeItems,
-                    new Point(store.getLocation().getX(), store.getLocation().getY()), store.getDeliveryPpk(), discountList));
+                    new Point(store.getLocation().getX(), store.getLocation().getY()), store.getDeliveryPpk(), discountList, ownerName));
         }
 //        // Convert customers list:
 //        Map<Integer, User> customerIdToCustomer = new HashMap<>();

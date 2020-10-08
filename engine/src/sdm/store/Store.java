@@ -19,13 +19,14 @@ public class Store implements Serializable {
     private final List<Integer> orders;
     private double totalDeliveryIncome;
     private final List<Discount> discounts;
-    //TODO: store owner, feedbacks
+    private final String ownerName;
 
     public Store(int id, String name, Map<Integer, Integer> itemIdToPrice, Point location,
-                 double PPK, List<Discount> discounts) {
+                 double PPK, List<Discount> discounts, String ownerName) {
         this.Id = id;
         this.name = name;
         this.itemIdToPrice = itemIdToPrice;
+        this.ownerName = ownerName;
         itemIdToNumberOfSales = new HashMap<>();
         itemIdToPrice.forEach((key, value) -> itemIdToNumberOfSales.put(key, (double) 0));
         this.location = location;

@@ -3,16 +3,82 @@ const USER_LIST_URL = buildUrlWithContextPath("usersList");
 const REGION_TABLE_URL = buildUrlWithContextPath("regionList");
 const UPLOAD_FILE_URL = buildUrlWithContextPath("upload");
 const USER_INFO_URL = buildUrlWithContextPath("userInfo");
+const USER_TRANSACTIONS_URL = buildUrlWithContextPath("userTransactions");
+const ADD_MONEY_URL = buildUrlWithContextPath("addMoney");
+const SET_REGION_NAME = buildUrlWithContextPath("setRegion");
 
-//users = a map of usernames and user objects:
-// {"ori":
-    // {"ordersIdList":[],
-    // "averageOrdersPrice":0.0,
-    // "averageDeliveryPrice":0.0,
-    // "averageItemsPrice":0.0,"id":1,
-    // "name":"ori",
-    // "type":"Customer"}
-// }
+// Global Variables:
+var userType;
+
+$(function getUserTypeAndAdjustPage(){
+    $.ajax({
+        url: USER_INFO_URL,
+        success: function(user){
+            console.log("user[name: " + user.name + ", type: " + user.type+"]");
+            userType = user.type;
+
+            // Adjust page according to user type:
+            if(userType=="Customer"){
+                $("#uploadFileButton").hide();
+            }
+            else{
+                $("#transferMoneyButton").hide();
+            }
+        }
+    })
+});
+
+function setRegionNameOnSession(name){
+    $.ajax({
+        url:SET_REGION_NAME,
+        data: "regionName=" + name,
+        dataType: 'json',
+        error: function (){
+            console.log("SET_REGION_NAME returned error")
+        },
+        success: function (){
+            console.log("SET_REGION_NAME returned success")
+        }
+    })
+}
+
+function refreshTransactionTable(transactions){
+    let accountTable = $("#accountTable");
+
+    accountTable.empty();
+
+    $('<tr>' +
+        '<th>Type</th>' +
+        '<th>Date</th>' +
+        '<th>Amount</th>' +
+        '<th>Balance before</th>' +
+        '<th>Balance after</th>' +
+        '</tr>').appendTo(accountTable);
+
+    $.each(transactions || [], function (index, transaction){
+        $('<tr>' +
+            '<td>' + transaction.type + '</td>' +
+            '<td>' + transaction.date + '</td>' +
+            '<td>' + transaction.amount + '</td>' +
+            '<td>' + transaction.balanceBefore + '</td>' +
+            '<td>' + transaction.balanceAfter + '</td>' +
+            '</tr>').appendTo(accountTable);
+    });
+}
+
+function ajaxTransactionsTable(){
+    $.ajax({
+        url: USER_TRANSACTIONS_URL,
+        success: function (transactions){
+            refreshTransactionTable(transactions);
+        }
+    })
+}
+
+//users = a list of UserDTO objects:
+//{id: 1,
+// name: "ori",
+// type: "Vendor"}
 function refreshUsersList(users) {
     //clear all current users
     $("#usersList").empty();
@@ -62,7 +128,7 @@ function refreshRegionTable(regions){
         '<th>Orders No.</th>' +
         '<th>Orders AVG price</th>' +
         '<th>More Info</th>' +
-    '</tr>').appendTo(regionTable).addClass("clickableRow");
+    '</tr>').appendTo(regionTable);
 
     //rebuild the region's table:
     $.each(regions || [], function (index, region){
@@ -79,10 +145,15 @@ function refreshRegionTable(regions){
             .find("button")
             .addClass("w3-button w3-block w3-green")
             .click(function (){
-                console.log(region.regionName);
-                window.location.replace("../stores/stores_customer.html");
+                setRegionNameOnSession(region.regionName);
+                if(userType=="Customer"){
+                    window.location.assign("../stores/stores_customer.html");
+                }
+                else{
+                    window.location.assign("../stores/stores_vendor.html");
+                }
             });
-    })
+    });
 }
 
 function ajaxRegionTable(){
@@ -95,6 +166,32 @@ function ajaxRegionTable(){
 }
 
 // step 1: onload - capture the submit event on the form.
+$(function AddMoney() {
+    $("#transferMoney").submit(function() {
+
+        let parameters = $(this).serialize();
+
+        $.ajax({
+            method:'POST',
+            data: parameters,
+            url: ADD_MONEY_URL,
+            timeout: 4000,
+            error: function(error) {
+                console.error("Failed to submit");
+                $("#resultTransferMoney").text("Failed to get result from server " + error);
+            },
+            success: function(response) {
+                $("#resultTransferMoney").text(response);
+            }
+        });
+
+        // return value of the submit operation
+        // by default - we'll always return false so it doesn't redirect the user.
+        return false;
+    })
+})
+
+// onload - capture the submit event on the form.
 $(function uploadFile() { // onload...do
     $("#uploadForm").submit(function() {
 
@@ -141,29 +238,6 @@ $(function closeModalTransfer(){
     });
 });
 
-// UserDTO:
-// {"id":1,
-// "name":"tomer",
-// "numberOfOrders":0,
-// "averageItemsPrice":0.0,
-// "averageDeliveryPrice":0.0,
-// "type":"Customer"}
-$(function getUserType(){
-    $.ajax({
-        url: USER_INFO_URL,
-        success: function(user){
-            console.log("USER - name:" + user.name + " type: " + user.type);
-            console.log(user.type);
-            if(user.type=="Customer"){
-                $("#uploadFileButton").hide();
-            }
-            else{
-                $("#transferMoneyButton").hide();
-            }
-        }
-    })
-});
-
 //activate the timer calls after the page is loaded
 $(function() {
 
@@ -172,4 +246,6 @@ $(function() {
 
     //The region table is refreshed automatically
     setInterval(ajaxRegionTable, refreshRate);
+
+    setInterval(ajaxTransactionsTable, refreshRate);
 });
