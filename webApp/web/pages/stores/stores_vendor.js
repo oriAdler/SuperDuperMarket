@@ -1,14 +1,13 @@
 const refreshRate = 2000; //milli seconds
-const GET_REGION_NAME_URL = buildUrlWithContextPath("getRegion");
-const ITEMS_TABLE_URL = buildUrlWithContextPath("itemsTable");
-const STORES_LIST_URL = buildUrlWithContextPath("storesList");
-const MAKE_ORDER_URL = buildUrlWithContextPath("makeOrder");
+const GET_REGION_NAME = buildUrlWithContextPath("getRegion");
+const ITEMS_TABLE = buildUrlWithContextPath("itemsTable");
+const STORES_LIST = buildUrlWithContextPath("storesList")
 //Global Variables:
 var regionName;
 
 $(function getRegionNameAndAdjustPage(){
     $.ajax({
-        url: GET_REGION_NAME_URL,
+        url: GET_REGION_NAME,
         success: function(response){
             regionName = response;
             $("#logo").text(regionName);
@@ -108,7 +107,7 @@ function refreshStoresList(stores){
 
 function ajaxItemsTable(){
     $.ajax({
-        url: ITEMS_TABLE_URL,
+        url: ITEMS_TABLE,
         success: function (items){
             refreshItemsList(items);
         }
@@ -117,7 +116,7 @@ function ajaxItemsTable(){
 
 function ajaxStoresList(){
     $.ajax({
-        url: STORES_LIST_URL,
+        url: STORES_LIST,
         success: function (stores){
             refreshStoresList(stores);
         }
@@ -129,58 +128,3 @@ $(function(){
 
     setInterval(ajaxStoresList, refreshRate);
 })
-
-$(function setMakeOrderForm(){
-    let storeSelect = $("#storeSelect");
-    let orderSelect = $("#orderSelect");
-    let storeLabel = $("#storeLabel");
-
-
-    //stores list is hidden before static order was chosen
-    storeSelect.hide();
-    storeLabel.hide();
-    //update current stores list:
-    $.ajax({
-        url: STORES_LIST_URL,
-        success: function (stores){
-            $.each(stores || [], function(index, store){
-                $('<option>' + store.name + '</option>')
-                    .val(store.id)
-                    .appendTo(storeSelect);
-            })
-        }
-    })
-
-    //set select order type:
-    orderSelect.change(function (){
-        if(orderSelect.val()=="static"){
-            storeSelect.show();
-            storeLabel.show();
-        }
-        else{   //orderSelect.val()=="dynamic"
-            storeSelect.hide();
-            storeLabel.hide();
-        }
-    })
-});
-
-$(function() {
-    //add a function to the submit event
-    $("#makeOrderForm").submit(function() {
-        $.ajax({
-            data: $(this).serialize(),
-            url: MAKE_ORDER_URL,
-            timeout: 2000,
-            error: function(errorObject) {
-                console.error("Failed to login !");
-                $("#error-placeholder").text(errorObject.responseText)
-            },
-            success: function(nextPageUrl) {
-                window.location.assign(nextPageUrl);
-            }
-        });
-
-        // by default - we'll always return false so it doesn't redirect the user.
-        return false;
-    });
-});

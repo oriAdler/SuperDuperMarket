@@ -25,7 +25,7 @@
     <orderEntry type="module-library">
       <library>
         <CLASSES>
-          <root url="jar://$MODULE_DIR$/web/WEB-INF/lib/gson-2.1.jar!/" />
+          <root url="jar://$USER_HOME$/OneDrive/שולחן העבודה/האקדמית תל אביב יפו/תש''פ קיץ/אינטרנט ושפת גאווה/דוגמאות הקורס/Online Chat V2/3rd/google-gson-2.1/gson-2.1.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES />

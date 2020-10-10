@@ -18,6 +18,7 @@ public class Store implements Serializable {
     private final double PPK;
     private final List<Integer> orders;
     private double totalDeliveryIncome;
+    private double totalItemsIncome;
     private final List<Discount> discounts;
     private final String ownerName;
 
@@ -33,6 +34,7 @@ public class Store implements Serializable {
         this.PPK = PPK;
         this.orders = new ArrayList<>();
         this.totalDeliveryIncome = 0;
+        this.totalItemsIncome = 0;
         this.discounts = discounts;
     }
 
@@ -68,12 +70,20 @@ public class Store implements Serializable {
         return totalDeliveryIncome;
     }
 
+    public double getTotalItemsIncome() {
+        return totalItemsIncome;
+    }
+
     public int getId() {
         return Id;
     }
 
     public void setTotalDeliveryIncome(double totalDeliveryIncome) {
         this.totalDeliveryIncome = totalDeliveryIncome;
+    }
+
+    public void setTotalItemsIncome(double totalItemsIncome) {
+        this.totalItemsIncome = totalItemsIncome;
     }
 
     public double calculateDeliveryPrice(Point customerLocation){

@@ -5,7 +5,7 @@ const UPLOAD_FILE_URL = buildUrlWithContextPath("upload");
 const USER_INFO_URL = buildUrlWithContextPath("userInfo");
 const USER_TRANSACTIONS_URL = buildUrlWithContextPath("userTransactions");
 const ADD_MONEY_URL = buildUrlWithContextPath("addMoney");
-const SET_REGION_NAME = buildUrlWithContextPath("setRegion");
+const SET_REGION_NAME_URL = buildUrlWithContextPath("setRegion");
 
 // Global Variables:
 var userType;
@@ -30,7 +30,7 @@ $(function getUserTypeAndAdjustPage(){
 
 function setRegionNameOnSession(name){
     $.ajax({
-        url:SET_REGION_NAME,
+        url:SET_REGION_NAME_URL,
         data: "regionName=" + name,
         dataType: 'json',
         error: function (){
@@ -59,9 +59,9 @@ function refreshTransactionTable(transactions){
         $('<tr>' +
             '<td>' + transaction.type + '</td>' +
             '<td>' + transaction.date + '</td>' +
-            '<td>' + transaction.amount + '</td>' +
-            '<td>' + transaction.balanceBefore + '</td>' +
-            '<td>' + transaction.balanceAfter + '</td>' +
+            '<td>' + transaction.amount + '&#8362' + '</td>' +
+            '<td>' + transaction.balanceBefore + '&#8362' + '</td>' +
+            '<td>' + transaction.balanceAfter + '&#8362' + '</td>' +
             '</tr>').appendTo(accountTable);
     });
 }
@@ -95,7 +95,6 @@ function refreshUsersList(users) {
                 user.type +
             '</div>' +
             '</li>').appendTo($("#usersList"));
-        // $('<li>' + user.name + " - " + user.type + '</li>').appendTo($("#usersList"));
     });
 }
 
@@ -116,9 +115,9 @@ function ajaxUsersList() {
 // "numOfOrders":0,
 // "ordersAveragePrice":-1.0}]
 function refreshRegionTable(regions){
-    //clear all current regions
     let regionTable = $("#regionTable");
 
+    //clear all current regions
     regionTable.empty();
     $('<tr>' +
         '<th>Owner name</th>' +

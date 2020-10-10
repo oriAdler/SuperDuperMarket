@@ -30,14 +30,6 @@ public class EngineImpl implements Engine{
         regionNameToSDM = new HashMap<>();
     }
 
-//    @Override
-//    public void loadDataFromFile(String pathName) {
-//        SuperDuperMarketDescriptor SDMDescriptor = XmlFileHandler.generateJaxbClasses(pathName);
-//        XmlFileHandler.checkValidXmlFile(SDMDescriptor);
-//        SDMDescriptorToSDMImpl(SDMDescriptor);
-//        validFileLoaded = true;
-//    }
-
     @Override
     public void loadDataFromFile(InputStream fileInputStream, String ownerName) {
         SuperDuperMarketDescriptor SDMDescriptor = XmlFileHandler.generateJaxbClasses(fileInputStream);
@@ -58,6 +50,11 @@ public class EngineImpl implements Engine{
         }
 
         return regionDTOList;
+    }
+
+    @Override
+    public SuperDuperMarket getRegionSDM(String regionName) {
+        return regionNameToSDM.getOrDefault(regionName, null);
     }
 
     @Override

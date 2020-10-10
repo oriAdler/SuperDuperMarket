@@ -9,6 +9,7 @@ import java.util.List;
 public interface Engine {
     void loadDataFromFile(InputStream fileInputStream, String ownerName);
     List<RegionDTO> getAllRegionList();
+    SuperDuperMarket getRegionSDM(String regionName);
 
     //void loadDataFromFile(String pathName);
     boolean isRegionNameExist(String regionName);

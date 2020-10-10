@@ -84,4 +84,31 @@
         <url-pattern>/getRegion</url-pattern>
     </servlet-mapping>
 
+    <servlet>
+        <servlet-name>ItemsTableServlet</servlet-name>
+        <servlet-class>sdm.servlets.ItemsTableServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>ItemsTableServlet</servlet-name>
+        <url-pattern>/itemsTable</url-pattern>
+    </servlet-mapping>
+
+    <servlet>
+        <servlet-name>StoresListServlet</servlet-name>
+        <servlet-class>sdm.servlets.StoresListServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>StoresListServlet</servlet-name>
+        <url-pattern>/storesList</url-pattern>
+    </servlet-mapping>
+
+    <servlet>
+        <servlet-name>MakeOrderServlet</servlet-name>
+        <servlet-class>sdm.servlets.MakeOrderServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>MakeOrderServlet</servlet-name>
+        <url-pattern>/makeOrder</url-pattern>
+    </servlet-mapping>
+
 </web-app>

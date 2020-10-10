@@ -256,6 +256,7 @@ public class SuperDuperMarketImpl implements SuperDuperMarket {
         Store store = storeIdToStore.get(storeId);
         store.getOrders().add(OrderStatic.getId());
         store.setTotalDeliveryIncome(store.getTotalDeliveryIncome() + orderStatic.getDeliveryPrice());
+        store.setTotalItemsIncome(store.getTotalItemsIncome() + orderStatic.getItemsPrice());
 
         //Update store's sales counter:
         cart.getItems()
@@ -316,12 +317,14 @@ public class SuperDuperMarketImpl implements SuperDuperMarket {
                 customerId);
         orderIdToOrder.put(OrderStatic.getId(), orderDynamic);
 
-        //Update store's orders list & total delivery income:
+        //Update store's orders list & total delivery & items income:
         storesIdSet.forEach(storeId->{
             Store store = storeIdToStore.get(storeId);
             store.getOrders().add(OrderStatic.getId());
             store.setTotalDeliveryIncome(
                     store.getTotalDeliveryIncome() + orderIdToOrderStatic.get(storeId).getDeliveryPrice());
+            store.setTotalItemsIncome(
+                    store.getTotalItemsIncome() + orderIdToOrderStatic.get(storeId).getItemsPrice());
         });
 
         //Update store's sales counter:
@@ -485,8 +488,8 @@ public class SuperDuperMarketImpl implements SuperDuperMarket {
     private void updateStoreRevenue(Store store, int orderId, OrderStatic orderStatic) {
         //Update store's orders list & total delivery income:
         store.getOrders().add(orderId);
-        store.setTotalDeliveryIncome(store.getTotalDeliveryIncome() +
-                orderStatic.getDeliveryPrice());
+        store.setTotalDeliveryIncome(store.getTotalDeliveryIncome() + orderStatic.getDeliveryPrice());
+        store.setTotalItemsIncome(store.getTotalItemsIncome() + orderStatic.getItemsPrice());
 
         //Update store's sales counter:
         orderStatic.getItemList().forEach(item -> {
@@ -708,11 +711,6 @@ public class SuperDuperMarketImpl implements SuperDuperMarket {
                 return true;
             }
         }
-//        for(Customer customer : customerIdToCustomer.values()){
-//            if(newLocation.equals(customer.getLocation())){
-//                return true;
-//            }
-//        }
 
         return false;
     }
@@ -779,7 +777,8 @@ public class SuperDuperMarketImpl implements SuperDuperMarket {
                         store.getLocation().y,
                         store.getPPK(),
                         store.getTotalDeliveryIncome(),
-                ownerName)));
+                        store.getTotalItemsIncome(),
+                        ownerName)));
         return storesDTOList;
     }
 
