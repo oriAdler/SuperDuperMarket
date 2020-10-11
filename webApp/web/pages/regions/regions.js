@@ -56,13 +56,16 @@ function refreshTransactionTable(transactions){
         '</tr>').appendTo(accountTable);
 
     $.each(transactions || [], function (index, transaction){
-        $('<tr>' +
-            '<td>' + transaction.type + '</td>' +
-            '<td>' + transaction.date + '</td>' +
-            '<td>' + transaction.amount + '&#8362' + '</td>' +
-            '<td>' + transaction.balanceBefore + '&#8362' + '</td>' +
-            '<td>' + transaction.balanceAfter + '&#8362' + '</td>' +
-            '</tr>').appendTo(accountTable);
+        let row = $('<tr>' +
+                '<td>' + transaction.type + '</td>' +
+                '<td>' + transaction.date + '</td>' +
+                '<td>' + transaction.amount + '&#8362' + '</td>' +
+                '<td>' + transaction.balanceBefore + '&#8362' + '</td>' +
+                '<td>' + transaction.balanceAfter + '&#8362' + '</td>' +
+                '</tr>').appendTo(accountTable);
+        if(transaction.type==="Add"){
+            row.addClass("w3-text-green");
+        }
     });
 }
 
@@ -86,15 +89,35 @@ function refreshUsersList(users) {
     // rebuild the list of users: scan all users and add them to the list of users
     $.each(users || [], function(index, user) {
         console.log("Adding user #" + index + ": " + user);
-        //create a new <option> tag with a value in it and
-        //append it to the #userslist (div with id=userslist) element
-        $('<li class="w3-bar">' +
-            '<img src="../../common/images/img_avatar2.png" alt="" class="w3-bar-item w3-circle" style="width:85px">' +
-            '<div class="w3-bar-item">' +
+        //append it to the #userslist (div with id=usersList) element
+        //if-else terms differentiate user's image
+        if(index % 3 === 0){
+            $('<li class="w3-bar">' +
+                '<img src=../../common/images/avatar1.png alt="" class="w3-bar-item w3-circle" style="width:85px">' +
+                '<div class="w3-bar-item">' +
                 user.name + '<br>' +
                 user.type +
-            '</div>' +
-            '</li>').appendTo($("#usersList"));
+                '</div>' +
+                '</li>').appendTo($("#usersList"));
+        }
+        else if(index % 3 === 1){
+            $('<li class="w3-bar">' +
+                '<img src=../../common/images/avatar2.png alt="" class="w3-bar-item w3-circle" style="width:85px">' +
+                '<div class="w3-bar-item">' +
+                user.name + '<br>' +
+                user.type +
+                '</div>' +
+                '</li>').appendTo($("#usersList"));
+        }
+        else{
+            $('<li class="w3-bar">' +
+                '<img src=../../common/images/avatar3.png alt="" class="w3-bar-item w3-circle" style="width:85px">' +
+                '<div class="w3-bar-item">' +
+                user.name + '<br>' +
+                user.type +
+                '</div>' +
+                '</li>').appendTo($("#usersList"));
+        }
     });
 }
 
@@ -177,10 +200,14 @@ $(function AddMoney() {
             timeout: 4000,
             error: function(error) {
                 console.error("Failed to submit");
-                $("#resultTransferMoney").text("Failed to get result from server " + error);
+                $("#resultTransferMoney").text("Failed to get result from server " + error)
+                    .addClass("w3-text-red")
+                    .removeClass("w3-text-green");
             },
             success: function(response) {
-                $("#resultTransferMoney").text(response);
+                $("#resultTransferMoney").text(response)
+                    .addClass("w3-text-green")
+                    .removeClass("w3-text-red");
             }
         });
 
@@ -206,12 +233,16 @@ $(function uploadFile() { // onload...do
             processData: false, // Don't process the files
             contentType: false, // Set content type to false as jQuery will tell the server its a query string request
             timeout: 4000,
-            error: function(error) {
+            error: function(errorObject) {
                 console.error("Failed to submit");
-                $("#resultUploadFile").text("Failed to get result from server " + error);
+                $("#resultUploadFile").text(errorObject.responseText)
+                    .addClass("w3-text-red")
+                    .removeClass("w3-text-green");
             },
             success: function(response) {
-                $("#resultUploadFile").text(response);
+                $("#resultUploadFile").text(response)
+                    .addClass("w3-text-green")
+                    .removeClass("w3-text-red");
             }
         });
 
@@ -239,7 +270,6 @@ $(function closeModalTransfer(){
 
 //activate the timer calls after the page is loaded
 $(function() {
-
     //The users list is refreshed automatically
     setInterval(ajaxUsersList, refreshRate);
 

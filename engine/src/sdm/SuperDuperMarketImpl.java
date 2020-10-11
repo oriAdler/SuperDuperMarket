@@ -375,7 +375,8 @@ public class SuperDuperMarketImpl implements SuperDuperMarket {
                 amount,
                 store.getName(),
                 storeId,
-                false)));
+                false,
+                true)));
 
         if(offersToAddToCart!=null && !offersToAddToCart.isEmpty()) {
             offersToAddToCart.forEach(offerDTO -> itemExtendedDTOList.add(new ItemExtendedDTO(
@@ -387,6 +388,7 @@ public class SuperDuperMarketImpl implements SuperDuperMarket {
                     offerDTO.getAmount(),
                     store.getName(),
                     storeId,
+                    true,
                     true)));
         }
 
@@ -415,7 +417,8 @@ public class SuperDuperMarketImpl implements SuperDuperMarket {
                     amount,
                     storeIdToStore.get(storeId).getName(),
                     storeId,
-                    false));
+                    false,
+                    false));    //has no meaning here..
         });
 
         if(offersToAddToCart!=null && !offersToAddToCart.isEmpty()){
@@ -428,7 +431,8 @@ public class SuperDuperMarketImpl implements SuperDuperMarket {
                     offer.getAmount(),
                     storeIdToStore.get(offer.getStoreId()).getName(),
                     offer.getStoreId(),
-                    true)));
+                    true,
+                    false)));   //has no meaning here..
         }
 
         // Generate a separate cart for each store:
@@ -623,43 +627,65 @@ public class SuperDuperMarketImpl implements SuperDuperMarket {
             return storeId;
     }
 
+    // As some of the itemDTO are irrelevant in this context they assigned with '-1'.
     public List<ItemDTO> getStoreItems(int storeId) {
         List<ItemDTO> itemDTOList = new ArrayList<>();
         Store store = storeIdToStore.get(storeId);
 
-        store.getItemIdToPrice().keySet().forEach(itemId->{
-            Item item = itemIdToItem.get(itemId);
+        itemIdToItem.forEach((key, item) -> {
+            boolean isSoldByStore = store.getItemIdToPrice().containsKey(key);
+            int itemPrice = isSoldByStore ? store.getItemIdToPrice().get(key) : -1;
 
-            itemDTOList.add(new ItemDTO(itemId,
+            itemDTOList.add(new ItemDTO(key,
                     item.getName(),
                     item.getPurchaseCategory().toString(),
-                    getNumOfSellersById(itemId),
-                    store.getItemIdToPrice().get(itemId),
-                    getNumOfSalesById(itemId)));
+                    -1,
+                    itemPrice,
+                    -1,
+                    isSoldByStore));
         });
 
         return itemDTOList;
     }
 
-    public List<ItemDTO> getItemsNotSoldByStore(int storeId){
-        List<ItemDTO> itemDTOList = new ArrayList<>();
-        Store store = storeIdToStore.get(storeId);
+//    public List<ItemDTO> getStoreItems(int storeId) {
+//        List<ItemDTO> itemDTOList = new ArrayList<>();
+//        Store store = storeIdToStore.get(storeId);
+//
+//        store.getItemIdToPrice().keySet().forEach(itemId->{
+//            Item item = itemIdToItem.get(itemId);
+//
+//            itemDTOList.add(new ItemDTO(itemId,
+//                    item.getName(),
+//                    item.getPurchaseCategory().toString(),
+//                    getNumOfSellersById(itemId),
+//                    store.getItemIdToPrice().get(itemId),
+//                    getNumOfSalesById(itemId),
+//                    true));
+//        });
+//
+//        return itemDTOList;
+//    }
 
-        itemIdToItem.keySet().forEach(itemId->{
-            if(!store.getItemIdToPrice().containsKey(itemId)){
-                Item item = itemIdToItem.get(itemId);
-
-                itemDTOList.add(new ItemDTO(itemId,
-                        item.getName(),
-                        item.getPurchaseCategory().toString(),
-                        getNumOfSellersById(itemId),
-                        -1, // store doesn't sell this item therefor price isn't relevant
-                        getNumOfSalesById(itemId)));
-            }
-        });
-
-        return itemDTOList;
-    }
+//    public List<ItemDTO> getItemsNotSoldByStore(int storeId){
+//        List<ItemDTO> itemDTOList = new ArrayList<>();
+//        Store store = storeIdToStore.get(storeId);
+//
+//        itemIdToItem.keySet().forEach(itemId->{
+//            if(!store.getItemIdToPrice().containsKey(itemId)){
+//                Item item = itemIdToItem.get(itemId);
+//
+//                itemDTOList.add(new ItemDTO(itemId,
+//                        item.getName(),
+//                        item.getPurchaseCategory().toString(),
+//                        getNumOfSellersById(itemId),
+//                        -1, // store doesn't sell this item therefor price isn't relevant
+//                        getNumOfSalesById(itemId), isSoldByStore));
+//            }
+//        });
+//
+//        return itemDTOList;
+//    }
 
     public double findMaxXCoordinate(){
         double storeMaxXCoordinate, customerMaxXCoordinate;
@@ -790,7 +816,8 @@ public class SuperDuperMarketImpl implements SuperDuperMarket {
                         itemIdToItem.get(id).getPurchaseCategory().toString(),
                         0, // Inside store number of sellers is irrelevant
                         price,
-                        store.getItemIdToNumberOfSales().get(id))));
+                        store.getItemIdToNumberOfSales().get(id),
+                        true)));
         return itemsDTOList;
     }
 
@@ -823,7 +850,8 @@ public class SuperDuperMarketImpl implements SuperDuperMarket {
                         item.getPurchaseCategory().toString(),
                         this.getNumOfSellersById(id),
                         this.getAveragePriceById(id),
-                        this.getNumOfSalesById(id))));
+                        this.getNumOfSalesById(id),
+                        true)));    //true is irrelevant here..
         return itemsDTOList;
     }
 

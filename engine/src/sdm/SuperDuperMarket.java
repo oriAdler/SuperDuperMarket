@@ -41,7 +41,7 @@ public interface SuperDuperMarket {
     List<DiscountDTO> getDiscounts(Map<Integer, Double> itemIdToAmount);
 
     List<ItemDTO> getStoreItems(int storeId);
-    List<ItemDTO> getItemsNotSoldByStore(int storeId);
+    //List<ItemDTO> getItemsNotSoldByStore(int storeId);
 
     double findMaxXCoordinate();
     double findMaxYCoordinate();

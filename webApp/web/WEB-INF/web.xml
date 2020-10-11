@@ -111,4 +111,13 @@
         <url-pattern>/makeOrder</url-pattern>
     </servlet-mapping>
 
+    <servlet>
+        <servlet-name>OrderItemsServlet</servlet-name>
+        <servlet-class>sdm.servlets.OrderItemsTableServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>OrderItemsServlet</servlet-name>
+        <url-pattern>/orderItemsList</url-pattern>
+    </servlet-mapping>
+
 </web-app>

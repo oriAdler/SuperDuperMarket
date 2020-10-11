@@ -1,10 +1,5 @@
 package DTO;
 
-import javafx.beans.property.SimpleBooleanProperty;
-import javafx.beans.property.SimpleDoubleProperty;
-import javafx.beans.property.SimpleStringProperty;
-import javafx.scene.control.Button;
-
 import java.util.Objects;
 
 public class ItemDTO {
@@ -14,18 +9,17 @@ public class ItemDTO {
     final private int numOfSellers;
     private String price;
     final private double numOfSales;
-    private String amount;
+    final private boolean isSoldByStore;
 
     public ItemDTO(int id, String name, String category,
-                   int numOfSellers, double price, double numOfSales) {
+                   int numOfSellers, double price, double numOfSales, boolean isSoldByStore) {
         this.id = id;
         this.name = name;
         this.category = category;
         this.numOfSellers = numOfSellers;
         this.price = String.format("%.2f", price);
         this.numOfSales = numOfSales;
-
-        this.amount = ("0");
+        this.isSoldByStore = isSoldByStore;
     }
 
     public int getId() {
@@ -58,15 +52,6 @@ public class ItemDTO {
     }
 
     // Features for Desktop Application:
-
-
-    public String getAmount() {
-        return amount;
-    }
-
-    public void setAmount(String amount) {
-        this.amount = amount;
-    }
 
     public void setPrice(String price) {
         this.price = price;

@@ -46,12 +46,12 @@ function refreshItemsList(items){
     //rebuild the items table:
     $.each(items || [], function(index,item){
         $('<tr>' +
-            '<th>' + item.id + '</th>' +
-            '<th>' + item.name + '</th>' +
-            '<th>' + item.category + '</th>' +
-            '<th>' + item.numOfSellers + '</th>' +
-            '<th>' + item.price + '&#8362' +'</th>' +
-            '<th>' + item.numOfSales + '</th>' +
+            '<td>' + item.id + '</td>' +
+            '<td>' + item.name + '</td>' +
+            '<td>' + item.category + '</td>' +
+            '<td>' + item.numOfSellers + '</td>' +
+            '<td>' + item.price + '&#8362' +'</td>' +
+            '<td>' + item.numOfSales + '</td>' +
             '</tr>').appendTo(itemTable);
     })
 }
@@ -96,11 +96,11 @@ function refreshStoresList(stores){
         // numOfSellers: 0
         $.each(store.items || [], function (index, item){
             $('<tr>' +
-                '<th>' + item.id + '</th>' +
-                '<th>' + item.name + '</th>' +
-                '<th>' + item.category + '</th>' +
-                '<th>' + item.price + '&#8362' + '</th>' +
-                '<th>' + item.numOfSellers + '</th>' +
+                '<td>' + item.id + '</td>' +
+                '<td>' + item.name + '</td>' +
+                '<td>' + item.category + '</td>' +
+                '<td>' + item.price + '&#8362' + '</td>' +
+                '<td>' + item.numOfSellers + '</td>' +
                 '</tr>').appendTo(itemsTable);
         })
     })
@@ -135,7 +135,6 @@ $(function setMakeOrderForm(){
     let orderSelect = $("#orderSelect");
     let storeLabel = $("#storeLabel");
 
-
     //stores list is hidden before static order was chosen
     storeSelect.hide();
     storeLabel.hide();
@@ -144,9 +143,10 @@ $(function setMakeOrderForm(){
         url: STORES_LIST_URL,
         success: function (stores){
             $.each(stores || [], function(index, store){
-                $('<option>' + store.name + '</option>')
-                    .val(store.id)
-                    .appendTo(storeSelect);
+                storeSelect.append(new Option(store.name, store.id));
+                // $('<option>' + store.name + '</option>')
+                //     .val(store.id)
+                //     .appendTo(storeSelect);
             })
         }
     })
@@ -155,10 +155,12 @@ $(function setMakeOrderForm(){
     orderSelect.change(function (){
         if(orderSelect.val()=="static"){
             storeSelect.show();
+            storeSelect.prop('required', true);
             storeLabel.show();
         }
         else{   //orderSelect.val()=="dynamic"
             storeSelect.hide();
+            storeSelect.prop('required', false);
             storeLabel.hide();
         }
     })

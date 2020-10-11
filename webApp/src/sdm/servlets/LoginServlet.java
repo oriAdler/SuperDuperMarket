@@ -34,7 +34,8 @@ public class LoginServlet extends HttpServlet{
             if(usernameFromParameter == null || usernameFromParameter.isEmpty()){
                 //no username in session and no username in parameter -
                 //redirect back to the index page
-                response.sendRedirect(SIGN_UP_URL);
+                response.setStatus(409);    //conflict in server side
+                response.getOutputStream().println(SIGN_UP_URL);
             }
             else{
                 //normalize the username value
@@ -43,9 +44,10 @@ public class LoginServlet extends HttpServlet{
                     if(userManager.isUserExists(usernameFromParameter)){
                         String errorMessage = "Username " + usernameFromParameter +
                                 " already exist. please enter a different username";
-                        // username already exists...
-                        request.setAttribute(Constants.USER_NAME_ERROR, errorMessage);
-                        getServletContext().getRequestDispatcher(LOGIN_ERROR_URL).forward(request, response);
+                        response.setStatus(401); // unauthorized - username already exists...
+                        response.getOutputStream().println(errorMessage);
+                        //request.setAttribute(Constants.USER_NAME_ERROR, errorMessage);
+                        //getServletContext().getRequestDispatcher(LOGIN_ERROR_URL).forward(request, response);
                     }
                     else{
                         //add the new user to the users list
@@ -54,14 +56,19 @@ public class LoginServlet extends HttpServlet{
                         request.getSession(true).setAttribute(USERNAME, usernameFromParameter);
                         request.getSession().setAttribute(USER_TYPE, userTypeFromParameter);
                         //redirect the request to the store regions page - in order to actually change the URL
-                        response.sendRedirect(STORES_REGION_URL);
+                        System.out.println("On login, request URI is: " + request.getRequestURI());
+                        response.setStatus(200);
+                        response.getOutputStream().println(STORES_REGION_URL);
+                        //response.sendRedirect(STORES_REGION_URL);
                     }
                 }
             }
         }
         else{
             //User is already logged in
-            response.sendRedirect(STORES_REGION_URL);
+            response.setStatus(200);
+            response.getOutputStream().println(STORES_REGION_URL);
+            //response.sendRedirect(STORES_REGION_URL);
         }
     }
 

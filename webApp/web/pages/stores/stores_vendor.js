@@ -45,12 +45,12 @@ function refreshItemsList(items){
     //rebuild the items table:
     $.each(items || [], function(index,item){
         $('<tr>' +
-            '<th>' + item.id + '</th>' +
-            '<th>' + item.name + '</th>' +
-            '<th>' + item.category + '</th>' +
-            '<th>' + item.numOfSellers + '</th>' +
-            '<th>' + item.price + '&#8362' +'</th>' +
-            '<th>' + item.numOfSales + '</th>' +
+            '<td>' + item.id + '</td>' +
+            '<td>' + item.name + '</td>' +
+            '<td>' + item.category + '</td>' +
+            '<td>' + item.numOfSellers + '</td>' +
+            '<td>' + item.price + '&#8362' +'</td>' +
+            '<td>' + item.numOfSales + '</td>' +
             '</tr>').appendTo(itemTable);
     })
 }
@@ -95,11 +95,11 @@ function refreshStoresList(stores){
         // numOfSellers: 0
         $.each(store.items || [], function (index, item){
             $('<tr>' +
-                '<th>' + item.id + '</th>' +
-                '<th>' + item.name + '</th>' +
-                '<th>' + item.category + '</th>' +
-                '<th>' + item.price + '&#8362' + '</th>' +
-                '<th>' + item.numOfSellers + '</th>' +
+                '<td>' + item.id + '</td>' +
+                '<td>' + item.name + '</td>' +
+                '<td>' + item.category + '</td>' +
+                '<td>' + item.price + '&#8362' + '</td>' +
+                '<td>' + item.numOfSellers + '</td>' +
                 '</tr>').appendTo(itemsTable);
         })
     })

@@ -7,8 +7,9 @@ public class ItemExtendedDTO extends ItemDTO {
     final private Boolean onDiscount;
 
     public ItemExtendedDTO(int id, String name, String category, int numOfSellers,
-                           double price, double numOfSales, String storeName, Integer storeId, Boolean onDiscount) {
-        super(id, name, category, numOfSellers, price, numOfSales);
+                           double price, double numOfSales, String storeName,
+                           Integer storeId, Boolean onDiscount, boolean isSoldByStore) {
+        super(id, name, category, numOfSellers, price, numOfSales, isSoldByStore);
         this.storeName = storeName;
         this.storeId = storeId;
         this.onDiscount = onDiscount;

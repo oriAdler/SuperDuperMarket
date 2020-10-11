@@ -49,7 +49,7 @@ public class MakeOrderServlet extends HttpServlet {
                 String orderType = request.getParameter(Constants.ORDER_TYPE);
                 httpSession.setAttribute(Constants.ORDER_TYPE, orderType);
                 if(orderType.equals("static")){
-                    httpSession.setAttribute(Constants.STORE, request.getParameter(Constants.STORE));
+                    httpSession.setAttribute(Constants.STORE_ID, request.getParameter(Constants.STORE_ID));
                 }
 
                 httpSession.setAttribute(Constants.X_LOCATION, x);

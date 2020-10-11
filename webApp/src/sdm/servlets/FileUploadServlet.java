@@ -32,7 +32,6 @@ public class FileUploadServlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         response.setContentType("text/html");
-        PrintWriter out = response.getWriter();
 
         Engine engine = ServletUtils.getEngine(getServletContext());
 
@@ -41,10 +40,12 @@ public class FileUploadServlet extends HttpServlet {
         //TODO: check if .XML file
         try{
             engine.loadDataFromFile(filePart.getInputStream(), SessionUtils.getUsername(request));
-            out.println("File was loaded successfully");
+            response.setStatus(200);
+            response.getOutputStream().println("File was loaded successfully");
         }
         catch (Exception exception){
-            out.println(exception.getMessage());
+            response.setStatus(400);
+            response.getOutputStream().println(exception.getMessage());
         }
     }
 

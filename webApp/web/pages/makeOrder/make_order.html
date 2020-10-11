@@ -1,10 +1,41 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <title>Make Order</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <title>Stores</title>
+    <script src="../../common/jquery-2.0.3.min.js"></script>
+    <script src="../../common/context-path-helper.js"></script>
+    <script src="make_order.js"></script>
+    <link rel="stylesheet" href="../../common/w3.css">
 </head>
 <body>
+<!-- Navbar -->
+<div class="w3-top w3-black">
+    <div class="w3-bar w3-black w3-card">
+        <a id="logo" href="#" class="w3-bar-item w3-button w3-padding-large">Super Duper Market</a>
+        <a href="../stores/stores_customer.html" class="w3-bar-item w3-button w3-padding-large w3-right">BACK</a>
+    </div>
+</div>
+
+<!-- Items table -->
+<div id="items">
+    <div class="w3-container w3-content w3-center w3-padding-64" style="max-width:1600px">
+        <h2 class="w3-wide">CHOOSE ITEMS</h2>
+        <div class="w3-row w3-padding-32">
+            <div class="w3-container">
+                <div class="w3-responsive">
+                    <table id="itemsTable" class="w3-striped w3-border w3-table-all w3-large"></table>
+                    <p id="check"></p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<footer class="w3-container w3-black w3-right-align">
+    <h5>&copy Super Duper Market 2020</h5>
+</footer>
+
 
 </body>
 </html>
