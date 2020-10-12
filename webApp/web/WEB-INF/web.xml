@@ -120,4 +120,13 @@
         <url-pattern>/orderItemsList</url-pattern>
     </servlet-mapping>
 
+    <servlet>
+        <servlet-name>GetDynamicOrderSummaryServlet</servlet-name>
+        <servlet-class>sdm.servlets.GetDynamicOrderSummaryServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>GetDynamicOrderSummaryServlet</servlet-name>
+        <url-pattern>/getDynamicOrderSummary</url-pattern>
+    </servlet-mapping>
+
 </web-app>

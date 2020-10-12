@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-    <title>Stores</title>
+    <title>Make Order</title>
     <script src="../../common/jquery-2.0.3.min.js"></script>
     <script src="../../common/context-path-helper.js"></script>
     <script src="make_order.js"></script>
@@ -24,8 +24,11 @@
         <div class="w3-row w3-padding-32">
             <div class="w3-container">
                 <div class="w3-responsive">
+                    <form id="chooseItemForm" class="w3-container" method="GET" action="chooseItems">
                     <table id="itemsTable" class="w3-striped w3-border w3-table-all w3-large"></table>
-                    <p id="check"></p>
+                    <button class="w3-button w3-block w3-green w3-section w3-padding" type="submit">Proceed to Checkout</button>
+                    <div id="error-placeholder" class="w3-text-red" role="alert"></div>
+                    </form>
                 </div>
             </div>
         </div>

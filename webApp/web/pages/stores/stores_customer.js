@@ -125,8 +125,9 @@ function ajaxStoresList(){
 }
 
 $(function(){
+    //ajaxItemsTable();
     setInterval(ajaxItemsTable, refreshRate);
-
+    //ajaxStoresList();
     setInterval(ajaxStoresList, refreshRate);
 })
 
@@ -179,6 +180,14 @@ $(function() {
             },
             success: function(nextPageUrl) {
                 window.location.assign(nextPageUrl);
+                // Check browser support for web storage API
+                if (typeof(Storage) !== "undefined") {
+                    // Store order type & store:
+                    localStorage.setItem("orderType", $("#orderSelect").val());
+                    localStorage.setItem("store", $("#storeSelect option:selected").html());
+                } else {
+                    alert("Sorry, your browser does not support Web Storage...");
+                }
             }
         });
 
