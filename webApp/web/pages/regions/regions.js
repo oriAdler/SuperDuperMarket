@@ -161,7 +161,7 @@ function refreshRegionTable(regions){
             '<td>' + region.numOfItemsType + '</td>' +
             '<td>' + region.numOfStores + '</td>' +
             '<td>' + region.numOfOrders + '</td>' +
-            '<td>' + region.ordersAveragePrice + '</td>' +
+            '<td>' + region.ordersAveragePrice + '&#8362' + '</td>' +
             '<td>' + '<button>Go to region >></button>' + '</td>' +
             '</tr>').appendTo(regionTable)
             .find("button")

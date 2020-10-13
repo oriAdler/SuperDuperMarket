@@ -1,7 +1,7 @@
 
 const ORDER_ITEMS_TABLE = buildUrlWithContextPath("orderItemsList");
 const GET_REGION_NAME_URL = buildUrlWithContextPath("getRegion");
-const GET_DYNAMIC_ORDER_SUMMARY = buildUrlWithContextPath("getDynamicOrderSummary");
+const CHOOSE_ITEMS_URL = buildUrlWithContextPath("chooseItems");
 
 // ItemDTO object:
 //{"id":1,
@@ -51,9 +51,11 @@ function refreshItemsTable(items){
                         buttonCell.empty();
                         if(item.category==="Quantity"){
                             buttonCell.append('<input type="number" id="amount" name="amount" min="1" step="1" value="1">');
+                            tableRow.find("input").attr('name', item.id);
                         }
                         else{   //item.category==="Quantity"
                             buttonCell.append('<input type="number" id="amount" name="amount" min="0.5" step="0.1" value="0.5">');
+                            tableRow.find("input").attr('name', item.id);
                         }
                         tableRow.addClass("inCart");    //in order to extract from table and send to server.
                 });
@@ -110,19 +112,78 @@ function Item(id, amount){
     this.amount = amount;
 }
 
-function ajaxDynamicOrderSummary(itemsArray){
-    $.ajax({
-        url: GET_DYNAMIC_ORDER_SUMMARY,
-        type: 'POST',
-        contentType: 'application/json',
-        data: JSON.stringify(itemsArray),
-        error: function (error){
+// function ajaxDynamicOrderSummary(itemsArray){
+//     $.ajax({
+//         url: CHOOSE_ITEMS_URL,
+//         type: 'POST',
+//         contentType: 'application/json',
+//         data: "itemsArray=" + JSON.stringify(itemsArray),
+//         error: function (error){
+//
+//         },
+//         success: function (result){
+//
+//         }
+//     })
+// }
 
-        },
-        success: function (result){
+function showOrderSummary(carts){
+    //clear page old details - choose item form
+    let items = $("#items");
+    items.find("h2").text("ORDER SUMMARY");
+    let innerDiv = $("#innerDiv");
+    innerDiv.empty();
 
-        }
-    })
+    //build order html page:
+    //build order summary table:
+    let orderTable = $('<tr>' +
+        '<th>Serial No.</th>' +
+        '<th>Name</th>' +
+        '<th>Location</th>' +
+        '<th>Distance</th>' +
+        '<th>PPK</th>' +
+        '<th>Delivery Price</th>' +
+        '<th>Products No.</th>' +
+        '<th>Items Price</th>' +
+        '</tr>');
+    orderTable.addClass("w3-striped w3-border w3-table-all w3-large")
+
+    //CartDTO object:
+    // PPK: 0
+    // deliveryPrice: 0
+    // distanceFromStoreToCustomer: 4
+    // items: [{…}]
+    // itemsNumber: 1
+    // storeId: 2
+    // storeName: "Hakol beshekel"
+    // storeXLocation: 1
+    // storeYLocation: 5
+    // totalItemsPrice: 0.5
+    // totalOrderPrice: 0.5
+    $.each(carts || [], function(index, cart){
+        $('<tr>' +
+            '<td>' + cart.storeId + '</td>' +
+            '<td>' + cart.storeName + '</td>' +
+            '<td>' + '[' + cart.storeXLocation + ',' + cart.storeYLocation + ']' + '</td>' +
+            '<td>' + cart.distanceFromStoreToCustomer + '</td>' +
+            '<td>' + cart.PPK + '&#8362' + '</td>' +
+            '<td>' + cart.deliveryPrice + '&#8362' + '</td>' +
+            '<td>' + cart.itemsNumber + '</td>' +
+            '<td>' + cart.totalItemsPrice + '&#8362' + '</td>' +
+            '</tr>').appendTo(orderTable)
+    });
+
+    //build order summary button:
+    let button = '<button>Checkout</button>';
+
+    innerDiv.append(orderTable);
+    innerDiv.append(button);
+
+    innerDiv.find("button")
+        .addClass("w3-button w3-block w3-green w3-section w3-padding")
+        .click(function(){
+            alert("It works!");
+        });
 }
 
 $(function chooseItemsFrom(){
@@ -138,30 +199,36 @@ $(function chooseItemsFrom(){
             }
         })
         if(itemWasChosen){
-            let itemsArray = [];
+            let parameters = $(this).serialize();
 
-            // fill items array:
-            tableRows.each(function(){
-                let tableRow = $(this);
-                if(tableRow.hasClass("inCart")){
-                    itemsArray.push(new Item(tableRow.children(".id").html(), tableRow.find("input").val()));
+            $.ajax({
+                method: 'POST',
+                data: parameters,
+                url: CHOOSE_ITEMS_URL,
+                timeout: 2000,
+                error: function (errorObject) {
+                    console.log(errorObject.responseText);
+                },
+                success: function (carts) {
+                    // $.each(carts || [], function (index, cart){
+                    //     console.log(cart);
+                    // });
+                    showOrderSummary(carts);
                 }
-            })
+            });
 
-            console.log(itemsArray);
-            //TODO: change local storage to servlet who tells what is the order type.
-            if(localStorage.getItem("orderType")==="dynamic"){
-                ajaxDynamicOrderSummary(itemsArray);
-            }
-            else{
-
-            }
+            return false;
+            // //TODO: change local storage to servlet who tells what is the order type.
+            // if(localStorage.getItem("orderType")==="dynamic"){
+            //     //ajaxDynamicOrderSummary(itemsArray);
+            // }
+            // else{
+            //
+            // }
         }
         else{   //item wasn't chosen
             $("#error-placeholder").text("Please chose at least one item before Checkout");
         }
-
-        return false;
     });
 });
 

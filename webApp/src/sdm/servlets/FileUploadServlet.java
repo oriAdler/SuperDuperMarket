@@ -23,7 +23,7 @@ import java.util.Scanner;
 
 @MultipartConfig(fileSizeThreshold = 1024 * 1024, maxFileSize = 1024 * 1024 * 5, maxRequestSize = 1024 * 1024 * 5 * 5)
 public class FileUploadServlet extends HttpServlet {
-
+    //TODO: is this do get necessary ?
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         response.sendRedirect("uploadForm/form.html");
@@ -50,7 +50,6 @@ public class FileUploadServlet extends HttpServlet {
     }
 
     //TODO: understand how this function works
-
 //    private String readFromInputStream(InputStream inputStream) {
 //        return new Scanner(inputStream).useDelimiter("\\Z").next();
 //    }

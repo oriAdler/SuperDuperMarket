@@ -20,7 +20,7 @@ import java.util.Scanner;
 
 public class AddMoneyServlet extends HttpServlet {
 
-    //TODO: understand what is do get about
+    //TODO: is this do get necessary ?
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         response.sendRedirect("transferMoney/form.html");

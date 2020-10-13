@@ -122,11 +122,11 @@
 
     <servlet>
         <servlet-name>GetDynamicOrderSummaryServlet</servlet-name>
-        <servlet-class>sdm.servlets.GetDynamicOrderSummaryServlet</servlet-class>
+        <servlet-class>sdm.servlets.SetOrderChosenItemsServlet</servlet-class>
     </servlet>
     <servlet-mapping>
         <servlet-name>GetDynamicOrderSummaryServlet</servlet-name>
-        <url-pattern>/getDynamicOrderSummary</url-pattern>
+        <url-pattern>/chooseItems</url-pattern>
     </servlet-mapping>
 
 </web-app>

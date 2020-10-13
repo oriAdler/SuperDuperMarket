@@ -30,10 +30,6 @@ public class UserManager {
         }
     }
 
-    public synchronized void removeUser(String username) {
-        usersMap.remove(username);
-    }
-
     public synchronized Map<String, User> getUsers() {
         return Collections.unmodifiableMap(usersMap);
     }
@@ -42,7 +38,7 @@ public class UserManager {
         return usersMap.containsKey(username);
     }
 
-    public UserDTO getUserInfo(String userName){
+    public synchronized UserDTO getUserInfo(String userName){
         if(usersMap.containsKey(userName)){
             User user = usersMap.get(userName);
             return new UserDTO(user.getId(), user.getName(), user.getType());
@@ -52,7 +48,7 @@ public class UserManager {
         }
     }
 
-    public List<TransactionDTO> getUserTransactions(String userName){
+    public synchronized List<TransactionDTO> getUserTransactions(String userName){
         if(usersMap.containsKey(userName)){
             return usersMap.get(userName).getAccount().getTransactionDTOList();
         }

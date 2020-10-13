@@ -1,7 +1,6 @@
 package sdm.servlets;
 
 import engine.users.UserManager;
-import sdm.constants.Constants;
 import sdm.utils.ServletUtils;
 import sdm.utils.SessionUtils;
 
@@ -18,7 +17,6 @@ public class LoginServlet extends HttpServlet{
 
     private final String STORES_REGION_URL = "pages/regions/regions.html";
     private final String SIGN_UP_URL = "../signup/signup.html";
-    private final String LOGIN_ERROR_URL = "/pages/loginError/login_error.html";
 
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
