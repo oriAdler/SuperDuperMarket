@@ -271,10 +271,12 @@ $(function closeModalTransfer(){
 //activate the timer calls after the page is loaded
 $(function() {
     //The users list is refreshed automatically
+    ajaxUsersList();
     setInterval(ajaxUsersList, refreshRate);
 
     //The region table is refreshed automatically
     setInterval(ajaxRegionTable, refreshRate);
 
+    ajaxTransactionsTable();
     setInterval(ajaxTransactionsTable, refreshRate);
 });

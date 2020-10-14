@@ -20,10 +20,12 @@ import java.util.Scanner;
 
 public class AddMoneyServlet extends HttpServlet {
 
-    //TODO: is this do get necessary ?
+    private final String REGIONS_URL = "../regions/regions.html";
+
+    //TODO: is that right?
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        response.sendRedirect("transferMoney/form.html");
+        response.sendRedirect(REGIONS_URL);
     }
 
     @Override

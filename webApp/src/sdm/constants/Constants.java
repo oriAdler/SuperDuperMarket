@@ -12,4 +12,7 @@ public class Constants {
     public static final String X_LOCATION = "x";
     public static final String Y_LOCATION = "y";
     public static final String ORDER_ITEMS_MAP = "orderItemsMap";
+    public static final String ORDER_ITEMS_MAP_DUMMY = "orderItemsMapDummy";
+
+    public static final String DYNAMIC_ORDER = "dynamic";
 }

@@ -23,10 +23,12 @@ import java.util.Scanner;
 
 @MultipartConfig(fileSizeThreshold = 1024 * 1024, maxFileSize = 1024 * 1024 * 5, maxRequestSize = 1024 * 1024 * 5 * 5)
 public class FileUploadServlet extends HttpServlet {
-    //TODO: is this do get necessary ?
+
+    private final String REGIONS_URL = "../regions/regions.html";
+
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        response.sendRedirect("uploadForm/form.html");
+        response.sendRedirect(REGIONS_URL);
     }
 
     @Override

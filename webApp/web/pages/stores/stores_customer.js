@@ -62,7 +62,7 @@ function refreshStoresList(stores){
     storesList.empty();
 
     $.each(stores || [], function(index, store){
-        let container = $('<div></div>').addClass("w3-row w3-white w3-margin-bottom").appendTo(storesList);
+        let container = $('<div></div>').addClass("w3-row w3-white w3-margin-bottom w3-responsive").appendTo(storesList);
 
         let third = $('<div></div>').addClass("w3-third w3-container").appendTo(container);
         let storeData = $('<div>' +
@@ -78,7 +78,7 @@ function refreshStoresList(stores){
             .addClass("w3-left-align")
             .appendTo(third);
 
-        let twoThird = $('<div></div>').addClass("w3-twothird w3-container").appendTo(container);
+        let twoThird = $('<div></div>').addClass("w3-twothird w3-container w3-responsive").appendTo(container);
         $('<h3>Items</h3>').appendTo(twoThird);
         let itemsTable = $('<table></table>').addClass("w3-striped w3-border w3-table-all w3-large").appendTo(twoThird);
         $('<tr>' +
@@ -125,9 +125,11 @@ function ajaxStoresList(){
 }
 
 $(function(){
-    //ajaxItemsTable();
+
+    ajaxItemsTable();
     setInterval(ajaxItemsTable, refreshRate);
-    //ajaxStoresList();
+
+    ajaxStoresList();
     setInterval(ajaxStoresList, refreshRate);
 })
 

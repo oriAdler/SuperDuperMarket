@@ -2,6 +2,8 @@
 const ORDER_ITEMS_TABLE = buildUrlWithContextPath("orderItemsList");
 const GET_REGION_NAME_URL = buildUrlWithContextPath("getRegion");
 const CHOOSE_ITEMS_URL = buildUrlWithContextPath("chooseItems");
+const CHOOSE_DISCOUNTS_URL = "../approveOrder/approve_order.html";
+//const CHOOSE_DISCOUNTS_URL = "../chooseDiscounts/choose_discounts.html";
 
 // ItemDTO object:
 //{"id":1,
@@ -106,27 +108,6 @@ $(function getRegionNameAndAdjustPage(){
     }
 });
 
-// item constructor
-function Item(id, amount){
-    this.id = id;
-    this.amount = amount;
-}
-
-// function ajaxDynamicOrderSummary(itemsArray){
-//     $.ajax({
-//         url: CHOOSE_ITEMS_URL,
-//         type: 'POST',
-//         contentType: 'application/json',
-//         data: "itemsArray=" + JSON.stringify(itemsArray),
-//         error: function (error){
-//
-//         },
-//         success: function (result){
-//
-//         }
-//     })
-// }
-
 function showOrderSummary(carts){
     //clear page old details - choose item form
     let items = $("#items");
@@ -182,7 +163,7 @@ function showOrderSummary(carts){
     innerDiv.find("button")
         .addClass("w3-button w3-block w3-green w3-section w3-padding")
         .click(function(){
-            alert("It works!");
+            window.location.assign(CHOOSE_DISCOUNTS_URL);
         });
 }
 
@@ -210,10 +191,12 @@ $(function chooseItemsFrom(){
                     console.log(errorObject.responseText);
                 },
                 success: function (carts) {
-                    // $.each(carts || [], function (index, cart){
-                    //     console.log(cart);
-                    // });
-                    showOrderSummary(carts);
+                    if(localStorage.getItem("orderType")==="dynamic"){
+                        showOrderSummary(carts);
+                    }
+                    else{   //"orderType"==="static"
+                        window.location.assign(CHOOSE_DISCOUNTS_URL);
+                    }
                 }
             });
 

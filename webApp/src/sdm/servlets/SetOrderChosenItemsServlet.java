@@ -41,7 +41,11 @@ public class SetOrderChosenItemsServlet extends HttpServlet {
                     //save user chosen items on session
                     request.getSession().setAttribute(ORDER_ITEMS_MAP, itemIdToItem);
 
-                    if(request.getSession().getAttribute(ORDER_TYPE).equals("dynamic")){
+                    //make a copy of the map for discounts updating
+                    Map<Integer, Double> itemIdToItemDummy = new HashMap<>(itemIdToItem);
+                    request.getSession().setAttribute(ORDER_ITEMS_MAP_DUMMY, itemIdToItemDummy);
+
+                    if(request.getSession().getAttribute(ORDER_TYPE).equals(DYNAMIC_ORDER)){
                         //summarize order and return json to client
                         String regionName = request.getSession().getAttribute(REGION_NAME).toString();
                         SuperDuperMarket regionSDM = engine.getRegionSDM(regionName);

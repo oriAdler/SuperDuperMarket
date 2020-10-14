@@ -129,4 +129,31 @@
         <url-pattern>/chooseItems</url-pattern>
     </servlet-mapping>
 
+    <servlet>
+        <servlet-name>GetDiscountServlet</servlet-name>
+        <servlet-class>sdm.servlets.GetDiscountServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>GetDiscountServlet</servlet-name>
+        <url-pattern>/discountsList</url-pattern>
+    </servlet-mapping>
+
+    <servlet>
+        <servlet-name>RefreshDiscountServlet</servlet-name>
+        <servlet-class>sdm.servlets.RefreshDiscountServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>RefreshDiscountServlet</servlet-name>
+        <url-pattern>/refreshDiscountList</url-pattern>
+    </servlet-mapping>
+
+    <servlet>
+        <servlet-name>GetOrderSummaryServlet</servlet-name>
+        <servlet-class>sdm.servlets.GetOrderSummaryServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>GetOrderSummaryServlet</servlet-name>
+        <url-pattern>/getOrderSummary</url-pattern>
+    </servlet-mapping>
+
 </web-app>
