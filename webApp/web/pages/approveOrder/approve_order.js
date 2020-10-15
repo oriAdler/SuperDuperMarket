@@ -1,6 +1,6 @@
 
 const ORDER_SUMMARY_URL = buildUrlWithContextPath("getOrderSummary");
-
+const APPROVE_ORDER_URL = buildUrlWithContextPath("approveOrder");
 // List<CartDTO>:
 // PPK: 10
 // deliveryPrice: 36.05551275463989
@@ -25,12 +25,17 @@ function refreshOrdersList(carts){
         let container = $('<div></div>').addClass("w3-row w3-white w3-margin-bottom").appendTo(cartsList);
 
         let third = $('<div></div>').addClass("w3-third w3-container").appendTo(container);
+
+        //fix doubles to two decimal digits:
+        let distance = Number.parseFloat(cart.distanceFromStoreToCustomer).toFixed(2);
+        let deliveryPrice = Number.parseFloat(cart.deliveryPrice).toFixed(2);
+
         let cartData = $('<div>' +
             '<h2>' + cart.storeName + '</h2>' +
             '<h4>' + 'Serial No. - ' + cart.storeId + '</h4>' +
             '<h4>' + 'PPK - ' + cart.PPK + '&#8362' + '</h4>' +
-            '<h4>' + 'Distance to customer - ' + cart.distanceFromStoreToCustomer + '&#13214' + '</h4>' +
-            '<h4>' + 'Delivery Price - ' + cart.deliveryPrice + '&#8362' + '</h4>' +
+            '<h4>' + 'Distance to customer - ' + distance + '&#13214' + '</h4>' +
+            '<h4>' + 'Delivery Price - ' + deliveryPrice + '&#8362' + '</h4>' +
             '</div>')
             .addClass("w3-left-align")
             .appendTo(third);
@@ -66,7 +71,7 @@ function refreshOrdersList(carts){
                 '<td>' + item.category + '</td>' +
                 '<td>' + item.numOfSales + '</td>' +
                 '<td>' + item.price + '&#8362' + '</td>' +
-                '<td>' + item.priceSum + '</td>' +
+                '<td>' + item.priceSum + '&#8362' + '</td>' +
                 '<td>' + item.onDiscount + '</td>' +
                 '</tr>').appendTo(itemsTable);
         });
@@ -78,7 +83,19 @@ function refreshOrdersList(carts){
     cartsList.find("#ApproveButton")
         .addClass("w3-button w3-block w3-green w3-section w3-padding")
         .click(function (){
-            alert("approve button works");
+            $.ajax({
+                url: APPROVE_ORDER_URL,
+                error: function (errorObject){
+                    console.log(errorObject.responseText);
+                    alert(errorObject.responseText);
+                },
+                success: function (nextUrlPage){
+                    //TODO: why nextUrlPage doesn't work..
+                    console.log(nextUrlPage);
+                    window.location.assign(nextUrlPage);
+                    //window.location.assign("../stores/stores_customer.html");
+                }
+            })
     });
 
     let buttonCancel = '<button id="CancelButton">Cancel</button>';
@@ -86,7 +103,7 @@ function refreshOrdersList(carts){
     cartsList.find("#CancelButton")
         .addClass("w3-button w3-block w3-gray w3-section w3-padding")
         .click(function (){
-            alert("cancel button works");
+            window.location.href = "../stores/stores_customer.html";
         })
 }
 

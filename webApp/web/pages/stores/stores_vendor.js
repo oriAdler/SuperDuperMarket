@@ -39,17 +39,19 @@ function refreshItemsList(items){
         '<th>Category</th>' +
         '<th>Sellers No.</th>' +
         '<th>Average price</th>' +
-        '<th>Sold No.</th>' +
+        '<th>Sales No.</th>' +
         '</tr>').appendTo(itemTable);
 
     //rebuild the items table:
     $.each(items || [], function(index,item){
+        let price = Number.parseFloat(item.price).toFixed(2);
+
         $('<tr>' +
             '<td>' + item.id + '</td>' +
             '<td>' + item.name + '</td>' +
             '<td>' + item.category + '</td>' +
             '<td>' + item.numOfSellers + '</td>' +
-            '<td>' + item.price + '&#8362' +'</td>' +
+            '<td>' + price + '&#8362' +'</td>' +
             '<td>' + item.numOfSales + '</td>' +
             '</tr>').appendTo(itemTable);
     })
@@ -64,15 +66,18 @@ function refreshStoresList(stores){
         let container = $('<div></div>').addClass("w3-row w3-white w3-margin-bottom").appendTo(storesList);
 
         let third = $('<div></div>').addClass("w3-third w3-container").appendTo(container);
+        let itemsIncome = Number.parseFloat(store.totalItemsIncome).toFixed(2);
+        let deliveryIncome = Number.parseFloat(store.totalDeliveryIncome).toFixed(2);
+
         let storeData = $('<div>' +
             '<h2>' + store.name + '</h2>' +
             '<h4>' + 'Serial No. - ' + store.id + '</h4>' +
             '<h4>' + 'Owner - ' + store.ownerName + '</h4>' +
             '<h4>' + 'Location - [' + store.xLocation + ',' + store.yLocation + ']' + '</h4>' +
             '<h4>' + 'Orders No. - ' + store.numOfOrders + '</h4>' +
-            '<h4>' + 'Items income - ' + store.totalItemsIncome + '</h4>' +
+            '<h4>' + 'Items income - ' + itemsIncome + '</h4>' +
             '<h4>' + 'PPK - ' +  store.PPK + '</h4>' +
-            '<h4>' + 'Delivery Income - ' + store.totalDeliveryIncome + '</h4>' +
+            '<h4>' + 'Delivery Income - ' + deliveryIncome + '</h4>' +
             '</div>')
             .addClass("w3-left-align")
             .appendTo(third);
@@ -92,14 +97,14 @@ function refreshStoresList(stores){
         // name: "Toilet Paper"
         // category: "Quantity"
         // price: "10.00"
-        // numOfSellers: 0
+        // numOfSales: 10.0
         $.each(store.items || [], function (index, item){
             $('<tr>' +
                 '<td>' + item.id + '</td>' +
                 '<td>' + item.name + '</td>' +
                 '<td>' + item.category + '</td>' +
                 '<td>' + item.price + '&#8362' + '</td>' +
-                '<td>' + item.numOfSellers + '</td>' +
+                '<td>' + item.numOfSales + '</td>' +
                 '</tr>').appendTo(itemsTable);
         })
     })
@@ -123,8 +128,11 @@ function ajaxStoresList(){
     })
 }
 
+
 $(function(){
     setInterval(ajaxItemsTable, refreshRate);
 
     setInterval(ajaxStoresList, refreshRate);
+
+    // setInterval(ajaxOrdersList, refreshRate);
 })

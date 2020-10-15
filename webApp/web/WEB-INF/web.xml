@@ -144,7 +144,7 @@
     </servlet>
     <servlet-mapping>
         <servlet-name>RefreshDiscountServlet</servlet-name>
-        <url-pattern>/refreshDiscountList</url-pattern>
+        <url-pattern>/refreshDiscount</url-pattern>
     </servlet-mapping>
 
     <servlet>
@@ -154,6 +154,24 @@
     <servlet-mapping>
         <servlet-name>GetOrderSummaryServlet</servlet-name>
         <url-pattern>/getOrderSummary</url-pattern>
+    </servlet-mapping>
+
+    <servlet>
+        <servlet-name>ApproveOrderServlet</servlet-name>
+        <servlet-class>sdm.servlets.ApproveOrderServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>ApproveOrderServlet</servlet-name>
+        <url-pattern>/approveOrder</url-pattern>
+    </servlet-mapping>
+
+    <servlet>
+        <servlet-name>OrderListServlet</servlet-name>
+        <servlet-class>sdm.servlets.OrdersListServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>OrderListServlet</servlet-name>
+        <url-pattern>/ordersList</url-pattern>
     </servlet-mapping>
 
 </web-app>

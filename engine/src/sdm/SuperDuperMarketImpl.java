@@ -863,6 +863,19 @@ public class SuperDuperMarketImpl implements SuperDuperMarket {
     }
 
     @Override
+    public List<OrderDTO> getCustomerOrdersHistory(int customerId) {
+        List<OrderDTO> orderDTOList = new ArrayList<>();
+
+        orderIdToOrder.forEach((orderId, order) -> {
+            if(order.getCustomerId()==customerId){
+                orderDTOList.add(order.convertOrderToOrderDTO(orderId));
+            }
+        });
+
+        return orderDTOList;
+    }
+
+    @Override
     public RegionDTO superDuperMarketToRegionDTO() {
         return new RegionDTO(ownerName,
                 regionName,

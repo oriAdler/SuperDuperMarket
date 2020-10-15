@@ -78,6 +78,10 @@ public class Store implements Serializable {
         return Id;
     }
 
+    public String getOwnerName() {
+        return ownerName;
+    }
+
     public void setTotalDeliveryIncome(double totalDeliveryIncome) {
         this.totalDeliveryIncome = totalDeliveryIncome;
     }

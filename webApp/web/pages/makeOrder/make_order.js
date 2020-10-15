@@ -2,8 +2,8 @@
 const ORDER_ITEMS_TABLE = buildUrlWithContextPath("orderItemsList");
 const GET_REGION_NAME_URL = buildUrlWithContextPath("getRegion");
 const CHOOSE_ITEMS_URL = buildUrlWithContextPath("chooseItems");
-const CHOOSE_DISCOUNTS_URL = "../approveOrder/approve_order.html";
-//const CHOOSE_DISCOUNTS_URL = "../chooseDiscounts/choose_discounts.html";
+// const CHOOSE_DISCOUNTS_URL = "../approveOrder/approve_order.html";
+const CHOOSE_DISCOUNTS_URL = "../chooseDiscounts/choose_discounts.html";
 
 // ItemDTO object:
 //{"id":1,
@@ -142,15 +142,20 @@ function showOrderSummary(carts){
     // totalItemsPrice: 0.5
     // totalOrderPrice: 0.5
     $.each(carts || [], function(index, cart){
+        //fix doubles to two decimal digits:
+        let distance = Number.parseFloat(cart.distanceFromStoreToCustomer).toFixed(2);
+        let deliveryPrice = Number.parseFloat(cart.deliveryPrice).toFixed(2);
+        let itemsPrice = Number.parseFloat(cart.totalItemsPrice).toFixed(2);
+
         $('<tr>' +
             '<td>' + cart.storeId + '</td>' +
             '<td>' + cart.storeName + '</td>' +
             '<td>' + '[' + cart.storeXLocation + ',' + cart.storeYLocation + ']' + '</td>' +
-            '<td>' + cart.distanceFromStoreToCustomer + '</td>' +
+            '<td>' + distance + '</td>' +
             '<td>' + cart.PPK + '&#8362' + '</td>' +
-            '<td>' + cart.deliveryPrice + '&#8362' + '</td>' +
+            '<td>' + deliveryPrice + '&#8362' + '</td>' +
             '<td>' + cart.itemsNumber + '</td>' +
-            '<td>' + cart.totalItemsPrice + '&#8362' + '</td>' +
+            '<td>' + itemsPrice + '&#8362' + '</td>' +
             '</tr>').appendTo(orderTable)
     });
 

@@ -13,6 +13,9 @@ public class Constants {
     public static final String Y_LOCATION = "y";
     public static final String ORDER_ITEMS_MAP = "orderItemsMap";
     public static final String ORDER_ITEMS_MAP_DUMMY = "orderItemsMapDummy";
+    public static final String CARTS_LIST = "cartsList";
 
     public static final String DYNAMIC_ORDER = "dynamic";
+
+    public static final String TYPE_CUSTOMER = "Customer";
 }

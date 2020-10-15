@@ -1,6 +1,6 @@
 
 const FIRST_DISCOUNT_LIST_URL = buildUrlWithContextPath("discountsList");
-const REFRESH_DISCOUNTS_LIST_URL = buildUrlWithContextPath("refreshDiscountList");
+const REFRESH_DISCOUNTS_URL = buildUrlWithContextPath("refreshDiscount");
 
 // offer constructor
 function Offer(id, name, quantity, offerPrice, idStore){
@@ -29,7 +29,7 @@ function refreshDiscountsList(discounts){
 
         let form = $('<form class="w3-container" method="GET">')
             .appendTo(listItem);
-        form.attr('action', 'refreshDiscountList');
+        form.attr('action', '../../refreshDiscount');
 
         let div = $('<div class="w3-section">')
             .appendTo(form);
@@ -71,44 +71,44 @@ function refreshDiscountsList(discounts){
         let button = $('<button style="width:250px" type="submit">' + 'AddDiscount' + '</button>')
             .addClass("w3-button w3-block w3-green w3-section w3-padding");
         div.append(button);
-    });
 
-    $("form").submit(function(){
-        //update my discounts:
-        let nameOfDiscount = $(this).find("discountName").text();
-        $("#myDiscountsInnerDiv").append('<p>' + nameOfDiscount + '</p>');
+        //add a submit function to current form:
+        listItem.find("form").submit(function chooseDiscount(){
+            //update my discounts:
+            let nameOfDiscount = $(this).find("discountName").text();
+            $("#myDiscountsInnerDiv").append('<p>' + nameOfDiscount + '</p>');
 
-        //find chosen offers:
-        let chosenOffers = [];
+            //find chosen offers:
+            let chosenOffers = [];
 
-        //(int itemId, double amount, double price, int storeId)
-        $(this).find("input").each(function(index){
-            let offer = $(this);
-            if(offer.hasAttribute('disabled')){
-                chosenOffers.push(offersArray[offer.getAttribute('value')]);
-            }
-            else if(offer.getAttribute('checked')===true){
-                chosenOffers.push(offersArray[offer.getAttribute('value')]);
-            }
+            //(int itemId, double amount, double price, int storeId)
+            $(this).find("input").each(function(index){
+                let offer = $(this);
+                if(offer.hasAttribute('disabled')){
+                    chosenOffers.push(offersArray[offer.getAttribute('value')]);
+                }
+                else if(offer.getAttribute('checked')===true){
+                    chosenOffers.push(offersArray[offer.getAttribute('value')]);
+                }
+            });
+
+            console.log(chosenOffers);
+
+            //refresh discounts list:
+            $.ajax({
+                data: $(this).serialize(),
+                url: REFRESH_DISCOUNTS_URL,
+                timeout: 2000,
+                error: function (errorObject) {
+                    console.log(errorObject.responseText);
+                },
+                success: function (discounts){
+                    refreshDiscountsList(discounts);
+                }
+            });
+
+            return false;
         });
-
-        console.log(chosenOffers);
-
-        //refresh discounts list:
-        $.ajax({
-            method: 'POST',
-            data: $(this).serialize(),
-            url: REFRESH_DISCOUNTS_LIST_URL,
-            timeout: 2000,
-            error: function (errorObject) {
-                console.log(errorObject.responseText);
-            },
-            success: function (discounts){
-                refreshDiscountsList(discounts);
-            }
-        });
-
-        return false;
     });
 }
 

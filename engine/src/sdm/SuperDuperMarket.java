@@ -57,6 +57,7 @@ public interface SuperDuperMarket {
     List<StoreDTO> getAllStoreList();
     List<ItemDTO> getAllItemList();
     List<OrderDTO> getOrdersHistory();
+    List<OrderDTO> getCustomerOrdersHistory(int customerId);
 
     RegionDTO superDuperMarketToRegionDTO();
 }
