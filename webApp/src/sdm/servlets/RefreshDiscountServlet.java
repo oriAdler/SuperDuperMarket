@@ -1,13 +1,15 @@
 package sdm.servlets;
 
 import DTO.DiscountDTO;
+import DTO.ItemToRemove;
+import DTO.OfferDTO;
 import com.google.gson.Gson;
 import engine.Engine;
 import sdm.SuperDuperMarket;
 import sdm.utils.ServletUtils;
 
+import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
-import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -23,30 +25,41 @@ import static sdm.constants.Constants.*;
 public class RefreshDiscountServlet extends HttpServlet {
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
+
         response.setContentType("application/json");
         try(PrintWriter out = response.getWriter()){
             Gson gson = new Gson();
             HttpSession session = request.getSession();
             Engine engine = ServletUtils.getEngine(getServletContext());
 
-            String regionNameFromSession = session.getAttribute((REGION_NAME)).toString();
-            SuperDuperMarket regionSDM = engine.getRegionSDM(regionNameFromSession);
+            String offersJsonString = request.getParameter(OFFERS_ARRAY_FROM_PARAMETER);
+            OfferDTO[] offersArrayToAdd = gson.fromJson(offersJsonString, OfferDTO[].class);
 
-            //TODO: get user cart with casting or save cart somewhere else (UserManager)
+            //add current user's choice to offers list:
+            List<OfferDTO> offerDTOList = (List<OfferDTO>) session.getAttribute(OFFER_ARRAY_LIST);
+            for(OfferDTO offer : offersArrayToAdd){
+                offerDTOList.add(new OfferDTO(offer.getItemId(),
+                        offer.getItemName(),
+                        offer.getAmount(),
+                        offer.getPrice(),
+                        offer.getStoreId()));
+            }
+
+            String itemToRemoveJsonString = request.getParameter(ITEM_TO_REMOVE);
+            ItemToRemove itemToRemove = gson.fromJson(itemToRemoveJsonString, ItemToRemove.class);
+
+            //decrease item's amount from dummy items map to recalculate discounts
             Map<Integer, Double> itemIdToItem = (Map<Integer, Double>) session.getAttribute(ORDER_ITEMS_MAP_DUMMY);
-            List<DiscountDTO> discountDTOS = new ArrayList<>();
+            double amountBefore = itemIdToItem.get(itemToRemove.getItemId());
+            double amountAfter = amountBefore - itemToRemove.getAmount();
+            itemIdToItem.put(itemToRemove.getItemId(), amountAfter);
 
-            if(session.getAttribute(ORDER_TYPE).equals(DYNAMIC_ORDER)){
-                discountDTOS = regionSDM.getDiscounts(itemIdToItem);
-            }
-            else{
-                //TODO: how to get attributes from session? casting (int) or this way?
-                int storeId = Integer.parseInt(session.getAttribute(STORE_ID).toString());
-                discountDTOS = regionSDM.getStoreDiscounts(itemIdToItem, storeId);
-            }
+            //TODO: how to use request dispatcher ?
+            //getServletContext().getRequestDispatcher("/GetDiscountServlet").forward(request, response);
 
-            String json = gson.toJson(discountDTOS);
-            out.println(json);
+            //sending a json response to avoid error on client side
+            String jsonResponse = gson.toJson(itemToRemove);
+            out.print(jsonResponse);
             out.flush();
         }
     }

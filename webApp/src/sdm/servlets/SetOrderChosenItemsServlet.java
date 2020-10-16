@@ -1,6 +1,7 @@
 package sdm.servlets;
 
 import DTO.CartDTO;
+import DTO.OfferDTO;
 import com.google.gson.Gson;
 import engine.Engine;
 import engine.users.UserManager;
@@ -14,6 +15,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.awt.*;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -40,6 +42,9 @@ public class SetOrderChosenItemsServlet extends HttpServlet {
 
                     //save user chosen items on session
                     request.getSession().setAttribute(ORDER_ITEMS_MAP, itemIdToItem);
+                    //save new offers list on session (for discounts phase)
+                    List<OfferDTO> offerDTOList = new ArrayList<>();
+                    request.getSession().setAttribute(OFFER_ARRAY_LIST, offerDTOList);
 
                     //make a copy of the map for discounts updating
                     Map<Integer, Double> itemIdToItemDummy = new HashMap<>(itemIdToItem);

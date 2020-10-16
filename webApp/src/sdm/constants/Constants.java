@@ -16,6 +16,9 @@ public class Constants {
     public static final String CARTS_LIST = "cartsList";
 
     public static final String DYNAMIC_ORDER = "dynamic";
+    public static final String OFFERS_ARRAY_FROM_PARAMETER = "offersArray";
+    public static final String OFFER_ARRAY_LIST = "offerArrayList";
+    public static final String ITEM_TO_REMOVE = "itemToRemove";
 
     public static final String TYPE_CUSTOMER = "Customer";
 }

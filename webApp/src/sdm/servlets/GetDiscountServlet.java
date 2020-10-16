@@ -31,15 +31,13 @@ public class GetDiscountServlet extends HttpServlet {
                 String regionNameFromSession = session.getAttribute((REGION_NAME)).toString();
                 SuperDuperMarket regionSDM = engine.getRegionSDM(regionNameFromSession);
 
-                //TODO: get user cart with casting or save cart somewhere else (UserManager)
-                Map<Integer, Double> itemIdToItem = (Map<Integer, Double>) session.getAttribute(ORDER_ITEMS_MAP);
+                Map<Integer, Double> itemIdToItem = (Map<Integer, Double>) session.getAttribute(ORDER_ITEMS_MAP_DUMMY);
                 List<DiscountDTO> discountDTOS = new ArrayList<>();
 
                 if(session.getAttribute(ORDER_TYPE).equals(DYNAMIC_ORDER)){
                     discountDTOS = regionSDM.getDiscounts(itemIdToItem);
                 }
                 else{
-                    //TODO: how to get attributes from session? casting (int) or this way?
                     int storeId = Integer.parseInt(session.getAttribute(STORE_ID).toString());
                     discountDTOS = regionSDM.getStoreDiscounts(itemIdToItem, storeId);
                 }

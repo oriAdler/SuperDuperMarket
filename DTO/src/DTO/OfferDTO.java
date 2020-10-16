@@ -31,6 +31,10 @@ public class OfferDTO {
         return storeId;
     }
 
+    public String getItemName() {
+        return itemName;
+    }
+
     @Override
     public String toString() {
         return String.format("%.2f %s for %.2f each", amount, itemName, price);
