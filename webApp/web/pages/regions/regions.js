@@ -56,14 +56,22 @@ function refreshTransactionTable(transactions){
         '</tr>').appendTo(accountTable);
 
     $.each(transactions || [], function (index, transaction){
+        let amount = Number.parseFloat(transaction.amount).toFixed(2);
+        let balanceBefore = Number.parseFloat(transaction.balanceBefore).toFixed(2);
+        let balanceAfter = Number.parseFloat(transaction.balanceAfter).toFixed(2);
+        let date = transaction.date;
+
         let row = $('<tr>' +
                 '<td>' + transaction.type + '</td>' +
-                '<td>' + transaction.date + '</td>' +
-                '<td>' + transaction.amount + '&#8362' + '</td>' +
-                '<td>' + transaction.balanceBefore + '&#8362' + '</td>' +
-                '<td>' + transaction.balanceAfter + '&#8362' + '</td>' +
+                '<td>' + date.day + '-' + date.month + '-' + date.year + '</td>' +
+                '<td>' + amount + '&#8362' + '</td>' +
+                '<td>' + balanceBefore + '&#8362' + '</td>' +
+                '<td>' + balanceAfter + '&#8362' + '</td>' +
                 '</tr>').appendTo(accountTable);
-        if(transaction.type==="Add"){
+        if(transaction.type==="Charge"){
+            row.addClass("w3-text-red");
+        }
+        else{
             row.addClass("w3-text-green");
         }
     });
@@ -148,20 +156,21 @@ function refreshRegionTable(regions){
         '<th>Items No.</th>' +
         '<th>Stores No.</th>' +
         '<th>Orders No.</th>' +
-        '<th>Orders AVG price</th>' +
+        '<th>Orders average price</th>' +
         '<th>More Info</th>' +
     '</tr>').appendTo(regionTable);
 
     //rebuild the region's table:
     $.each(regions || [], function (index, region){
         console.log("Adding region #" + index + ": " + region);
+        let orderAveragePrice = Number.parseFloat(region.ordersAveragePrice).toFixed(2);
         $('<tr>' +
             '<td>' + region.ownerName + '</td>' +
             '<td>' + region.regionName + '</td>' +
             '<td>' + region.numOfItemsType + '</td>' +
             '<td>' + region.numOfStores + '</td>' +
             '<td>' + region.numOfOrders + '</td>' +
-            '<td>' + region.ordersAveragePrice + '&#8362' + '</td>' +
+            '<td>' + orderAveragePrice + '&#8362' + '</td>' +
             '<td>' + '<button>Go to region >></button>' + '</td>' +
             '</tr>').appendTo(regionTable)
             .find("button")

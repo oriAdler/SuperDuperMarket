@@ -1,13 +1,15 @@
 const refreshRate = 2000; //milli seconds
-const GET_REGION_NAME = buildUrlWithContextPath("getRegion");
-const ITEMS_TABLE = buildUrlWithContextPath("itemsTable");
-const STORES_LIST = buildUrlWithContextPath("storesList")
+const GET_REGION_NAME_URL = buildUrlWithContextPath("getRegion");
+const ITEMS_TABLE_URL = buildUrlWithContextPath("itemsTable");
+const STORES_LIST_URL = buildUrlWithContextPath("storesList")
+const FEEDBACKS_LIST_URL = buildUrlWithContextPath("feedbacksList");
+
 //Global Variables:
 var regionName;
 
 $(function getRegionNameAndAdjustPage(){
     $.ajax({
-        url: GET_REGION_NAME,
+        url: GET_REGION_NAME_URL,
         success: function(response){
             regionName = response;
             $("#logo").text(regionName);
@@ -75,9 +77,9 @@ function refreshStoresList(stores){
             '<h4>' + 'Owner - ' + store.ownerName + '</h4>' +
             '<h4>' + 'Location - [' + store.xLocation + ',' + store.yLocation + ']' + '</h4>' +
             '<h4>' + 'Orders No. - ' + store.numOfOrders + '</h4>' +
-            '<h4>' + 'Items income - ' + itemsIncome + '</h4>' +
-            '<h4>' + 'PPK - ' +  store.PPK + '</h4>' +
-            '<h4>' + 'Delivery Income - ' + deliveryIncome + '</h4>' +
+            '<h4>' + 'Items income - ' + itemsIncome + '&#8362' + '</h4>' +
+            '<h4>' + 'PPK - ' +  store.PPK + '&#8362' + '</h4>' +
+            '<h4>' + 'Delivery Income - ' + deliveryIncome + '&#8362' + '</h4>' +
             '</div>')
             .addClass("w3-left-align")
             .appendTo(third);
@@ -112,7 +114,7 @@ function refreshStoresList(stores){
 
 function ajaxItemsTable(){
     $.ajax({
-        url: ITEMS_TABLE,
+        url: ITEMS_TABLE_URL,
         success: function (items){
             refreshItemsList(items);
         }
@@ -121,18 +123,28 @@ function ajaxItemsTable(){
 
 function ajaxStoresList(){
     $.ajax({
-        url: STORES_LIST,
+        url: STORES_LIST_URL,
         success: function (stores){
             refreshStoresList(stores);
         }
     })
 }
 
+function ajaxFeedbacksList(){
+    $.ajax({
+        url: FEEDBACKS_LIST_URL,
+        success: function (feedbacks){
+            //refreshFeedbacksList(feedbacks);
+        }
+    })
+}
 
 $(function(){
+    ajaxItemsTable();
     setInterval(ajaxItemsTable, refreshRate);
 
+    ajaxStoresList();
     setInterval(ajaxStoresList, refreshRate);
 
-    // setInterval(ajaxOrdersList, refreshRate);
+    setInterval(ajaxFeedbacksList, refreshRate);
 })

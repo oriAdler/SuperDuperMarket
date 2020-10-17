@@ -1,12 +1,14 @@
 package sdm.servlets;
 
 import DTO.CartDTO;
+import DTO.OfferDTO;
 import DTO.StoreDTO;
 import com.google.gson.Gson;
 import engine.Engine;
 import engine.users.UserManager;
 import sdm.SuperDuperMarket;
 import sdm.utils.ServletUtils;
+import sdm.utils.SessionUtils;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -38,8 +40,8 @@ public class GetOrderSummaryServlet  extends HttpServlet {
 
             try {
                 //Get order relevant data from session:
-                //TODO: casting??
                 Map<Integer, Double> itemIdToItem = (Map<Integer, Double>) session.getAttribute(ORDER_ITEMS_MAP);
+                List<OfferDTO> offerDTOList = SessionUtils.getUserDiscounts(request);
                 String userName = session.getAttribute(USERNAME).toString();
                 int customerId = userManager.getUserInfo(userName).getId();
                 int x = Integer.parseInt(session.getAttribute(X_LOCATION).toString());
@@ -49,14 +51,14 @@ public class GetOrderSummaryServlet  extends HttpServlet {
 
                 if(session.getAttribute(ORDER_TYPE).toString().equals(DYNAMIC_ORDER)) {
                     cartDTOList.addAll(regionSDM.summarizeDynamicOrder(itemIdToItem,
-                            null,
+                            offerDTOList,
                             customerId,
                             new Point(x,y)));
                 }
                 else{   //ORDER_TYPE == STATIC_ORDER
                     int storeId = Integer.parseInt(session.getAttribute(STORE_ID).toString());
                     cartDTOList.add(regionSDM.summarizeStaticOrder(itemIdToItem,
-                            null,
+                            offerDTOList,
                             storeId,
                             customerId,
                             new Point(x,y)));

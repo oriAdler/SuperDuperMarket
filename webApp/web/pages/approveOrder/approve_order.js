@@ -1,6 +1,76 @@
 
 const ORDER_SUMMARY_URL = buildUrlWithContextPath("getOrderSummary");
 const APPROVE_ORDER_URL = buildUrlWithContextPath("approveOrder");
+const ADD_FEEDBACK_URL = buildUrlWithContextPath("addFeedback");
+
+// function Feedback(id, rating, text){
+//     this.id = id;
+//     this.rating = rating;
+//     this.text = text;
+// }
+
+function giveFeedbacks(){
+    $("#ApproveButton").hide();
+    $("#CancelButton").text("FINISH").removeClass("w3-gray").addClass("w3-green");
+
+    $("#divHeader").text("Give Feedbacks");
+    $(".storeDiv").each(function (){
+        let feedbackDiv = $(this);
+        let storeName = feedbackDiv.attr("storeName");
+        let storeId = feedbackDiv.attr("storeId");
+
+        feedbackDiv.empty();
+        feedbackDiv.append('<h2>' + storeName + '<h2>');
+
+        //build feedback form:
+        let form = $('<form class="w3-container w3-left-align" method="GET">').appendTo(feedbackDiv);
+        let innerDiv = $('<div class="w3-section">').appendTo(form);
+
+        $('<input type="hidden" name="id">').attr("value", storeId).appendTo(innerDiv);
+
+        $('<label>' + '<b>' + 'Rating' + '</b>' + '</label>').appendTo(innerDiv);
+        let radioButtonTable = $('<table style="max-width:200px"></table>').addClass("w3-striped w3-border w3-table-all").appendTo(innerDiv);
+        $('<tr>' +
+            '<th>1</th>' +
+            '<th>2</th>' +
+            '<th>3</th>' +
+            '<th>4</th>' +
+            '<th>5</th>' +
+            '</tr>').appendTo(radioButtonTable);
+        $('<tr>' +
+            '<td>' + '<input type="radio" name="rate" value="1" required>' + '</td>' +
+            '<td>' + '<input type="radio" name="rate" value="2" required>' + '</td>' +
+            '<td>' + '<input type="radio" name="rate" value="3" required>' + '</td>' +
+            '<td>' + '<input type="radio" name="rate" value="4" required>' + '</td>' +
+            '<td>' + '<input type="radio" name="rate" value="5" required>' + '</td>' +
+            '</tr>').appendTo(radioButtonTable);
+
+        $('<label>' + '<b>' + 'Feedback' + '</b>' + '</label>').appendTo(innerDiv);
+        let textArea = $('<textarea id="feedback" class="w3-input w3-border w3-margin-bottom" name="feedback" placeholder="Write your feedback here" style="height:150px">')
+            .appendTo(innerDiv);
+
+        $('<button class="w3-button w3-block w3-green w3-section w3-padding" type="submit">POST</button>')
+            .appendTo(innerDiv);
+        form.submit(function (){
+                feedbackDiv.empty();
+                feedbackDiv.append('<h4>' + 'Thank you for your feedback!' + '<h4>');
+            $.ajax({
+                type: 'POST',
+                data: $(this).serialize(),
+                url: ADD_FEEDBACK_URL,
+                error: function(errorObject) {
+                    alert("Failed to submit feedback !");
+                },
+                success: function(nextPageUrl) {
+                    //window.location.assign(nextPageUrl);
+                }
+            });
+
+            return false;
+        });
+    })
+}
+
 // List<CartDTO>:
 // PPK: 10
 // deliveryPrice: 36.05551275463989
@@ -23,6 +93,9 @@ function refreshOrdersList(carts){
 
     $.each(carts || [], function (index, cart){
         let container = $('<div></div>').addClass("w3-row w3-white w3-margin-bottom").appendTo(cartsList);
+        container.addClass("storeDiv");
+        container.attr("storeName", cart.storeName);
+        container.attr("storeId", cart.storeId);
 
         let third = $('<div></div>').addClass("w3-third w3-container").appendTo(container);
 
@@ -90,10 +163,9 @@ function refreshOrdersList(carts){
                     alert(errorObject.responseText);
                 },
                 success: function (nextUrlPage){
-                    //TODO: why nextUrlPage doesn't work..
-                    console.log(nextUrlPage);
-                    window.location.assign(nextUrlPage);
-                    //window.location.assign("../stores/stores_customer.html");
+                    giveFeedbacks();
+                    //console.log(nextUrlPage);
+                    //window.location.assign(nextUrlPage);
                 }
             })
     });

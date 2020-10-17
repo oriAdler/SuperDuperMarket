@@ -12,6 +12,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.awt.*;
 import java.io.IOException;
+import java.time.LocalDate;
 
 import static sdm.constants.Constants.REGION_NAME;
 
@@ -44,7 +45,8 @@ public class MakeOrderServlet extends HttpServlet {
             else{   //set basic order data on session, and redirect user to make_order.html
                 HttpSession httpSession = request.getSession();
 
-                httpSession.setAttribute(Constants.DATE, request.getParameter(Constants.DATE));
+                //save upon session ad localDate in order to parse on ApproveOrderServlet
+                httpSession.setAttribute(Constants.DATE, LocalDate.parse(request.getParameter(Constants.DATE)));
 
                 String orderType = request.getParameter(Constants.ORDER_TYPE);
                 httpSession.setAttribute(Constants.ORDER_TYPE, orderType);

@@ -2,6 +2,7 @@ package engine.users;
 
 import DTO.TransactionDTO;
 import DTO.UserDTO;
+import engine.accounts.Account;
 
 import java.util.*;
 
@@ -51,6 +52,15 @@ public class UserManager {
     public synchronized List<TransactionDTO> getUserTransactions(String userName){
         if(usersMap.containsKey(userName)){
             return usersMap.get(userName).getAccount().getTransactionDTOList();
+        }
+        else{
+            return null;
+        }
+    }
+
+    public synchronized Account getUserAccount(String userName){
+        if(usersMap.containsKey(userName)){
+            return usersMap.get(userName).getAccount();
         }
         else{
             return null;

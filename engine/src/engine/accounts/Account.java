@@ -2,6 +2,7 @@ package engine.accounts;
 
 import DTO.TransactionDTO;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -17,7 +18,10 @@ public class Account {
         transactionList = new ArrayList<>();
     }
 
-    public void addTransaction(String type, Date date, double amount){
+    public void addTransaction(String type, LocalDate date, double amount){
+        if(type.equals("Charge")){
+            amount *= (-1);
+        }
         oldBalance = currentBalance;
         currentBalance += amount;
         transactionList.add(new Transaction(type, date, amount, oldBalance, currentBalance));
@@ -50,12 +54,12 @@ public class Account {
 
     public static class Transaction {
         final private String type;
-        final private Date date;
+        final private LocalDate date;
         final private double amount;
         final private double balanceBefore;
         final private double balanceAfter;
 
-        public Transaction(String type, Date date, double amount, double balanceBefore, double balanceAfter) {
+        public Transaction(String type, LocalDate date, double amount, double balanceBefore, double balanceAfter) {
             this.type = type;
             this.date = date;
             this.amount = amount;
@@ -67,7 +71,7 @@ public class Account {
             return type;
         }
 
-        public Date getDate() {
+        public LocalDate getDate() {
             return date;
         }
 

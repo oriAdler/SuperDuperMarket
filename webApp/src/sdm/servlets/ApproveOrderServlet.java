@@ -1,12 +1,11 @@
 package sdm.servlets;
 
 import DTO.CartDTO;
-import DTO.ItemDTO;
-import com.google.gson.Gson;
+import DTO.TransactionDTO;
 import engine.Engine;
+import engine.accounts.Account;
 import engine.users.UserManager;
 import sdm.SuperDuperMarket;
-import sdm.constants.Constants;
 import sdm.utils.ServletUtils;
 
 import javax.servlet.ServletException;
@@ -18,8 +17,6 @@ import java.awt.*;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -47,25 +44,34 @@ public class ApproveOrderServlet extends HttpServlet {
                 SuperDuperMarket regionSDM = engine.getRegionSDM(regionNameFromSession);
 
                 //get order details
-                //TODO: casting?
                 String userName = session.getAttribute(USERNAME).toString();
                 List<CartDTO> cartDTOList = (List<CartDTO>) session.getAttribute(CARTS_LIST);
-                //Date date = (Date) session.getAttribute(DATE);
+                LocalDate date = (LocalDate) session.getAttribute(DATE);
                 int customerId = userManager.getUserInfo(userName).getId();
                 int x = Integer.parseInt(session.getAttribute(X_LOCATION).toString());
                 int y = Integer.parseInt(session.getAttribute(Y_LOCATION).toString());
 
+                Map<String, TransactionDTO> userNameToTransaction;
+
                 if(session.getAttribute(ORDER_TYPE).toString().equals(DYNAMIC_ORDER)){
-                    regionSDM.executeDynamicOrder(cartDTOList,
-                            LocalDate.of(2020, 10, 15),
+                    userNameToTransaction = regionSDM.executeDynamicOrder(cartDTOList,
+                            date,
                             customerId,
-                            new Point(x,y));
+                            new Point(x,y), userName);
                 }
                 else{
-                    regionSDM.executeStaticOrder(cartDTOList.get(0),
-                            LocalDate.of(2020,10,15),
-                            customerId);
+                    userNameToTransaction = regionSDM.executeStaticOrder(cartDTOList.get(0),
+                            date,
+                            customerId, userName);
                 }
+
+                //update transactions:
+                userNameToTransaction.forEach((key, value)->{
+                    Account userAccount = userManager.getUserAccount(key);
+                    if(userAccount != null){
+                        userAccount.addTransaction(value.getType(), value.getDate(), value.getAmount());
+                    }
+                });
 
                 //on success redirect user to page 3
                 out.println(STORES_URL);

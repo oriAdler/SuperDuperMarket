@@ -2,7 +2,11 @@
 const FIRST_DISCOUNT_LIST_URL = buildUrlWithContextPath("discountsList");
 const REFRESH_DISCOUNTS_URL = buildUrlWithContextPath("refreshDiscount");
 
-
+$(function (){
+    $("#checkoutButton").click(function (){
+        window.location.assign("../approveOrder/approve_order.html");
+    })
+})
 
 function ajaxDiscountList(){
     $.ajax({
@@ -99,7 +103,12 @@ function refreshDiscountsList(discounts){
 
             //update my discounts:
             let nameOfDiscount = form.find(".discountName").text();
-            $("#myDiscountsInnerDiv").append('<p>' + nameOfDiscount  + '</p>');
+            $('<li class="w3-bar">' +
+                '<img src=../../common/images/discount.jpg alt="" class="w3-bar-item w3-circle" style="width:85px">' +
+                '<div class="w3-bar-item">' +
+                nameOfDiscount +
+                '</div>' +
+                '</li>').appendTo($("#myDiscountsList"));
 
             //find chosen offers:
             let chosenOffers = [];
@@ -139,3 +148,4 @@ function refreshDiscountsList(discounts){
 }
 
 $(ajaxDiscountList());
+

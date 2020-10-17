@@ -15,6 +15,7 @@ import javax.servlet.http.Part;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintWriter;
+import java.time.LocalDate;
 import java.util.Date;
 import java.util.Scanner;
 
@@ -37,11 +38,10 @@ public class AddMoneyServlet extends HttpServlet {
         String userName = SessionUtils.getUsername(request);
         try{
             double amount = Double.parseDouble(request.getParameter("amount"));
-            //TODO: parse date
-            //Date date = request.getParameter("date");
+            LocalDate date = LocalDate.parse(request.getParameter("date"));
             if(userName!=null){
                 if(userManager.getUsers().containsKey(userName)){
-                    userManager.getUsers().get(userName).getAccount().addTransaction("Add", new Date(), amount);
+                    userManager.getUsers().get(userName).getAccount().addTransaction("Add", date, amount);
                     out.println(String.format("%.2f₪ were loaded successfully", amount));
                 }
             }

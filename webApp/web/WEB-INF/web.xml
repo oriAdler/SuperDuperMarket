@@ -174,4 +174,22 @@
         <url-pattern>/ordersList</url-pattern>
     </servlet-mapping>
 
+    <servlet>
+        <servlet-name>AddFeedbackServlet</servlet-name>
+        <servlet-class>sdm.servlets.AddFeedbackServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>AddFeedbackServlet</servlet-name>
+        <url-pattern>/addFeedback</url-pattern>
+    </servlet-mapping>
+
+    <servlet>
+        <servlet-name>GetFeedbacksServlet</servlet-name>
+        <servlet-class>sdm.servlets.GetFeedbacksServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>GetFeedbacksServlet</servlet-name>
+        <url-pattern>/feedbacksList</url-pattern>
+    </servlet-mapping>
+
 </web-app>

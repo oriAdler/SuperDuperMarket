@@ -21,4 +21,8 @@ public class Constants {
     public static final String ITEM_TO_REMOVE = "itemToRemove";
 
     public static final String TYPE_CUSTOMER = "Customer";
+
+    public static final String USER_RATING = "rate";
+    public static final String USER_FEEDBACK = "feedback";
+    public static final String STORE_ID_FEEDBACK = "id";
 }

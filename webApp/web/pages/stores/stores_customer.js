@@ -78,9 +78,9 @@ function refreshStoresList(stores){
             '<h4>' + 'Owner - ' + store.ownerName + '</h4>' +
             '<h4>' + 'Location - [' + store.xLocation + ',' + store.yLocation + ']' + '</h4>' +
             '<h4>' + 'Orders No. - ' + store.numOfOrders + '</h4>' +
-            '<h4>' + 'Items income - ' + itemsIncome + '</h4>' +
-            '<h4>' + 'PPK - ' +  store.PPK + '</h4>' +
-            '<h4>' + 'Delivery Income - ' + deliveryIncome + '</h4>' +
+            '<h4>' + 'Items income - ' + itemsIncome + '&#8362' + '</h4>' +
+            '<h4>' + 'PPK - ' +  store.PPK + '&#8362' + '</h4>' +
+            '<h4>' + 'Delivery Income - ' + deliveryIncome + '&#8362' + '</h4>' +
             '</div>')
             .addClass("w3-left-align")
             .appendTo(third);

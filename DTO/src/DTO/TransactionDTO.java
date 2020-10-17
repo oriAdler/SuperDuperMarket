@@ -1,15 +1,16 @@
 package DTO;
 
+import java.time.LocalDate;
 import java.util.Date;
 
 public class TransactionDTO {
     final private String type;
-    final private Date date;
+    final private LocalDate date;
     final private double amount;
     final private double balanceBefore;
     final private double balanceAfter;
 
-    public TransactionDTO(String type, Date date, double amount, double balanceBefore, double balanceAfter) {
+    public TransactionDTO(String type, LocalDate date, double amount, double balanceBefore, double balanceAfter) {
         this.type = type;
         this.date = date;
         this.amount = amount;
@@ -21,7 +22,7 @@ public class TransactionDTO {
         return type;
     }
 
-    public Date getDate() {
+    public LocalDate getDate() {
         return date;
     }
 

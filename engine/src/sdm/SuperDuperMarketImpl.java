@@ -7,6 +7,7 @@ import exception.invalidGeneralException;
 import engine.users.Customer;
 import sdm.discount.Discount;
 import sdm.discount.Offer;
+import sdm.feedback.Feedback;
 import sdm.item.PurchaseCategory;
 import sdm.order.OrderDynamic;
 import sdm.order.OrderStatic;
@@ -236,7 +237,7 @@ public class SuperDuperMarketImpl implements SuperDuperMarket {
     }
 
     @Override
-    public void executeStaticOrder(CartDTO cart, LocalDate date, int customerId) {
+    public Map<String, TransactionDTO> executeStaticOrder(CartDTO cart, LocalDate date, int customerId, String userName) {
         Integer storeId = cart.getStoreId();
 
         //Add order to Super Duper Market System:
@@ -266,10 +267,17 @@ public class SuperDuperMarketImpl implements SuperDuperMarket {
 
         // Update customer data:
         //customerIdToCustomer.get(customerId).addNewOrder(orderStatic, OrderStatic.getId());
+
+        //calculate transactions:
+        Map<String, TransactionDTO> userNameToTransaction = new HashMap<>();
+        userNameToTransaction.put(userName, new TransactionDTO("Charge", date, cart.getTotalOrderPrice(), -1, -1));
+        String ownerName = storeIdToStore.get(store.getId()).getOwnerName();
+        userNameToTransaction.put(ownerName, new TransactionDTO("Payment", date, cart.getTotalOrderPrice(), -1, -1));
+        return userNameToTransaction;
     }
 
     @Override
-    public void executeDynamicOrder(List<CartDTO> cartList, LocalDate date, Integer customerId, Point customerLocation) {
+    public Map<String, TransactionDTO> executeDynamicOrder(List<CartDTO> cartList, LocalDate date, Integer customerId, Point customerLocation, String userName) {
         //Get all id's of all stores participating in order:
         Set<Integer> storesIdSet = cartList
                 .stream()
@@ -337,6 +345,32 @@ public class SuperDuperMarketImpl implements SuperDuperMarket {
 
         // Update customer data:
         //customerIdToCustomer.get(customerId).addNewOrder(orderDynamic, OrderStatic.getId());
+
+        //calculate transactions:
+        //customer transaction:
+        Map<String, TransactionDTO> userNameToTransaction = new HashMap<>();
+        userNameToTransaction.put(userName, new TransactionDTO("Charge", date, cart.getTotalOrderPrice(), -1, -1));
+
+        //vendor transactions:
+        Map<String, Double> userNameToTotalIncome = new HashMap<>();
+
+        cartList.forEach(currentCart -> {
+            int currentStoreId = currentCart.getStoreId();
+            String ownerName = storeIdToStore.get(currentStoreId).getOwnerName();
+
+            if(userNameToTotalIncome.containsKey(ownerName)){
+                userNameToTotalIncome.put(ownerName, userNameToTotalIncome.get(ownerName) + currentCart.getTotalOrderPrice());
+            }
+            else{
+                userNameToTotalIncome.put(ownerName, currentCart.getTotalOrderPrice());
+            }
+        });
+
+        userNameToTotalIncome.forEach((vendorName, totalIncome)->{
+            userNameToTransaction.put(vendorName, new TransactionDTO("Payment", date, totalIncome, -1, -1));
+        });
+
+        return userNameToTransaction;
     }
 
     // TODO: Check after making orders that numbers make sense.
@@ -883,6 +917,26 @@ public class SuperDuperMarketImpl implements SuperDuperMarket {
                 storeIdToStore.size(),
                 orderIdToOrder.size(),
                 getRegionAverageOrdersItemsPrice());
+    }
+
+    @Override
+    public void addFeedbackToStore(int storeId, String customerName, LocalDate date, int rating, String feedback) {
+        Store store = storeIdToStore.get(storeId);
+
+        store.getFeedbacks().add(new Feedback(customerName, date, rating, feedback));
+    }
+
+    @Override
+    public List<FeedbackDTO> getVendorFeedbacks(String ownerName) {
+        List<FeedbackDTO> feedbackDTOList = new ArrayList<>();
+
+        for(Store store : storeIdToStore.values()){
+            if(store.getOwnerName().equals(ownerName)){
+                store.getFeedbacks().forEach(feedback -> feedbackDTOList.add(feedback.feedbackToFeedbackDTO()));
+            }
+        }
+
+        return  feedbackDTOList;
     }
 
     private double getRegionAverageOrdersItemsPrice(){

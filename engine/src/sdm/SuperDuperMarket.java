@@ -1,6 +1,7 @@
 package sdm;
 
 import DTO.*;
+import sdm.feedback.Feedback;
 import sdm.item.PurchaseCategory;
 import sdm.order.OrderStatic;
 
@@ -25,8 +26,8 @@ public interface SuperDuperMarket {
     void addItemToStore(int storeId, int itemId, int itemNewPrice);
     void updateItemPriceInStore(int storeId, int itemId, int itemNewPrice);
 
-    void executeStaticOrder(CartDTO cart, LocalDate date, int customerId);
-    void executeDynamicOrder(List<CartDTO> cartList, LocalDate orderDate, Integer customerId, Point customerLocation);
+    Map<String, TransactionDTO> executeStaticOrder(CartDTO cart, LocalDate date, int customerId, String userName);
+    Map<String, TransactionDTO> executeDynamicOrder(List<CartDTO> cartList, LocalDate orderDate, Integer customerId, Point customerLocation, String userName);
     CartDTO summarizeStaticOrder(Map<Integer, Double> itemsMap, List<OfferDTO> offersToAddToCart, int storeId, Integer customerId, Point customerLocation);
     List<CartDTO> summarizeDynamicOrder(Map<Integer, Double> itemsMap, List<OfferDTO> offersToAddToCart, Integer customerId, Point customerLocation);
     List<CartDTO> getDetailedOrder(Integer orderId);
@@ -60,4 +61,7 @@ public interface SuperDuperMarket {
     List<OrderDTO> getCustomerOrdersHistory(int customerId);
 
     RegionDTO superDuperMarketToRegionDTO();
+
+    void addFeedbackToStore(int storeId, String userName, LocalDate date, int rating, String feedback);
+    List<FeedbackDTO> getVendorFeedbacks(String ownerName);
 }

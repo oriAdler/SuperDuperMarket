@@ -151,7 +151,7 @@ function showOrderSummary(carts){
             '<td>' + cart.storeId + '</td>' +
             '<td>' + cart.storeName + '</td>' +
             '<td>' + '[' + cart.storeXLocation + ',' + cart.storeYLocation + ']' + '</td>' +
-            '<td>' + distance + '</td>' +
+            '<td>' + distance + '&#13214' + '</td>' +
             '<td>' + cart.PPK + '&#8362' + '</td>' +
             '<td>' + deliveryPrice + '&#8362' + '</td>' +
             '<td>' + cart.itemsNumber + '</td>' +

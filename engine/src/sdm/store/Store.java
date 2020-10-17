@@ -1,6 +1,7 @@
 package sdm.store;
 
 import sdm.discount.Discount;
+import sdm.feedback.Feedback;
 
 import java.awt.*;
 import java.io.Serializable;
@@ -21,6 +22,7 @@ public class Store implements Serializable {
     private double totalItemsIncome;
     private final List<Discount> discounts;
     private final String ownerName;
+    private final List<Feedback> feedbacks;
 
     public Store(int id, String name, Map<Integer, Integer> itemIdToPrice, Point location,
                  double PPK, List<Discount> discounts, String ownerName) {
@@ -36,6 +38,7 @@ public class Store implements Serializable {
         this.totalDeliveryIncome = 0;
         this.totalItemsIncome = 0;
         this.discounts = discounts;
+        this.feedbacks = new ArrayList<>();
     }
 
     public Map<Integer, Integer> getItemIdToPrice() {
@@ -80,6 +83,10 @@ public class Store implements Serializable {
 
     public String getOwnerName() {
         return ownerName;
+    }
+
+    public List<Feedback> getFeedbacks() {
+        return feedbacks;
     }
 
     public void setTotalDeliveryIncome(double totalDeliveryIncome) {
