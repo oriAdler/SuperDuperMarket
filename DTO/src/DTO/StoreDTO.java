@@ -14,12 +14,13 @@ public class StoreDTO implements LocationDTO{
     final private double totalItemsIncome;
     final private String ownerName;
     final private int numOfOrders;
+    final private List<PrivateOrderDTO> orderDTOList;
 
     private String newItemPrice;
 
     public StoreDTO(int id, String name, List<ItemDTO> items,
                     List<OrderDTO> orders, Integer xLocation, Integer yLocation,
-                    double PPK, double totalDeliveryIncome, double totalItemsIncome, String ownerName) {
+                    double PPK, double totalDeliveryIncome, double totalItemsIncome, String ownerName, List<PrivateOrderDTO> orderDTOList) {
         this.id = id;
         this.name = name;
         this.items = items;
@@ -31,6 +32,7 @@ public class StoreDTO implements LocationDTO{
         this.totalItemsIncome = totalItemsIncome;
         this.ownerName = ownerName;
         this.numOfOrders = orders.size();
+        this.orderDTOList = orderDTOList;
 
         newItemPrice = "0";
     }

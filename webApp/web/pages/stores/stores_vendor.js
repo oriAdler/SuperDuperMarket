@@ -1,4 +1,4 @@
-const refreshRate = 2000; //milli seconds
+const refreshRate = 5000; //milli seconds
 const GET_REGION_NAME_URL = buildUrlWithContextPath("getRegion");
 const ITEMS_TABLE_URL = buildUrlWithContextPath("itemsTable");
 const STORES_LIST_URL = buildUrlWithContextPath("storesList")
@@ -109,7 +109,118 @@ function refreshStoresList(stores){
                 '<td>' + item.numOfSales + '</td>' +
                 '</tr>').appendTo(itemsTable);
         })
+
+        //orders history
+        // "orderDTOList":[
+        // {"id":1, "localDate":{"year":2020,"month":10,"day":28}, "customerName":"tomer", "location":{"x":1,"y":1},
+        // "numOfStores":1, "numOfItems":3, "itemsPrice":25.0, "deliveryPrice":108.16653826391968, "totalPrice":133.16653826391968, "itemsList":[
+        // {"priceSum":20.0,"storeName":"super baba","storeId":1,"onDiscount":false,"id":1,"name":"Ketshop","category":"Quantity","numOfSellers":0,"price":"20.00","numOfSales":1.0,"isSoldByStore":true},
+        let ordersContainer = $('<div></div>').addClass("w3-row w3-white w3-margin-bottom w3-container w3-responsive").appendTo(container);
+        $('<h3>Orders History</h3>').appendTo(ordersContainer);
+
+        let ordersTable = $('<table></table>').addClass("w3-striped w3-border w3-table-all w3-large").appendTo(ordersContainer);
+        let orderHeaders = $('<tr>' +
+            '<th>Serial No.</th>' +
+            '<th>Date</th>' +
+            '<th>Customer Name</th>' +
+            '<th>Customer Location</th>' +
+            '<th>Items No.</th>' +
+            '<th>Items Price</th>' +
+            '<th>Delivery Price</th>' +
+            '</tr>').appendTo(ordersTable);
+
+        if(store.orderDTOList.length === 0){  //table is empty
+            $('<tr>' +
+                '<td>' + 'No content in table' + '</td>' +
+                '<td>' + ' ' + '</td>' +
+                '<td>' + ' ' + '</td>' +
+                '<td>' + ' ' + '</td>' +
+                '<td>' + ' ' + '</td>' +
+                '<td>' + ' ' + '</td>' +
+                '<td>' + ' ' + '</td>' +
+                '</tr>').appendTo(ordersTable);
+        }
+
+        //rebuild orders table:
+        $.each(store.orderDTOList || [], function(index,order) {
+            let itemsPrice = Number.parseFloat(order.itemsPrice).toFixed(2);
+            let deliveryPrice = Number.parseFloat(order.deliveryPrice).toFixed(2);
+
+            let orderRow = $('<tr>' +
+                '<td>' + order.id + '</td>' +
+                '<td>' + order.localDate.day + '-' + order.localDate.month + '-' + order.localDate.year + '</td>' +
+                '<td>' + order.customerName + '</td>' +
+                '<td>' + '[' + order.location.x + ',' + order.location.y + ']' + '</td>' +
+                '<td>' + order.numOfItems + '</td>' +
+                '<td>' + itemsPrice + '&#8362' + '</td>' +
+                '<td>' + deliveryPrice + '&#8362' + '</td>' +
+                '</tr>').appendTo(ordersTable);
+
+            //order's items table:
+            let itemsTable = $('<table></table>').addClass("w3-striped w3-border w3-table-all w3-small w3-light-blue").appendTo(orderRow);
+            $('<h4>Items</h4>').appendTo(itemsTable);
+            $('<tr>' +
+                '<th>Serial number</th>' +
+                '<th>Name</th>' +
+                '<th>Category</th>' +
+                '<th>Amount</th>' +
+                '<th>Price</th>' +
+                '<th>Total Price</th>' +
+                '<th>On Discount</th>' +
+                '</tr>').appendTo(itemsTable);
+
+            $.each(order.itemsList || [], function (index, item) {
+                let itemPrice = Number.parseFloat(item.price).toFixed(2);
+                let priceSum = Number.parseFloat(item.priceSum).toFixed(2);
+
+                $('<tr>' +
+                    '<td>' + item.id + '</td>' +
+                    '<td>' + item.name + '</td>' +
+                    '<td>' + item.category + '</td>' +
+                    '<td>' + item.numOfSales + '</td>' +
+                    '<td>' + itemPrice + '&#8362' + '</td>' +
+                    '<td>' + priceSum + '&#8362' + '</td>' +
+                    '<td>' + item.onDiscount + '</td>' +
+                    '</tr>').appendTo(itemsTable);
+            })
+
+            itemsTable.hide();
+
+            orderRow.click(function (){
+                itemsTable.toggle();
+            })
+        })
     })
+}
+
+//[{"customerName":"tomer",
+// "localDate":{"year":2020,"month":10,"day":7},
+// "rating":4,
+// "feedback":"Good store!"}]
+
+function refreshFeedbacksList(feedbacks){
+    let feedbacksList = $('#feedbacksList');
+
+    feedbacksList.empty();
+
+    $.each(feedbacks || [], function(index, feedback) {
+        let container = $('<div></div>').addClass("w3-row w3-white w3-margin-bottom w3-card-4 w3-padding-large")
+            .appendTo(feedbacksList);
+
+        let feedbackData = $('<div>' +
+            '<h4>' + 'Date - ' + feedback.localDate.day + '-' + feedback.localDate.month + '-' + feedback.localDate.year + '</h4>' +
+            '<h4>' + 'Rating - ' + feedback.rating + '/5' + '</h4>').addClass("w3-left-align").appendTo(container);
+        if(feedback.feedback !== ""){
+            $('<div>' + '<h4>' + 'Feedback' + '</h4>' +
+                '<p>' + '"' + feedback.feedback + '"' + '</p>' + '</div>')
+                .addClass("w3-left-align w3-light-gray w3-padding-large")
+                .appendTo(feedbackData);
+        }
+        $('<h4 class="w3-right-align">' + feedback.customerName + '</h4>' +
+        '</div>')
+        .addClass("w3-left-align")
+        .appendTo(feedbackData);
+    });
 }
 
 function ajaxItemsTable(){
@@ -134,7 +245,7 @@ function ajaxFeedbacksList(){
     $.ajax({
         url: FEEDBACKS_LIST_URL,
         success: function (feedbacks){
-            //refreshFeedbacksList(feedbacks);
+            refreshFeedbacksList(feedbacks);
         }
     })
 }

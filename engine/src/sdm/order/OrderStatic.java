@@ -23,11 +23,11 @@ public class OrderStatic implements Serializable {
     final private int customerId;
     private CartDTO cart;
     final private Point customerLocation;
+    final private String customerName;
 
     public OrderStatic(LocalDate date, int storeId, String storeName, int numOfItems, double itemsPrice,
                        double deliveryPrice, double totalOrderPrice, boolean advanceId,
-                       List<Item> itemList, int customerId, Point customerLocation) {
-        this.customerLocation = customerLocation;
+                       List<Item> itemList, int customerId, Point customerLocation, String customerName) {
         if(advanceId){
             id++;
         }
@@ -40,6 +40,8 @@ public class OrderStatic implements Serializable {
         this.totalOrderPrice = totalOrderPrice;
         this.itemList = itemList;
         this.customerId = customerId;
+        this.customerLocation = customerLocation;
+        this.customerName = customerName;
     }
 
     public static int getId() {
@@ -88,6 +90,10 @@ public class OrderStatic implements Serializable {
 
     public Point getCustomerLocation() {
         return customerLocation;
+    }
+
+    public String getCustomerName() {
+        return customerName;
     }
 
     public OrderDTO convertOrderToOrderDTO(int orderId){

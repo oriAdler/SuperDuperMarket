@@ -55,6 +55,16 @@ function refreshTransactionTable(transactions){
         '<th>Balance after</th>' +
         '</tr>').appendTo(accountTable);
 
+    if(transactions.length === 0){  //table is empty
+        $('<tr>' +
+            '<td>' + 'No content in table' + '</td>' +
+            '<td>' + ' ' + '</td>' +
+            '<td>' + ' ' + '</td>' +
+            '<td>' + ' ' + '</td>' +
+            '<td>' + ' ' + '</td>' +
+            '</tr>').appendTo(accountTable);
+    }
+
     $.each(transactions || [], function (index, transaction){
         let amount = Number.parseFloat(transaction.amount).toFixed(2);
         let balanceBefore = Number.parseFloat(transaction.balanceBefore).toFixed(2);
@@ -159,6 +169,18 @@ function refreshRegionTable(regions){
         '<th>Orders average price</th>' +
         '<th>More Info</th>' +
     '</tr>').appendTo(regionTable);
+
+    if(regions.length === 0){  //table is empty
+        $('<tr>' +
+            '<td>' + 'No content in table' + '</td>' +
+            '<td>' + ' ' + '</td>' +
+            '<td>' + ' ' + '</td>' +
+            '<td>' + ' ' + '</td>' +
+            '<td>' + ' ' + '</td>' +
+            '<td>' + ' ' + '</td>' +
+            '<td>' + ' ' + '</td>' +
+            '</tr>').appendTo(regionTable);
+    }
 
     //rebuild the region's table:
     $.each(regions || [], function (index, region){

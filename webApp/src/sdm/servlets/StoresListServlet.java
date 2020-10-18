@@ -30,8 +30,8 @@ public class StoresListServlet extends HttpServlet {
             SuperDuperMarket regionSDM = engine.getRegionSDM(regionNameFromSession);
 
             if(regionSDM!=null){
-                List<StoreDTO> itemDTOList = regionSDM.getAllStoreList();
-                String json = gson.toJson(itemDTOList);
+                List<StoreDTO> storeDTOList = regionSDM.getAllStoreList();
+                String json = gson.toJson(storeDTOList);
                 out.println(json);
                 out.flush();
             }

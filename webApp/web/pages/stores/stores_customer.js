@@ -151,6 +151,19 @@ function refreshOrdersList(orders){
         '<th>Total Price</th>' +
         '</tr>').appendTo(ordersTable);
 
+    if(orders.length === 0){  //table is empty
+        $('<tr>' +
+            '<td>' + 'No content in table' + '</td>' +
+            '<td>' + ' ' + '</td>' +
+            '<td>' + ' ' + '</td>' +
+            '<td>' + ' ' + '</td>' +
+            '<td>' + ' ' + '</td>' +
+            '<td>' + ' ' + '</td>' +
+            '<td>' + ' ' + '</td>' +
+            '<td>' + ' ' + '</td>' +
+            '</tr>').appendTo(ordersTable);
+    }
+
     //rebuild the items table:
     $.each(orders || [], function(index,order) {
         let itemsPrice = Number.parseFloat(order.itemsPrice).toFixed(2);
@@ -185,7 +198,7 @@ function refreshOrdersList(orders){
 
         $.each(order.itemsList || [], function (index, item) {
             let itemPrice = Number.parseFloat(item.price).toFixed(2);
-            let totalPrice = Number.parseFloat(item.priceSum).toFixed(2);
+            let priceSum = Number.parseFloat(item.priceSum).toFixed(2);
 
             $('<tr>' +
                 '<td>' + item.id + '</td>' +
@@ -195,7 +208,7 @@ function refreshOrdersList(orders){
                 '<td>' + item.storeName + '</td>' +
                 '<td>' + item.numOfSales + '</td>' +
                 '<td>' + itemPrice + '&#8362' + '</td>' +
-                '<td>' + itemsPrice + '&#8362' + '</td>' +
+                '<td>' + priceSum + '&#8362' + '</td>' +
                 '<td>' + item.onDiscount + '</td>' +
                 '</tr>').appendTo(itemsTable);
         })

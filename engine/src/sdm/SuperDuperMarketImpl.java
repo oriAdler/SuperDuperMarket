@@ -250,7 +250,8 @@ public class SuperDuperMarketImpl implements SuperDuperMarket {
                         .map(this::itemDTOToItem)
                         .collect(Collectors.toList()),
                 customerId,
-                customerLocation);
+                customerLocation,
+                userName);
         orderStatic.setCart(cart);  // Save cart for showing details later
         orderIdToOrder.put(OrderStatic.getId(), orderStatic);
 
@@ -301,7 +302,8 @@ public class SuperDuperMarketImpl implements SuperDuperMarket {
                             .filter(item -> item.getStoreId().equals(storeId))
                             .map(this::itemDTOToItem)
                             .collect(Collectors.toList()),
-                    customerId, customerLocation);
+                    customerId, customerLocation,
+                    userName);
             orderStatic.setCart(cart);  // Save cart for showing details later
             orderIdToOrderStatic.put(storeId, orderStatic);
         });
@@ -321,7 +323,8 @@ public class SuperDuperMarketImpl implements SuperDuperMarket {
                         .map(this::itemDTOToItem)
                         .collect(Collectors.toList()),
                 customerId,
-                customerLocation);
+                customerLocation,
+                userName);
         orderIdToOrder.put(OrderStatic.getId(), orderDynamic);
 
         //Update store's orders list & total delivery & items income:
@@ -341,9 +344,6 @@ public class SuperDuperMarketImpl implements SuperDuperMarket {
             store.getItemIdToNumberOfSales().replace(item.getId(),
                     store.getItemIdToNumberOfSales().get(item.getId()) + item.getNumOfSales());
         });
-
-        // Update customer data:
-        //customerIdToCustomer.get(customerId).addNewOrder(orderDynamic, OrderStatic.getId());
 
         //calculate transactions:
         //customer transaction:
@@ -828,16 +828,39 @@ public class SuperDuperMarketImpl implements SuperDuperMarket {
     @Override
     public List<StoreDTO> getAllStoreList() {
         List<StoreDTO> storesDTOList = new ArrayList<>();
-        storeIdToStore.forEach((id, store) -> storesDTOList.add(new StoreDTO(id,
-                        store.getName(),
-                        this.getItemsSoldByStore(store),
-                        this.getStoreOrdersList(id),
-                        store.getLocation().x,
-                        store.getLocation().y,
-                        store.getPPK(),
-                        store.getTotalDeliveryIncome(),
-                        store.getTotalItemsIncome(),
-                        ownerName)));
+
+        storeIdToStore.forEach((id, store) -> {
+            //add store's orders:
+            List<PrivateOrderDTO> orderDTOList = new ArrayList<>();
+
+            for(int orderId : store.getOrders()){
+                OrderStatic orderStatic = orderIdToOrder.get(orderId);
+                orderDTOList.add(new PrivateOrderDTO(orderId,
+                        orderStatic.getDate(),
+                        orderStatic.getCustomerName(), //customer name is irrelevant in this context
+                        orderStatic.getCustomerLocation(),
+                        orderStatic.getNumOfStores(),
+                        orderStatic.getNumOfItems(),
+                        orderStatic.getItemsPrice(),
+                        orderStatic.getDeliveryPrice(),
+                        orderStatic.getTotalOrderPrice(),
+                        orderStatic.getItemExtendedDTOList()));
+            }
+
+            //create a storeDTO:
+            storesDTOList.add(new StoreDTO(id,
+                    store.getName(),
+                    this.getItemsSoldByStore(store),
+                    this.getStoreOrdersList(id),
+                    store.getLocation().x,
+                    store.getLocation().y,
+                    store.getPPK(),
+                    store.getTotalDeliveryIncome(),
+                    store.getTotalItemsIncome(),
+                    ownerName,
+                    orderDTOList));
+                });
+
         return storesDTOList;
     }
 
@@ -903,6 +926,7 @@ public class SuperDuperMarketImpl implements SuperDuperMarket {
             if(order.getCustomerId()==customerId){
                 privateOrdersList.add(new PrivateOrderDTO(orderId,
                         order.getDate(),
+                        order.getCustomerName(), //customer name is irrelevant in this context
                         order.getCustomerLocation(),
                         order.getNumOfStores(),
                         order.getNumOfItems(),
@@ -955,3 +979,24 @@ public class SuperDuperMarketImpl implements SuperDuperMarket {
         return averagePrice.isPresent() ? averagePrice.getAsDouble() : 0;
     }
 }
+
+//[{"id":1,
+// "name":"super baba",
+// "items":[{"id":1,"name":"Ketshop","category":"Quantity","numOfSellers":0,"price":"20.00","numOfSales":1.0,"isSoldByStore":true}
+// ,{"id":2,"name":"Banana","category":"Weight","numOfSellers":0,"price":"10.00","numOfSales":1.5,"isSoldByStore":true}
+// ,{"id":5,"name":"Tomato","category":"Weight","numOfSellers":0,"price":"50.00","numOfSales":0.0,"isSoldByStore":true}]
+// ,"orders":[
+// {"id":1,
+// "date":{"year":2020,"month":10,"day":28},
+// "storeId":1,
+// "storeName":"super baba",
+// "numOfItems":3,
+// "itemsPrice":25.0,
+// "deliveryPrice":108.16653826391968,
+// "totalPrice":133.16653826391968,
+// "itemDTOList":[]}],"xLocation":3,"yLocation":4,
+// "PPK":30.0,
+// "totalDeliveryIncome":108.16653826391968,
+// "totalItemsIncome":25.0,
+// "ownerName":"ori",
+// "numOfOrders":1,

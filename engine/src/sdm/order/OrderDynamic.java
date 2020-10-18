@@ -16,9 +16,9 @@ public class OrderDynamic extends OrderStatic {
 
     public OrderDynamic(LocalDate date, int storeId, String storeName, int numOfItems, double itemsPrice,
                         double deliveryPrice, double totalOrderPrice, Map<Integer, OrderStatic> storeIdToOrder,
-                        boolean advanceId, List<Item> itemList, int customerId, Point customerLocation) {
+                        boolean advanceId, List<Item> itemList, int customerId, Point customerLocation, String customerName) {
         super(date, storeId, "Super Duper Market", numOfItems, itemsPrice,
-                deliveryPrice, totalOrderPrice, advanceId, itemList, customerId, customerLocation);
+                deliveryPrice, totalOrderPrice, advanceId, itemList, customerId, customerLocation, customerName);
         this.storeIdToOrder = storeIdToOrder;
     }
 
