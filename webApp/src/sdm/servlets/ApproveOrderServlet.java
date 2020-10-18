@@ -55,14 +55,11 @@ public class ApproveOrderServlet extends HttpServlet {
 
                 if(session.getAttribute(ORDER_TYPE).toString().equals(DYNAMIC_ORDER)){
                     userNameToTransaction = regionSDM.executeDynamicOrder(cartDTOList,
-                            date,
-                            customerId,
-                            new Point(x,y), userName);
+                            date, customerId, new Point(x,y), userName);
                 }
                 else{
                     userNameToTransaction = regionSDM.executeStaticOrder(cartDTOList.get(0),
-                            date,
-                            customerId, userName);
+                            date, customerId, new Point(x,y), userName);
                 }
 
                 //update transactions:

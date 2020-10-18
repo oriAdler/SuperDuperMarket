@@ -1,5 +1,7 @@
 package sdm.item;
 
+import DTO.ItemDTO;
+
 import java.io.Serializable;
 
 public class Item implements Serializable {

@@ -237,7 +237,7 @@ public class SuperDuperMarketImpl implements SuperDuperMarket {
     }
 
     @Override
-    public Map<String, TransactionDTO> executeStaticOrder(CartDTO cart, LocalDate date, int customerId, String userName) {
+    public Map<String, TransactionDTO> executeStaticOrder(CartDTO cart, LocalDate date, int customerId, Point customerLocation, String userName) {
         Integer storeId = cart.getStoreId();
 
         //Add order to Super Duper Market System:
@@ -249,7 +249,8 @@ public class SuperDuperMarketImpl implements SuperDuperMarket {
                 cart.getItems().stream()    //Generate items list:
                         .map(this::itemDTOToItem)
                         .collect(Collectors.toList()),
-                customerId);
+                customerId,
+                customerLocation);
         orderStatic.setCart(cart);  // Save cart for showing details later
         orderIdToOrder.put(OrderStatic.getId(), orderStatic);
 
@@ -264,9 +265,6 @@ public class SuperDuperMarketImpl implements SuperDuperMarket {
                 .forEach((item)->store.getItemIdToNumberOfSales()
                         .replace(item.getId(),
                                 store.getItemIdToNumberOfSales().get(item.getId()) + item.getNumOfSales()));
-
-        // Update customer data:
-        //customerIdToCustomer.get(customerId).addNewOrder(orderStatic, OrderStatic.getId());
 
         //calculate transactions:
         Map<String, TransactionDTO> userNameToTransaction = new HashMap<>();
@@ -303,7 +301,7 @@ public class SuperDuperMarketImpl implements SuperDuperMarket {
                             .filter(item -> item.getStoreId().equals(storeId))
                             .map(this::itemDTOToItem)
                             .collect(Collectors.toList()),
-                    customerId);
+                    customerId, customerLocation);
             orderStatic.setCart(cart);  // Save cart for showing details later
             orderIdToOrderStatic.put(storeId, orderStatic);
         });
@@ -322,7 +320,8 @@ public class SuperDuperMarketImpl implements SuperDuperMarket {
                 cart.getItems().stream()    //Generate items list:
                         .map(this::itemDTOToItem)
                         .collect(Collectors.toList()),
-                customerId);
+                customerId,
+                customerLocation);
         orderIdToOrder.put(OrderStatic.getId(), orderDynamic);
 
         //Update store's orders list & total delivery & items income:
@@ -897,16 +896,24 @@ public class SuperDuperMarketImpl implements SuperDuperMarket {
     }
 
     @Override
-    public List<OrderDTO> getCustomerOrdersHistory(int customerId) {
-        List<OrderDTO> orderDTOList = new ArrayList<>();
+    public List<PrivateOrderDTO> getCustomerOrdersHistory(int customerId) {
+        List<PrivateOrderDTO> privateOrdersList = new ArrayList<>();
 
         orderIdToOrder.forEach((orderId, order) -> {
             if(order.getCustomerId()==customerId){
-                orderDTOList.add(order.convertOrderToOrderDTO(orderId));
+                privateOrdersList.add(new PrivateOrderDTO(orderId,
+                        order.getDate(),
+                        order.getCustomerLocation(),
+                        order.getNumOfStores(),
+                        order.getNumOfItems(),
+                        order.getItemsPrice(),
+                        order.getDeliveryPrice(),
+                        order.getTotalOrderPrice(),
+                        order.getItemExtendedDTOList()));
             }
         });
 
-        return orderDTOList;
+        return privateOrdersList;
     }
 
     @Override

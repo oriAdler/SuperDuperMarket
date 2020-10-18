@@ -1,13 +1,14 @@
 package sdm.order;
 
 import DTO.CartDTO;
+import DTO.ItemExtendedDTO;
 import DTO.OrderDTO;
 import sdm.item.Item;
 
+import java.awt.*;
 import java.io.Serializable;
 import java.time.LocalDate;
 import java.util.List;
-import java.util.OptionalDouble;
 
 public class OrderStatic implements Serializable {
     static private int id = 0;
@@ -21,11 +22,12 @@ public class OrderStatic implements Serializable {
     final private List<Item> itemList;
     final private int customerId;
     private CartDTO cart;
-    //TODO: customer name & location
+    final private Point customerLocation;
 
     public OrderStatic(LocalDate date, int storeId, String storeName, int numOfItems, double itemsPrice,
                        double deliveryPrice, double totalOrderPrice, boolean advanceId,
-                       List<Item> itemList, int customerId) {
+                       List<Item> itemList, int customerId, Point customerLocation) {
+        this.customerLocation = customerLocation;
         if(advanceId){
             id++;
         }
@@ -84,6 +86,10 @@ public class OrderStatic implements Serializable {
         return customerId;
     }
 
+    public Point getCustomerLocation() {
+        return customerLocation;
+    }
+
     public OrderDTO convertOrderToOrderDTO(int orderId){
         return new OrderDTO(orderId,
                 this.getDate(),
@@ -105,5 +111,13 @@ public class OrderStatic implements Serializable {
 
     public double getItemsAveragePrice() {
         return this.getItemsPrice();
+    }
+
+    public int getNumOfStores(){
+        return 1;
+    }
+
+    public List<ItemExtendedDTO> getItemExtendedDTOList(){
+        return this.cart.getItems();
     }
 }

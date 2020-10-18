@@ -113,6 +113,101 @@ function refreshStoresList(stores){
     })
 }
 
+//[{"id":1,
+// "localDate":{"year":2020,"month":10,"day":20},
+// "location":{"x":2,"y":2},
+// "numOfStores":1,
+// "numOfItems":2,
+// "itemsPrice":1.0,
+// "deliveryPrice":0.0,
+// "totalPrice":1.0,
+// "itemsList":
+// [{"priceSum":0.5,
+// "storeName":"Hakol beshekel",
+// "storeId":2,
+// "onDiscount":false,
+// "id":2,
+// "name":"Banana",
+// "category":"Weight",
+// "numOfSellers":0,
+// "price":"1.00",
+// "numOfSales":0.5,
+// "isSoldByStore":true}]}
+function refreshOrdersList(orders){
+    let ordersTable = $('#ordersTable');
+
+    //clear all current items
+    ordersTable.empty();
+
+    //append headers
+    $('<tr>' +
+        '<th>Serial number</th>' +
+        '<th>Date</th>' +
+        '<th>Location</th>' +
+        '<th>Stores No.</th>' +
+        '<th>Items No.</th>' +
+        '<th>Items Price</th>' +
+        '<th>Delivery Price</th>' +
+        '<th>Total Price</th>' +
+        '</tr>').appendTo(ordersTable);
+
+    //rebuild the items table:
+    $.each(orders || [], function(index,order) {
+        let itemsPrice = Number.parseFloat(order.itemsPrice).toFixed(2);
+        let deliveryPrice = Number.parseFloat(order.deliveryPrice).toFixed(2);
+        let totalPrice = Number.parseFloat(order.totalPrice).toFixed(2);
+
+        let orderRow = $('<tr>' +
+            '<td>' + order.id + '</td>' +
+            '<td>' + order.localDate.day + '-' + order.localDate.month + '-' + order.localDate.year + '</td>' +
+            '<td>' + '[' + order.location.x + ',' + order.location.y + ']' + '</td>' +
+            '<td>' + order.numOfStores + '</td>' +
+            '<td>' + order.numOfItems + '</td>' +
+            '<td>' + itemsPrice + '&#8362' + '</td>' +
+            '<td>' + deliveryPrice + '&#8362' + '</td>' +
+            '<td>' + totalPrice + '&#8362' + '</td>' +
+            '</tr>').appendTo(ordersTable);
+
+        //order's items table:
+        let itemsTable = $('<table></table>').addClass("w3-striped w3-border w3-table-all w3-small w3-light-blue").appendTo(orderRow);
+        $('<h4>Items</h4>').appendTo(itemsTable);
+        $('<tr>' +
+            '<th>Serial number</th>' +
+            '<th>Name</th>' +
+            '<th>Category</th>' +
+            '<th>Store Id</th>' +
+            '<th>Store Name</th>' +
+            '<th>Amount</th>' +
+            '<th>Price</th>' +
+            '<th>Total Price</th>' +
+            '<th>On Discount</th>' +
+            '</tr>').appendTo(itemsTable);
+
+        $.each(order.itemsList || [], function (index, item) {
+            let itemPrice = Number.parseFloat(item.price).toFixed(2);
+            let totalPrice = Number.parseFloat(item.priceSum).toFixed(2);
+
+            $('<tr>' +
+                '<td>' + item.id + '</td>' +
+                '<td>' + item.name + '</td>' +
+                '<td>' + item.category + '</td>' +
+                '<td>' + item.storeId + '</td>' +
+                '<td>' + item.storeName + '</td>' +
+                '<td>' + item.numOfSales + '</td>' +
+                '<td>' + itemPrice + '&#8362' + '</td>' +
+                '<td>' + itemsPrice + '&#8362' + '</td>' +
+                '<td>' + item.onDiscount + '</td>' +
+                '</tr>').appendTo(itemsTable);
+        })
+
+        itemsTable.hide();
+
+        orderRow.click(function (){
+            itemsTable.toggle();
+        })
+    })
+}
+
 function ajaxItemsTable(){
     $.ajax({
         url: ITEMS_TABLE_URL,
@@ -135,7 +230,7 @@ function ajaxOrderList(){
     $.ajax({
         url: ORDER_LIST_URL,
         success: function (orders){
-            //refreshOrdersList(orders);
+            refreshOrdersList(orders);
         }
     })
 }
@@ -148,7 +243,9 @@ $(function(){
     ajaxStoresList();
     setInterval(ajaxStoresList, refreshRate);
 
-    setInterval(ajaxOrderList, refreshRate);
+    //TODO: interval or not?
+    ajaxOrderList();
+    //setInterval(ajaxOrderList, refreshRate * 5);
 })
 
 $(function setMakeOrderForm(){

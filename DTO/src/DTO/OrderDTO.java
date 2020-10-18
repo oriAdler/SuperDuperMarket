@@ -1,6 +1,8 @@
 package DTO;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 
 public class OrderDTO {
     private final int id;
@@ -11,6 +13,7 @@ public class OrderDTO {
     private final double itemsPrice;
     private final double deliveryPrice;
     private final double totalPrice;
+    private final List<ItemDTO> itemDTOList;
 
     public OrderDTO(int id, LocalDate date, int storeId, String storeName, int numOfItems,
                     double itemsPrice, double deliveryPrice, double totalPrice) {
@@ -22,6 +25,7 @@ public class OrderDTO {
         this.itemsPrice = itemsPrice;
         this.deliveryPrice = deliveryPrice;
         this.totalPrice = totalPrice;
+        this.itemDTOList = new ArrayList<>();
     }
 
     public int getId() {

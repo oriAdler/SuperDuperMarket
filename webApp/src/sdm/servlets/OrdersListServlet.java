@@ -2,6 +2,7 @@ package sdm.servlets;
 
 import DTO.ItemDTO;
 import DTO.OrderDTO;
+import DTO.PrivateOrderDTO;
 import DTO.UserDTO;
 import com.google.gson.Gson;
 import engine.Engine;
@@ -40,16 +41,13 @@ public class OrdersListServlet extends HttpServlet {
             String userName = session.getAttribute(USERNAME).toString();
             UserDTO user = userManager.getUserInfo(userName);
 
-            List<OrderDTO> orderDTOList = new ArrayList<>();
+            List<PrivateOrderDTO> privateOrdersList = new ArrayList<>();
 
             if(user.getType().equals(TYPE_CUSTOMER)){
-                orderDTOList.addAll(regionSDM.getCustomerOrdersHistory(user.getId()));
-            }
-            else{   //userType.equals(TYPE_VENDOR)
-
+                privateOrdersList.addAll(regionSDM.getCustomerOrdersHistory(user.getId()));
             }
 
-            String json = gson.toJson(orderDTOList);
+            String json = gson.toJson(privateOrdersList);
             out.println(json);
             out.flush();
         }
