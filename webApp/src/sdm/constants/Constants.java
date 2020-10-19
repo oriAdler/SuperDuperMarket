@@ -25,4 +25,7 @@ public class Constants {
     public static final String USER_RATING = "rate";
     public static final String USER_FEEDBACK = "feedback";
     public static final String STORE_ID_FEEDBACK = "id";
+
+    public static final String STORE_NAME = "storeName";
+    public static final String STORE_PPK = "ppk";
 }

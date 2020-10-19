@@ -50,6 +50,12 @@ function refreshDiscountsList(discounts){
     let ifYouBuyArray = [];
     let ifYouBuyIndex = 0;
 
+    if(discounts.length === 0){
+        $('<p>' + '<i>' + 'No discounts available' + '</i>' + '</p>')
+            .addClass("w3-row w3-white w3-margin-bottom w3-card-2 w3-padding-large")
+            .appendTo(discountsList);
+    }
+
     $.each(discounts || [], function (index, discount){
         //create discount listItem
         let listItem = $('<li class="w3-bar-item w3-left-align"></li>').appendTo(discountsList);

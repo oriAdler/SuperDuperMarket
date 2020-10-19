@@ -774,8 +774,11 @@ public class SuperDuperMarketImpl implements SuperDuperMarket {
         return false;
     }
 
-    public void createNewStore(int id, String name, int ppk, Point location, Map<Integer, Integer> itemIdToPrice, String storeOwner){
-        storeIdToStore.put(id, new Store(id, name, itemIdToPrice, location, ppk, new ArrayList<>(), storeOwner));
+    public void createNewStore(String storeName, int ppk, Point location, Map<Integer, Integer> itemIdToPrice, String storeOwner){
+        // in case some error occurred the store's id will be 0.
+        Integer newStoreId = storeIdToStore.keySet().stream().max(Integer::compare).orElse(-1) + 1;
+
+        storeIdToStore.put(newStoreId, new Store(newStoreId, storeName, itemIdToPrice, location, ppk, new ArrayList<>(), storeOwner));
     }
 
     public boolean isItemExistById(int id){
@@ -826,38 +829,48 @@ public class SuperDuperMarketImpl implements SuperDuperMarket {
     }
 
     @Override
-    public List<StoreDTO> getAllStoreList() {
+    public List<StoreDTO> getAllStoreList(String userName) {
         List<StoreDTO> storesDTOList = new ArrayList<>();
 
-        storeIdToStore.forEach((id, store) -> {
+        storeIdToStore.forEach((storeId, store) -> {
             //add store's orders:
             List<PrivateOrderDTO> orderDTOList = new ArrayList<>();
 
-            for(int orderId : store.getOrders()){
-                OrderStatic orderStatic = orderIdToOrder.get(orderId);
-                orderDTOList.add(new PrivateOrderDTO(orderId,
-                        orderStatic.getDate(),
-                        orderStatic.getCustomerName(), //customer name is irrelevant in this context
-                        orderStatic.getCustomerLocation(),
-                        orderStatic.getNumOfStores(),
-                        orderStatic.getNumOfItems(),
-                        orderStatic.getItemsPrice(),
-                        orderStatic.getDeliveryPrice(),
-                        orderStatic.getTotalOrderPrice(),
-                        orderStatic.getItemExtendedDTOList()));
+            //show orders history only when the user is store's owner:
+            if(store.getOwnerName().equals(userName)){
+                for(int orderId : store.getOrders()){
+                    OrderStatic orderStatic;
+                    if(orderIdToOrder.get(orderId) instanceof OrderDynamic){    //get store's partial order
+                        OrderDynamic orderDynamic = (OrderDynamic) orderIdToOrder.get(orderId);
+                        orderStatic = orderDynamic.getStoreIdToOrder().get(storeId);
+                    }
+                    else{   //the whole order was made from one store
+                        orderStatic = orderIdToOrder.get(orderId);
+                    }
+                    orderDTOList.add(new PrivateOrderDTO(orderId,
+                            orderStatic.getDate(),
+                            orderStatic.getCustomerName(), //customer name is irrelevant in this context
+                            orderStatic.getCustomerLocation(),
+                            orderStatic.getNumOfStores(),
+                            orderStatic.getNumOfItems(),
+                            orderStatic.getItemsPrice(),
+                            orderStatic.getDeliveryPrice(),
+                            orderStatic.getTotalOrderPrice(),
+                            orderStatic.getItemExtendedDTOList()));
+                }
             }
 
             //create a storeDTO:
-            storesDTOList.add(new StoreDTO(id,
+            storesDTOList.add(new StoreDTO(storeId,
                     store.getName(),
                     this.getItemsSoldByStore(store),
-                    this.getStoreOrdersList(id),
+                    this.getStoreOrdersList(storeId),
                     store.getLocation().x,
                     store.getLocation().y,
                     store.getPPK(),
                     store.getTotalDeliveryIncome(),
                     store.getTotalItemsIncome(),
-                    ownerName,
+                    store.getOwnerName(),
                     orderDTOList));
                 });
 

@@ -205,18 +205,12 @@ $(function chooseItemsFrom(){
                 }
             });
 
-            return false;
-            // //TODO: change local storage to servlet who tells what is the order type.
-            // if(localStorage.getItem("orderType")==="dynamic"){
-            //     //ajaxDynamicOrderSummary(itemsArray);
-            // }
-            // else{
-            //
-            // }
         }
         else{   //item wasn't chosen
             $("#error-placeholder").text("Please chose at least one item before Checkout");
         }
+
+        return false;
     });
 });
 

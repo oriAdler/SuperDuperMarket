@@ -47,14 +47,14 @@ public interface SuperDuperMarket {
     double findMaxYCoordinate();
 
     boolean isLocationOccupied(Point location);
-    void createNewStore(int id, String name, int ppk, Point location, Map<Integer, Integer> itemIdToPrice, String storeOwner);
+    void createNewStore(String storeName, int ppk, Point location, Map<Integer, Integer> itemIdToPrice, String storeOwner);
     boolean isItemExistById(int id);
     void addItemToSDM(int itemId, String itemName, String purchaseMethod, Map<Integer, Integer> storeIdToItemPrice);
     boolean isDiscountNameExist(String discountName);
     void addDiscountToStore(int storeId, String discountName, int itemId, double itemAmount,
                             String discountType, List<OfferDTO> offerDTOList);
 
-    List<StoreDTO> getAllStoreList();
+    List<StoreDTO> getAllStoreList(String userName);
     List<ItemDTO> getAllItemList();
     List<OrderDTO> getOrdersHistory();
     List<PrivateOrderDTO> getCustomerOrdersHistory(int customerId);

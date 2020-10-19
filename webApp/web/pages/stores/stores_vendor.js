@@ -3,6 +3,7 @@ const GET_REGION_NAME_URL = buildUrlWithContextPath("getRegion");
 const ITEMS_TABLE_URL = buildUrlWithContextPath("itemsTable");
 const STORES_LIST_URL = buildUrlWithContextPath("storesList")
 const FEEDBACKS_LIST_URL = buildUrlWithContextPath("feedbacksList");
+const ADD_STORE_URL = buildUrlWithContextPath("addStore");
 
 //Global Variables:
 var regionName;
@@ -203,6 +204,12 @@ function refreshFeedbacksList(feedbacks){
 
     feedbacksList.empty();
 
+    if(feedbacks.length === 0){
+        $('<p>' + '<i>' + 'No feedbacks have been received yet' + '</i>' + '</p>')
+            .addClass("w3-row w3-white w3-margin-bottom w3-card-2 w3-padding-large")
+            .appendTo(feedbacksList);
+    }
+
     $.each(feedbacks || [], function(index, feedback) {
         let container = $('<div></div>').addClass("w3-row w3-white w3-margin-bottom w3-card-4 w3-padding-large")
             .appendTo(feedbacksList);
@@ -257,5 +264,26 @@ $(function(){
     ajaxStoresList();
     setInterval(ajaxStoresList, refreshRate);
 
+    ajaxFeedbacksList();
     setInterval(ajaxFeedbacksList, refreshRate);
 })
+
+$(function() {
+    //add a function to the submit event
+    $("#addStoreForm").submit(function() {
+        $.ajax({
+            data: $(this).serialize(),
+            url: ADD_STORE_URL,
+            timeout: 2000,
+            error: function(errorObject) {
+                console.error("Failed to add store !");
+                $("#error-placeholder").text(errorObject.responseText)
+            },
+            success: function(nextPageUrl) {
+                window.location.assign(nextPageUrl);
+            }
+        });
+
+        return false;
+    });
+});

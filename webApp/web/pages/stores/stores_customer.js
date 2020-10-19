@@ -275,9 +275,6 @@ $(function setMakeOrderForm(){
         success: function (stores){
             $.each(stores || [], function(index, store){
                 storeSelect.append(new Option(store.name, store.id));
-                // $('<option>' + store.name + '</option>')
-                //     .val(store.id)
-                //     .appendTo(storeSelect);
             })
         }
     })

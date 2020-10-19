@@ -53,9 +53,25 @@
 
 <!-- Add Store -->
 <div id="addStore" class="w3-sand">
-    <div class="w3-container w3-content w3-center w3-padding-64" style="max-width:1600px">
-        <h2 class="w3-wide">ADD STORE</h2>
-        <div class="w3-row w3-padding-32"></div>
+    <div class="w3-container w3-content w3-padding-64" style="max-width:800px">
+        <h2 class="w3-wide w3-center w3-margin-bottom">ADD STORE</h2>
+        <div class="w3-row w3-card-4">
+            <div class="w3-row w3-padding-32">
+                <form id="addStoreForm" class="w3-container" method="GET" action="addStore">
+                    <div class="w3-section">
+                        <label><b>Store Name</b></label>
+                        <input class="w3-input w3-border w3-margin-bottom" type="text" name="storeName" placeholder="Enter store name" required>
+                        <label><b>Store Location</b></label>
+                        <input class="w3-input w3-border w3-margin-bottom" type="number" name="x" min="1"  max="50" placeholder="X coordinate" required>
+                        <input class="w3-input w3-border w3-margin-bottom" type="number" name="y" min="1"  max="50" placeholder="Y coordinate" required>
+                        <label><b>PPK</b></label>
+                        <input class="w3-input w3-border w3-margin-bottom" type="number" name="ppk" min="0" placeholder="Enter price per Km" required>
+                        <button class="w3-button w3-block w3-green w3-section w3-padding" type="submit">Add Store</button>
+                        <div id="error-placeholder" class="w3-text-red" role="alert"></div>
+                    </div>
+                </form>
+            </div>
+        </div>
     </div>
 </div>
 

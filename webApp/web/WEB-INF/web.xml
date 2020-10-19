@@ -192,4 +192,22 @@
         <url-pattern>/feedbacksList</url-pattern>
     </servlet-mapping>
 
+    <servlet>
+        <servlet-name>AddStoreServlet</servlet-name>
+        <servlet-class>sdm.servlets.AddStoreServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>AddStoreServlet</servlet-name>
+        <url-pattern>/addStore</url-pattern>
+    </servlet-mapping>
+
+    <servlet>
+        <servlet-name>ApproveAddStoreServlet</servlet-name>
+        <servlet-class>sdm.servlets.ApproveAddStoreServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>ApproveAddStoreServlet</servlet-name>
+        <url-pattern>/approveAddStore</url-pattern>
+    </servlet-mapping>
+
 </web-app>

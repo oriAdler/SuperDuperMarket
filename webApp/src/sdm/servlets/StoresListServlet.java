@@ -16,6 +16,7 @@ import java.io.PrintWriter;
 import java.util.List;
 
 import static sdm.constants.Constants.REGION_NAME;
+import static sdm.constants.Constants.USERNAME;
 
 public class StoresListServlet extends HttpServlet {
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
@@ -29,8 +30,10 @@ public class StoresListServlet extends HttpServlet {
             String regionNameFromSession = request.getSession().getAttribute((REGION_NAME)).toString();
             SuperDuperMarket regionSDM = engine.getRegionSDM(regionNameFromSession);
 
+            String userName = request.getSession().getAttribute(USERNAME).toString();
+
             if(regionSDM!=null){
-                List<StoreDTO> storeDTOList = regionSDM.getAllStoreList();
+                List<StoreDTO> storeDTOList = regionSDM.getAllStoreList(userName);
                 String json = gson.toJson(storeDTOList);
                 out.println(json);
                 out.flush();
