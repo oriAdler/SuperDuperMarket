@@ -7,6 +7,7 @@ const ORDER_LIST_URL = buildUrlWithContextPath("ordersList");
 
 //Global Variables:
 var regionName;
+var userType;
 
 $(function getRegionNameAndAdjustPage(){
     $.ajax({
@@ -54,7 +55,7 @@ function refreshItemsList(items){
             '<td>' + item.name + '</td>' +
             '<td>' + item.category + '</td>' +
             '<td>' + item.numOfSellers + '</td>' +
-            '<td>' + price + '&#8362' +'</td>' +
+            '<td>' + '<span>&#8362</span>' + price + '</td>' +
             '<td>' + item.numOfSales + '</td>' +
             '</tr>').appendTo(itemTable);
     })
@@ -78,9 +79,9 @@ function refreshStoresList(stores){
             '<h4>' + 'Owner - ' + store.ownerName + '</h4>' +
             '<h4>' + 'Location - [' + store.xLocation + ',' + store.yLocation + ']' + '</h4>' +
             '<h4>' + 'Orders No. - ' + store.numOfOrders + '</h4>' +
-            '<h4>' + 'Items income - ' + itemsIncome + '&#8362' + '</h4>' +
-            '<h4>' + 'PPK - ' +  store.PPK + '&#8362' + '</h4>' +
-            '<h4>' + 'Delivery Income - ' + deliveryIncome + '&#8362' + '</h4>' +
+            '<h4>' + 'Items income - ' + '<span>&#8362</span>' + itemsIncome + '</h4>' +
+            '<h4>' + 'PPK - ' +  '<span>&#8362</span>' + store.PPK + '</h4>' +
+            '<h4>' + 'Delivery Income - ' + '<span>&#8362</span>' + deliveryIncome + '</h4>' +
             '</div>')
             .addClass("w3-left-align")
             .appendTo(third);
@@ -106,7 +107,7 @@ function refreshStoresList(stores){
                 '<td>' + item.id + '</td>' +
                 '<td>' + item.name + '</td>' +
                 '<td>' + item.category + '</td>' +
-                '<td>' + item.price + '&#8362' + '</td>' +
+                '<td>' + '<span>&#8362</span>' + item.price + '</td>' +
                 '<td>' + item.numOfSales + '</td>' +
                 '</tr>').appendTo(itemsTable);
         })
@@ -176,9 +177,9 @@ function refreshOrdersList(orders){
             '<td>' + '[' + order.location.x + ',' + order.location.y + ']' + '</td>' +
             '<td>' + order.numOfStores + '</td>' +
             '<td>' + order.numOfItems + '</td>' +
-            '<td>' + itemsPrice + '&#8362' + '</td>' +
-            '<td>' + deliveryPrice + '&#8362' + '</td>' +
-            '<td>' + totalPrice + '&#8362' + '</td>' +
+            '<td>' + '<span>&#8362</span>' + itemsPrice + '</td>' +
+            '<td>' + '<span>&#8362</span>' + deliveryPrice + '</td>' +
+            '<td>' + '<span>&#8362</span>' + totalPrice + '</td>' +
             '</tr>').appendTo(ordersTable);
 
         //order's items table:
@@ -207,8 +208,8 @@ function refreshOrdersList(orders){
                 '<td>' + item.storeId + '</td>' +
                 '<td>' + item.storeName + '</td>' +
                 '<td>' + item.numOfSales + '</td>' +
-                '<td>' + itemPrice + '&#8362' + '</td>' +
-                '<td>' + priceSum + '&#8362' + '</td>' +
+                '<td>' + '<span>&#8362</span>' + itemPrice + '</td>' +
+                '<td>' + '<span>&#8362</span>' + priceSum + '</td>' +
                 '<td>' + item.onDiscount + '</td>' +
                 '</tr>').appendTo(itemsTable);
         })
@@ -256,9 +257,7 @@ $(function(){
     ajaxStoresList();
     setInterval(ajaxStoresList, refreshRate);
 
-    //TODO: interval or not?
     ajaxOrderList();
-    //setInterval(ajaxOrderList, refreshRate * 5);
 })
 
 $(function setMakeOrderForm(){

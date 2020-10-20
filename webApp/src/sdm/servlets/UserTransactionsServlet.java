@@ -3,6 +3,7 @@ package sdm.servlets;
 import DTO.TransactionDTO;
 import DTO.UserDTO;
 import com.google.gson.Gson;
+import engine.users.User;
 import engine.users.UserManager;
 import sdm.constants.Constants;
 import sdm.utils.ServletUtils;
@@ -11,6 +12,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.List;
@@ -22,9 +24,13 @@ public class UserTransactionsServlet extends HttpServlet {
         response.setContentType("application/json");
         try (PrintWriter out = response.getWriter()) {
             Gson gson = new Gson();
+            HttpSession session = request.getSession();
 
             UserManager userManager = ServletUtils.getUserManager(getServletContext());
-            List<TransactionDTO> transactionDTOList = userManager.getUserTransactions(request.getSession().getAttribute(Constants.USERNAME).toString());
+            User user = userManager.getUser(session.getAttribute(Constants.USERNAME).toString());
+
+            List<TransactionDTO> transactionDTOList = user.getAccount().getTransactionDTOList();
+//          userManager.getUserTransactions(request.getSession().getAttribute(Constants.USERNAME).toString());
 
             String json = gson.toJson(transactionDTOList);
             out.println(json);

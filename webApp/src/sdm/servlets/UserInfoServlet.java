@@ -21,7 +21,9 @@ public class UserInfoServlet extends HttpServlet {
         try (PrintWriter out = response.getWriter()) {
             Gson gson = new Gson();
             UserManager userManager = ServletUtils.getUserManager(getServletContext());
-            UserDTO userDTO = userManager.getUserInfo(request.getSession().getAttribute(Constants.USERNAME).toString());
+            String userName = request.getSession().getAttribute(Constants.USERNAME).toString();
+
+            UserDTO userDTO = userManager.getUser(userName).userToUserDTO();
             String json = gson.toJson(userDTO);
             out.println(json);
             out.flush();

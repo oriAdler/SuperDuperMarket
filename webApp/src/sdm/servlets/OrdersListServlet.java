@@ -6,6 +6,7 @@ import DTO.PrivateOrderDTO;
 import DTO.UserDTO;
 import com.google.gson.Gson;
 import engine.Engine;
+import engine.users.User;
 import engine.users.UserManager;
 import sdm.SuperDuperMarket;
 import sdm.utils.ServletUtils;
@@ -39,7 +40,7 @@ public class OrdersListServlet extends HttpServlet {
 
             //get user details
             String userName = session.getAttribute(USERNAME).toString();
-            UserDTO user = userManager.getUserInfo(userName);
+            UserDTO user = userManager.getUser(userName).userToUserDTO();
 
             List<PrivateOrderDTO> privateOrdersList = new ArrayList<>();
 

@@ -74,9 +74,9 @@ function refreshTransactionTable(transactions){
         let row = $('<tr>' +
                 '<td>' + transaction.type + '</td>' +
                 '<td>' + date.day + '-' + date.month + '-' + date.year + '</td>' +
-                '<td>' + amount + '&#8362' + '</td>' +
-                '<td>' + balanceBefore + '&#8362' + '</td>' +
-                '<td>' + balanceAfter + '&#8362' + '</td>' +
+                '<td>' + '<span>&#8362</span>' + amount + '</td>' +
+                '<td>' + '<span>&#8362</span>' + balanceBefore + '</td>' +
+                '<td>' + '<span>&#8362</span>' + balanceAfter + '</td>' +
                 '</tr>').appendTo(accountTable);
         if(transaction.type==="Charge"){
             row.addClass("w3-text-red");
@@ -192,7 +192,7 @@ function refreshRegionTable(regions){
             '<td>' + region.numOfItemsType + '</td>' +
             '<td>' + region.numOfStores + '</td>' +
             '<td>' + region.numOfOrders + '</td>' +
-            '<td>' + orderAveragePrice + '&#8362' + '</td>' +
+            '<td>' + '<span>&#8362</span>' + orderAveragePrice + '</td>' +
             '<td>' + '<button>Go to region >></button>' + '</td>' +
             '</tr>').appendTo(regionTable)
             .find("button")

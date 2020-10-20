@@ -4,6 +4,7 @@ import DTO.CartDTO;
 import DTO.TransactionDTO;
 import engine.Engine;
 import engine.accounts.Account;
+import engine.users.User;
 import engine.users.UserManager;
 import sdm.SuperDuperMarket;
 import sdm.utils.ServletUtils;
@@ -47,7 +48,7 @@ public class ApproveOrderServlet extends HttpServlet {
                 String userName = session.getAttribute(USERNAME).toString();
                 List<CartDTO> cartDTOList = (List<CartDTO>) session.getAttribute(CARTS_LIST);
                 LocalDate date = (LocalDate) session.getAttribute(DATE);
-                int customerId = userManager.getUserInfo(userName).getId();
+                int customerId = userManager.getUser(userName).getId();
                 int x = Integer.parseInt(session.getAttribute(X_LOCATION).toString());
                 int y = Integer.parseInt(session.getAttribute(Y_LOCATION).toString());
 
@@ -64,7 +65,7 @@ public class ApproveOrderServlet extends HttpServlet {
 
                 //update transactions:
                 userNameToTransaction.forEach((key, value)->{
-                    Account userAccount = userManager.getUserAccount(key);
+                    Account userAccount = userManager.getUser(key).getAccount();
                     if(userAccount != null){
                         userAccount.addTransaction(value.getType(), value.getDate(), value.getAmount());
                     }

@@ -32,7 +32,7 @@ function refreshItemsTable(items){
 
     //rebuild the items table:
     $.each(items || [], function(index,item){
-        let itemPrice = item.isSoldByStore ? item.price + "&#8362" : "N/A";
+        let itemPrice = item.isSoldByStore ? '<span>&#8362</span>' + item.price : "N/A";
         let tableRow = $('<tr>' +
             '<td class="id">' + item.id + '</td>' +
             '<td>' + item.name + '</td>' +
@@ -152,10 +152,10 @@ function showOrderSummary(carts){
             '<td>' + cart.storeName + '</td>' +
             '<td>' + '[' + cart.storeXLocation + ',' + cart.storeYLocation + ']' + '</td>' +
             '<td>' + distance + '&#13214' + '</td>' +
-            '<td>' + cart.PPK + '&#8362' + '</td>' +
-            '<td>' + deliveryPrice + '&#8362' + '</td>' +
+            '<td>' + '<span>&#8362</span>' + cart.PPK + '</td>' +
+            '<td>' + '<span>&#8362</span>' + deliveryPrice + '</td>' +
             '<td>' + cart.itemsNumber + '</td>' +
-            '<td>' + itemsPrice + '&#8362' + '</td>' +
+            '<td>' + '<span>&#8362</span>' + itemsPrice + '</td>' +
             '</tr>').appendTo(orderTable)
     });
 

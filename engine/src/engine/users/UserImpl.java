@@ -1,5 +1,6 @@
 package engine.users;
 
+import DTO.UserDTO;
 import engine.accounts.Account;
 
 import java.util.List;
@@ -32,6 +33,11 @@ public class UserImpl implements User {
     @Override
     public List<Account.Transaction> getTransactionList() {
         return this.account.getTransactionList();
+    }
+
+    @Override
+    public UserDTO userToUserDTO() {
+        return new UserDTO(this.id, this.name, this.type);
     }
 
     public Account getAccount() {

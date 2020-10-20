@@ -106,9 +106,9 @@ function refreshOrdersList(carts){
         let cartData = $('<div>' +
             '<h2>' + cart.storeName + '</h2>' +
             '<h4>' + 'Serial No. - ' + cart.storeId + '</h4>' +
-            '<h4>' + 'PPK - ' + cart.PPK + '&#8362' + '</h4>' +
+            '<h4>' + '<span>&#8362</span>' + 'PPK - ' + cart.PPK + '</h4>' +
             '<h4>' + 'Distance to customer - ' + distance + '&#13214' + '</h4>' +
-            '<h4>' + 'Delivery Price - ' + deliveryPrice + '&#8362' + '</h4>' +
+            '<h4>' + 'Delivery Price - ' + '<span>&#8362</span>' + deliveryPrice + '</h4>' +
             '</div>')
             .addClass("w3-left-align")
             .appendTo(third);
@@ -143,8 +143,8 @@ function refreshOrdersList(carts){
                 '<td>' + item.name + '</td>' +
                 '<td>' + item.category + '</td>' +
                 '<td>' + item.numOfSales + '</td>' +
-                '<td>' + item.price + '&#8362' + '</td>' +
-                '<td>' + item.priceSum + '&#8362' + '</td>' +
+                '<td>' + '<span>&#8362</span>' + item.price + '</td>' +
+                '<td>' + '<span>&#8362</span>' + item.priceSum + '</td>' +
                 '<td>' + item.onDiscount + '</td>' +
                 '</tr>').appendTo(itemsTable);
         });

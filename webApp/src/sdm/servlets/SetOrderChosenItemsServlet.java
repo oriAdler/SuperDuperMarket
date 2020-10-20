@@ -56,7 +56,7 @@ public class SetOrderChosenItemsServlet extends HttpServlet {
                         SuperDuperMarket regionSDM = engine.getRegionSDM(regionName);
 
                         String userName = request.getSession().getAttribute(USERNAME).toString();
-                        int userId = userManager.getUserInfo(userName).getId();
+                        int userId = userManager.getUser(userName).getId();
 
                         int x = Integer.parseInt(request.getSession().getAttribute(X_LOCATION).toString());
                         int y = Integer.parseInt(request.getSession().getAttribute(X_LOCATION).toString());

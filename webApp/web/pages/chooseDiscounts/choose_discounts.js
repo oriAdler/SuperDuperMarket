@@ -80,7 +80,7 @@ function refreshDiscountsList(discounts){
         $.each(discount.offerList || [], function(index, offer){
             offersArray.push(new Offer(offer.itemId, offer.itemName, offer.amount, offer.price, offer.storeId));
 
-            let offerString = " " + offer.amount + " " + offer.itemName + " for " + offer.price + '&#8362';
+            let offerString = " " + offer.amount + " " + offer.itemName + " for " + '<span>&#8362</span>' + offer.price;
             let offerParagraph = $('<p></p>')
                 .append('<input class="w3-radio" type="radio" name="offer">')
                 .append('<label>' + offerString + '</label>');

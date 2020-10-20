@@ -54,7 +54,7 @@ function refreshItemsList(items){
             '<td>' + item.name + '</td>' +
             '<td>' + item.category + '</td>' +
             '<td>' + item.numOfSellers + '</td>' +
-            '<td>' + price + '&#8362' +'</td>' +
+            '<td>' + '<span>&#8362</span>' + price + '</td>' +
             '<td>' + item.numOfSales + '</td>' +
             '</tr>').appendTo(itemTable);
     })
@@ -78,9 +78,9 @@ function refreshStoresList(stores){
             '<h4>' + 'Owner - ' + store.ownerName + '</h4>' +
             '<h4>' + 'Location - [' + store.xLocation + ',' + store.yLocation + ']' + '</h4>' +
             '<h4>' + 'Orders No. - ' + store.numOfOrders + '</h4>' +
-            '<h4>' + 'Items income - ' + itemsIncome + '&#8362' + '</h4>' +
-            '<h4>' + 'PPK - ' +  store.PPK + '&#8362' + '</h4>' +
-            '<h4>' + 'Delivery Income - ' + deliveryIncome + '&#8362' + '</h4>' +
+            '<h4>' + 'Items income - ' + '<span>&#8362</span>' + itemsIncome + '</h4>' +
+            '<h4>' + 'PPK - ' +  '<span>&#8362</span>' + store.PPK + '</h4>' +
+            '<h4>' + 'Delivery Income - ' + '<span>&#8362</span>' + deliveryIncome + '</h4>' +
             '</div>')
             .addClass("w3-left-align")
             .appendTo(third);
@@ -93,7 +93,7 @@ function refreshStoresList(stores){
             '<th>Name</th>' +
             '<th>Category</th>' +
             '<th>Price</th>' +
-            '<th>Sells No.</th>' +
+            '<th>Sales No.</th>' +
             '</tr>').appendTo(itemsTable);
         //ItemDTO
         // id: 1
@@ -106,7 +106,7 @@ function refreshStoresList(stores){
                 '<td>' + item.id + '</td>' +
                 '<td>' + item.name + '</td>' +
                 '<td>' + item.category + '</td>' +
-                '<td>' + item.price + '&#8362' + '</td>' +
+                '<td>' + '<span>&#8362</span>' + item.price + '</td>' +
                 '<td>' + item.numOfSales + '</td>' +
                 '</tr>').appendTo(itemsTable);
         })
@@ -119,7 +119,7 @@ function refreshStoresList(stores){
         let ordersContainer = $('<div></div>').addClass("w3-row w3-white w3-margin-bottom w3-container w3-responsive").appendTo(container);
         $('<h3>Orders History</h3>').appendTo(ordersContainer);
 
-        let ordersTable = $('<table></table>').addClass("w3-striped w3-border w3-table-all w3-large").appendTo(ordersContainer);
+        let ordersTable = $('<table></table>').addClass("w3-striped w3-border w3-table-all w3-large w3-hoverable").appendTo(ordersContainer);
         let orderHeaders = $('<tr>' +
             '<th>Serial No.</th>' +
             '<th>Date</th>' +
@@ -153,8 +153,8 @@ function refreshStoresList(stores){
                 '<td>' + order.customerName + '</td>' +
                 '<td>' + '[' + order.location.x + ',' + order.location.y + ']' + '</td>' +
                 '<td>' + order.numOfItems + '</td>' +
-                '<td>' + itemsPrice + '&#8362' + '</td>' +
-                '<td>' + deliveryPrice + '&#8362' + '</td>' +
+                '<td>' + '<span>&#8362</span>' + itemsPrice + '</td>' +
+                '<td>' + '<span>&#8362</span>' + deliveryPrice + '</td>' +
                 '</tr>').appendTo(ordersTable);
 
             //order's items table:
@@ -179,8 +179,8 @@ function refreshStoresList(stores){
                     '<td>' + item.name + '</td>' +
                     '<td>' + item.category + '</td>' +
                     '<td>' + item.numOfSales + '</td>' +
-                    '<td>' + itemPrice + '&#8362' + '</td>' +
-                    '<td>' + priceSum + '&#8362' + '</td>' +
+                    '<td>' + '<span>&#8362</span>' + itemPrice + '</td>' +
+                    '<td>' + '<span>&#8362</span>' + priceSum + '</td>' +
                     '<td>' + item.onDiscount + '</td>' +
                     '</tr>').appendTo(itemsTable);
             })
@@ -259,8 +259,9 @@ function ajaxFeedbacksList(){
 
 $(function(){
     ajaxItemsTable();
-    setInterval(ajaxItemsTable, refreshRate);
+    // setInterval(ajaxItemsTable, refreshRate);
 
+    //TODO: consider another method as items in order's history is pop-up window
     ajaxStoresList();
     setInterval(ajaxStoresList, refreshRate);
 

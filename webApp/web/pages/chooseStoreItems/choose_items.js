@@ -25,7 +25,7 @@ function refreshItemsTable(items){
 
     //rebuild the items table:
     $.each(items || [], function(index,item){
-        let itemPrice = item.isSoldByStore ? item.price + "&#8362" : "N/A";
+        let itemPrice = item.isSoldByStore ? '<span>&#8362</span>' + item.price : "N/A";
         let tableRow = $('<tr>' +
             '<td class="id">' + item.id + '</td>' +
             '<td>' + item.name + '</td>' +

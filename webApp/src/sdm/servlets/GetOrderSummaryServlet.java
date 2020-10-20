@@ -43,7 +43,7 @@ public class GetOrderSummaryServlet  extends HttpServlet {
                 Map<Integer, Double> itemIdToItem = (Map<Integer, Double>) session.getAttribute(ORDER_ITEMS_MAP);
                 List<OfferDTO> offerDTOList = SessionUtils.getUserDiscounts(request);
                 String userName = session.getAttribute(USERNAME).toString();
-                int customerId = userManager.getUserInfo(userName).getId();
+                int customerId = userManager.getUser(userName).getId();
                 int x = Integer.parseInt(session.getAttribute(X_LOCATION).toString());
                 int y = Integer.parseInt(session.getAttribute(Y_LOCATION).toString());
 
