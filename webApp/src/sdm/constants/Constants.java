@@ -1,6 +1,7 @@
 package sdm.constants;
 
 public class Constants {
+
     public static final String USERNAME = "username";
     public static final String USER_TYPE = "userType";
     public static final String USER_NAME_ERROR = "username_error";
@@ -28,4 +29,7 @@ public class Constants {
 
     public static final String STORE_NAME = "storeName";
     public static final String STORE_PPK = "ppk";
+
+    public static final int INT_PARAMETER_ERROR = Integer.MIN_VALUE;
+    public static final String NOTIFICATION_VERSION_PARAMETER = "notificationVersion";
 }

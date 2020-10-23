@@ -6,9 +6,11 @@ const USER_INFO_URL = buildUrlWithContextPath("userInfo");
 const USER_TRANSACTIONS_URL = buildUrlWithContextPath("userTransactions");
 const ADD_MONEY_URL = buildUrlWithContextPath("addMoney");
 const SET_REGION_NAME_URL = buildUrlWithContextPath("setRegion");
+const NOTIFICATION_VERSION_URL = buildUrlWithContextPath("notification");
 
 // Global Variables:
 var userType;
+var notificationVersion = 0;
 
 $(function getUserTypeAndAdjustPage(){
     $.ajax({
@@ -20,9 +22,11 @@ $(function getUserTypeAndAdjustPage(){
             // Adjust page according to user type:
             if(userType=="Customer"){
                 $("#uploadFileButton").hide();
+                $("#notificationsOuterDiv").hide();
             }
             else{
                 $("#transferMoneyButton").hide();
+                triggerAjaxNotificationContent();
             }
         }
     })
@@ -101,8 +105,10 @@ function ajaxTransactionsTable(){
 // name: "ori",
 // type: "Vendor"}
 function refreshUsersList(users) {
+    let userList = $("#usersList");
+
     //clear all current users
-    $("#usersList").empty();
+    userList.empty();
 
     // rebuild the list of users: scan all users and add them to the list of users
     $.each(users || [], function(index, user) {
@@ -116,7 +122,7 @@ function refreshUsersList(users) {
                 user.name + '<br>' +
                 user.type +
                 '</div>' +
-                '</li>').appendTo($("#usersList"));
+                '</li>').appendTo(userList);
         }
         else if(index % 3 === 1){
             $('<li class="w3-bar">' +
@@ -125,7 +131,7 @@ function refreshUsersList(users) {
                 user.name + '<br>' +
                 user.type +
                 '</div>' +
-                '</li>').appendTo($("#usersList"));
+                '</li>').appendTo(userList);
         }
         else{
             $('<li class="w3-bar">' +
@@ -134,7 +140,7 @@ function refreshUsersList(users) {
                 user.name + '<br>' +
                 user.type +
                 '</div>' +
-                '</li>').appendTo($("#usersList"));
+                '</li>').appendTo(userList);
         }
     });
 }
@@ -311,3 +317,59 @@ $(function() {
     ajaxTransactionsTable();
     setInterval(ajaxTransactionsTable, refreshRate);
 });
+
+function appendToNotificationList(notifications, delta){
+    let notificationList = $("#notificationList");
+
+    $.each(notifications || [] ,function (index, notification){
+        $('<li class="w3-bar">' +
+            '<div class="w3-bar-item">' +
+            notification +
+            '</div>' +
+            '</li>').prependTo(notificationList);
+    })
+}
+
+function triggerAjaxNotificationContent() {
+    setTimeout(ajaxNotificationContent, refreshRate);
+}
+
+//call the server and get the notification version
+//we also send it the current chat version so in case there was a change
+//in the notification content, we will get the new string as well
+function ajaxNotificationContent() {
+    $.ajax({
+        url: NOTIFICATION_VERSION_URL,
+        data: "notificationVersion=" + notificationVersion,
+        dataType: 'json',
+        success: function(data) {
+             //{"notifications":
+             //["ori has made an order in your store \"super baba\".\nThe order includes 2 items with total price of 20.00 and delivery price of 108.17",...]
+             //,"version":4}
+            console.log("Server notification version: " + data.version + ", Current notification version: " + notificationVersion);
+            if (data.version !== notificationVersion) {
+                let delta = data.version - notificationVersion;
+                let badge = $('<span>' + delta + '</span>').addClass("w3-badge w3-circle w3-red");
+                $("#dropDownButton").append(badge);
+                notificationVersion = data.version;
+                appendToNotificationList(data.notifications, delta);
+            }
+            triggerAjaxNotificationContent();
+        },
+        error: function(error) {
+            triggerAjaxNotificationContent();
+        }
+    });
+}
+
+$(function (){
+    $("#dropDownButton").click(function(){
+        $(this).find(".w3-badge").remove();
+        let dropDown = document.getElementById("notificationDiv");
+        if (dropDown.className.indexOf("w3-show") == -1) {
+            dropDown.className += " w3-show";
+        } else {
+            dropDown.className = dropDown.className.replace(" w3-show", "");
+        }
+    })
+})

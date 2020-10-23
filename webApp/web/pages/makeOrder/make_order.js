@@ -2,8 +2,37 @@
 const ORDER_ITEMS_TABLE = buildUrlWithContextPath("orderItemsList");
 const GET_REGION_NAME_URL = buildUrlWithContextPath("getRegion");
 const CHOOSE_ITEMS_URL = buildUrlWithContextPath("chooseItems");
-// const CHOOSE_DISCOUNTS_URL = "../approveOrder/approve_order.html";
 const CHOOSE_DISCOUNTS_URL = "../chooseDiscounts/choose_discounts.html";
+const GET_ORDER_TYPE_URL = buildUrlWithContextPath("getOrderType");
+
+//Global variables:
+var orderType;
+
+//response from server returns with one extra blank line, therefor trim is necessary.
+$(function getOrderTypeAndAdjustPage(){
+    $.ajax({
+        url: GET_ORDER_TYPE_URL,
+        success: function(response){
+            orderType = response.trim();
+        },
+        error: function (error){
+            console.log(error);
+        }
+    })
+})
+
+// $(function getRegionNameAndAdjustPage(){
+//     $.ajax({
+//         url: GET_REGION_NAME_URL,
+//         success: function(response){
+//             regionName = response;
+//             //$("#logo").text(regionName);
+//         },
+//         error: function (error){
+//             console.log(error);
+//         }
+//     })
+// })
 
 // ItemDTO object:
 //{"id":1,
@@ -22,7 +51,7 @@ function refreshItemsTable(items){
         '<th>Serial number</th>' +
         '<th>Name</th>' +
         '<th>Category</th>');
-    if(localStorage.getItem("orderType")==="static"){
+    if(orderType=="static"){
         tableHeader.append('<th>Price</th>');
     }
     tableHeader.append(
@@ -37,7 +66,7 @@ function refreshItemsTable(items){
             '<td class="id">' + item.id + '</td>' +
             '<td>' + item.name + '</td>' +
             '<td>' + item.category + '</td>');
-        if(localStorage.getItem("orderType")==="static"){
+        if(orderType=="static"){
             tableRow.append('<th>' + itemPrice + '</th>');
         }
         tableRow.append('</tr>');
@@ -81,32 +110,32 @@ $(function ajaxOrderItemsList(){
     })
 });
 
-$(function getRegionNameAndAdjustPage(){
-    // Check browser support for web storage API
-    if (typeof(Storage) !== "undefined") {
-        // retrieve orderType & store name:
-        let orderType = localStorage.getItem("orderType");
-        if(orderType==="static"){
-            let storeName = localStorage.getItem("store");
-            $("#logo").text(storeName);
-        }
-        else{   //orderType==="dynamic"
-            // get region name via ajax request
-            $.ajax({
-                url: GET_REGION_NAME_URL,
-                success: function(response){
-                    regionName = response;
-                    $("#logo").text(regionName);
-                },
-                error: function (error){
-                    console.log(error);
-                }
-            })
-        }
-    } else {
-        alert("Sorry, your browser does not support Web Storage...");
-    }
-});
+// $(function getRegionNameAndAdjustPage(){
+//     // Check browser support for web storage API
+//     if (typeof(Storage) !== "undefined") {
+//         // retrieve orderType & store name:
+//         let orderType = localStorage.getItem("orderType");
+//         if(orderType==="static"){
+//             let storeName = localStorage.getItem("store");
+//             $("#logo").text(storeName);
+//         }
+//         else{   //orderType==="dynamic"
+//             // get region name via ajax request
+//             $.ajax({
+//                 url: GET_REGION_NAME_URL,
+//                 success: function(response){
+//                     regionName = response;
+//                     $("#logo").text(regionName);
+//                 },
+//                 error: function (error){
+//                     console.log(error);
+//                 }
+//             })
+//         }
+//     } else {
+//         alert("Sorry, your browser does not support Web Storage...");
+//     }
+// });
 
 function showOrderSummary(carts){
     //clear page old details - choose item form
@@ -196,10 +225,10 @@ $(function chooseItemsFrom(){
                     console.log(errorObject.responseText);
                 },
                 success: function (carts) {
-                    if(localStorage.getItem("orderType")==="dynamic"){
+                    if(orderType=="dynamic"){
                         showOrderSummary(carts);
                     }
-                    else{   //"orderType"==="static"
+                    else{   //"orderType" =="static"
                         window.location.assign(CHOOSE_DISCOUNTS_URL);
                     }
                 }

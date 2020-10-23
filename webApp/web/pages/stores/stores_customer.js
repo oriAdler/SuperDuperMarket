@@ -7,14 +7,13 @@ const ORDER_LIST_URL = buildUrlWithContextPath("ordersList");
 
 //Global Variables:
 var regionName;
-var userType;
 
 $(function getRegionNameAndAdjustPage(){
     $.ajax({
         url: GET_REGION_NAME_URL,
         success: function(response){
             regionName = response;
-            $("#logo").text(regionName);
+            //$("#logo").text(regionName);
         },
         error: function (error){
             console.log(error);
@@ -307,13 +306,13 @@ $(function() {
             success: function(nextPageUrl) {
                 window.location.assign(nextPageUrl);
                 // Check browser support for web storage API
-                if (typeof(Storage) !== "undefined") {
-                    // Store order type & store:
-                    localStorage.setItem("orderType", $("#orderSelect").val());
-                    localStorage.setItem("store", $("#storeSelect option:selected").html());
-                } else {
-                    alert("Sorry, your browser does not support Web Storage...");
-                }
+                // if (typeof(Storage) !== "undefined") {
+                //     // Store order type & store:
+                //     localStorage.setItem("orderType", $("#orderSelect").val());
+                //     localStorage.setItem("store", $("#storeSelect option:selected").html());
+                // } else {
+                //     alert("Sorry, your browser does not support Web Storage...");
+                // }
             }
         });
 

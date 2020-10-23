@@ -1,8 +1,11 @@
 package sdm.utils;
 
 import DTO.OfferDTO;
+import engine.notification.NotificationManager;
+import engine.users.UserManager;
 import sdm.constants.Constants;
 
+import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import java.util.List;

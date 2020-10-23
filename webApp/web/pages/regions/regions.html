@@ -18,6 +18,22 @@
         <a href="#account" class="w3-bar-item w3-button w3-padding-large">ACCOUNT</a>
         <button id="uploadFileButton" class="w3-bar-item w3-button w3-padding-large" onclick="document.getElementById('uploadFileModal').style.display='block'">UPLOAD FILE</button>
         <button id="transferMoneyButton" class="w3-bar-item w3-button w3-padding-large" onclick="document.getElementById('transferMoneyModal').style.display='block'">TRANSFER MONEY</button>
+
+        <div id="notificationsOuterDiv" class="w3-dropdown-click">
+            <button id="dropDownButton" class="w3-button w3-padding-large">
+                Notifications
+            </button>
+            <div style="overflow: hidden">
+                <div style="overflow-y: scroll; max-height: 300px" id="notificationDiv" class="w3-dropdown-content w3-bar-block w3-card">
+                    <ul id="notificationList" class="w3-ul w3-card-4">
+                        <li class="w3-bar">
+                            <div class="w3-bar-item">Upload file and start trading!</div>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
     </div>
 </div>
 <!-- Page content -->

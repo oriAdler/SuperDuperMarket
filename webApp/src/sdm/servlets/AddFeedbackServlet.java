@@ -1,6 +1,7 @@
 package sdm.servlets;
 
 import engine.Engine;
+import engine.notification.NotificationManager;
 import sdm.SuperDuperMarket;
 import sdm.utils.ServletUtils;
 
@@ -25,6 +26,7 @@ public class AddFeedbackServlet extends HttpServlet {
             HttpSession session = request.getSession();
             String regionName = session.getAttribute(REGION_NAME).toString();
             Engine engine = ServletUtils.getEngine(getServletContext());
+            NotificationManager notificationManager = ServletUtils.getNotificationManager(getServletContext());
 
             SuperDuperMarket regionSDM = engine.getRegionSDM(regionName);
 
@@ -38,6 +40,16 @@ public class AddFeedbackServlet extends HttpServlet {
             int rating = Integer.parseInt(ratingFromParameter);
 
             regionSDM.addFeedbackToStore(storeId, userName, localDate, rating, feedbackFromParameter);
+
+            //add notification to store's owner:
+            String ownerName = regionSDM.getStoreOwnerName(storeId);
+            String storeName = regionSDM.getStoreNameById(storeId);
+            String notification = String.format("%s gave you a feedback about store \"%s\" in region \"%s\" with rating %d/5",
+                    userName, storeName, regionName, rating);
+
+            synchronized (getServletContext()){
+                notificationManager.addNotification(ownerName, notification);
+            }
         }
     }
 

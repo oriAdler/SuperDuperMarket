@@ -3,10 +3,14 @@ package sdm.utils;
 //import engine.chat.ChatManager;
 import engine.Engine;
 import engine.EngineImpl;
+import engine.notification.NotificationManager;
 import engine.users.UserManager;
+import sdm.constants.Constants;
 
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
+
+import static sdm.constants.Constants.INT_PARAMETER_ERROR;
 
 //import static chat.constants.Constants.INT_PARAMETER_ERROR;
 
@@ -14,6 +18,7 @@ public class ServletUtils {
 
 	private static final String USER_MANAGER_ATTRIBUTE_NAME = "userManager";
 	private static final String ENGINE_ATTRIBUTE_NAME = "engine";
+	public static final String NOTIFICATION_MANAGER_ATTRIBUTE_NAME = "notificationManager";
 
 	/*
 	Note how the synchronization is done only on the question and\or creation of the relevant managers and once they exists -
@@ -21,6 +26,7 @@ public class ServletUtils {
 	 */
 	private static final Object userManagerLock = new Object();
 	private static final Object engineLock = new Object();
+	private static final Object notificationManagerLock = new Object();
 
 	public static UserManager getUserManager(ServletContext servletContext) {
 
@@ -40,15 +46,24 @@ public class ServletUtils {
 		}
 		return (Engine) servletContext.getAttribute(ENGINE_ATTRIBUTE_NAME);
 	}
-//
-//	public static int getIntParameter(HttpServletRequest request, String name) {
-//		String value = request.getParameter(name);
-//		if (value != null) {
-//			try {
-//				return Integer.parseInt(value);
-//			} catch (NumberFormatException numberFormatException) {
-//			}
-//		}
-//		return INT_PARAMETER_ERROR;
-//	}
+
+	public static NotificationManager getNotificationManager(ServletContext servletContext) {
+		synchronized (notificationManagerLock) {
+			if (servletContext.getAttribute(NOTIFICATION_MANAGER_ATTRIBUTE_NAME) == null) {
+				servletContext.setAttribute(NOTIFICATION_MANAGER_ATTRIBUTE_NAME, new NotificationManager());
+			}
+		}
+		return (NotificationManager) servletContext.getAttribute(NOTIFICATION_MANAGER_ATTRIBUTE_NAME);
+	}
+
+	public static int getIntParameter(HttpServletRequest request, String name) {
+		String value = request.getParameter(name);
+		if (value != null) {
+			try {
+				return Integer.parseInt(value);
+			} catch (NumberFormatException numberFormatException) {
+			}
+		}
+		return INT_PARAMETER_ERROR;
+	}
 }

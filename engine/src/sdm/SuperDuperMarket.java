@@ -25,8 +25,8 @@ public interface SuperDuperMarket {
     void addItemToStore(int storeId, int itemId, int itemNewPrice);
     void updateItemPriceInStore(int storeId, int itemId, int itemNewPrice);
 
-    Map<String, TransactionDTO> executeStaticOrder(CartDTO cart, LocalDate date, int customerId, Point customerLocation, String userName);
-    Map<String, TransactionDTO> executeDynamicOrder(List<CartDTO> cartList, LocalDate orderDate, Integer customerId, Point customerLocation, String userName);
+    Map<String, TransactionDTO> executeStaticOrder(CartDTO cart, LocalDate date, int customerId, Point customerLocation, String userName, Map<String, List<String>> userNameToNotification);
+    Map<String, TransactionDTO> executeDynamicOrder(List<CartDTO> cartList, LocalDate orderDate, Integer customerId, Point customerLocation, String userName, Map<String, List<String>> userNameToNotification);
     CartDTO summarizeStaticOrder(Map<Integer, Double> itemsMap, List<OfferDTO> offersToAddToCart, int storeId, Integer customerId, Point customerLocation);
     List<CartDTO> summarizeDynamicOrder(Map<Integer, Double> itemsMap, List<OfferDTO> offersToAddToCart, Integer customerId, Point customerLocation);
     List<CartDTO> getDetailedOrder(Integer orderId);
@@ -63,4 +63,7 @@ public interface SuperDuperMarket {
 
     void addFeedbackToStore(int storeId, String userName, LocalDate date, int rating, String feedback);
     List<FeedbackDTO> getVendorFeedbacks(String ownerName);
+    int getItemsNumberInRegion();
+    String getRegionOwnerName();
+    String getStoreOwnerName(int storeId);
 }

@@ -4,6 +4,7 @@ import DTO.CartDTO;
 import DTO.TransactionDTO;
 import engine.Engine;
 import engine.accounts.Account;
+import engine.notification.NotificationManager;
 import engine.users.User;
 import engine.users.UserManager;
 import sdm.SuperDuperMarket;
@@ -18,6 +19,7 @@ import java.awt.*;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.time.LocalDate;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -37,7 +39,7 @@ public class ApproveOrderServlet extends HttpServlet {
             HttpSession session = request.getSession();
             Engine engine = ServletUtils.getEngine(getServletContext());
             UserManager userManager = ServletUtils.getUserManager(getServletContext());
-
+            NotificationManager notificationManager = ServletUtils.getNotificationManager(getServletContext());
 
             try{
                 //get region
@@ -53,14 +55,15 @@ public class ApproveOrderServlet extends HttpServlet {
                 int y = Integer.parseInt(session.getAttribute(Y_LOCATION).toString());
 
                 Map<String, TransactionDTO> userNameToTransaction;
+                Map<String, List<String>> userNameToNotification = new HashMap<>();
 
                 if(session.getAttribute(ORDER_TYPE).toString().equals(DYNAMIC_ORDER)){
                     userNameToTransaction = regionSDM.executeDynamicOrder(cartDTOList,
-                            date, customerId, new Point(x,y), userName);
+                            date, customerId, new Point(x,y), userName, userNameToNotification);
                 }
                 else{
                     userNameToTransaction = regionSDM.executeStaticOrder(cartDTOList.get(0),
-                            date, customerId, new Point(x,y), userName);
+                            date, customerId, new Point(x,y), userName, userNameToNotification);
                 }
 
                 //update transactions:
@@ -70,6 +73,11 @@ public class ApproveOrderServlet extends HttpServlet {
                         userAccount.addTransaction(value.getType(), value.getDate(), value.getAmount());
                     }
                 });
+
+                // add notifications to vendors, synchronized with "AddFeedbackServlet" and "AddStoreServlet".
+                synchronized (getServletContext()){
+                    userNameToNotification.forEach(notificationManager::addNotificationList);
+                }
 
                 //on success redirect user to page 3
                 out.println(STORES_URL);

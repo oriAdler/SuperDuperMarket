@@ -56,13 +56,14 @@ public class SuperDuperMarketImpl implements SuperDuperMarket {
         return regionName;
     }
 
-    public String getOwnerName() {
+    public String getRegionOwnerName() {
         return ownerName;
     }
 
-    //    public Map<Integer, User> getCustomerIdToCustomer() {
-//        return customerIdToCustomer;
-//    }
+    @Override
+    public String getStoreOwnerName(int storeId) {
+        return storeIdToStore.get(storeId).getOwnerName();
+    }
 
     public int getNumOfSellersById(int id){
         return (int) storeIdToStore
@@ -237,7 +238,8 @@ public class SuperDuperMarketImpl implements SuperDuperMarket {
     }
 
     @Override
-    public Map<String, TransactionDTO> executeStaticOrder(CartDTO cart, LocalDate date, int customerId, Point customerLocation, String userName) {
+    public Map<String, TransactionDTO> executeStaticOrder(CartDTO cart, LocalDate date, int customerId,
+                                                          Point customerLocation, String userName, Map<String, List<String>> userNameToNotification) {
         Integer storeId = cart.getStoreId();
 
         //Add order to Super Duper Market System:
@@ -272,11 +274,27 @@ public class SuperDuperMarketImpl implements SuperDuperMarket {
         userNameToTransaction.put(userName, new TransactionDTO("Charge", date, cart.getTotalOrderPrice(), -1, -1));
         String ownerName = storeIdToStore.get(store.getId()).getOwnerName();
         userNameToTransaction.put(ownerName, new TransactionDTO("Payment", date, cart.getTotalOrderPrice(), -1, -1));
+
+        //summarize notification to vendor:
+        String storeName = storeIdToStore.get(storeId).getName();
+        String notification = generateOrderNotification(userName, storeName, cart.getItemsNumber(), cart.getTotalItemsPrice(), cart.getDeliveryPrice());
+        List<String> notificationsList = new ArrayList<>();
+        notificationsList.add(notification);
+        userNameToNotification.put(ownerName, notificationsList);
+
         return userNameToTransaction;
     }
 
+    private String generateOrderNotification(String customerName, String storeName, int itemsNumber,
+                                             double itemsPrice, double deliveryPrice){
+        return String.format("%s has made an order in your store \"%s\".\n" +
+                        "The order includes %d items with total price of %.2f and delivery price of %.2f",
+                customerName, storeName, itemsNumber, itemsPrice, deliveryPrice);
+    }
+
     @Override
-    public Map<String, TransactionDTO> executeDynamicOrder(List<CartDTO> cartList, LocalDate date, Integer customerId, Point customerLocation, String userName) {
+    public Map<String, TransactionDTO> executeDynamicOrder(List<CartDTO> cartList, LocalDate date, Integer customerId,
+                                                           Point customerLocation, String userName, Map<String, List<String>> userNameToNotification) {
         //Get all id's of all stores participating in order:
         Set<Integer> storesIdSet = cartList
                 .stream()
@@ -367,6 +385,25 @@ public class SuperDuperMarketImpl implements SuperDuperMarket {
 
         userNameToTotalIncome.forEach((vendorName, totalIncome)->{
             userNameToTransaction.put(vendorName, new TransactionDTO("Payment", date, totalIncome, -1, -1));
+        });
+
+        //summarize notifications to vendors:
+        cartList.forEach(currentCart -> {
+            Store store = storeIdToStore.get(currentCart.getStoreId());
+            String ownerName = store.getOwnerName();
+            String storeName = store.getName();
+
+            String notification = generateOrderNotification(userName, storeName, currentCart.getItemsNumber(),
+                    currentCart.getTotalItemsPrice(), currentCart.getDeliveryPrice());
+
+            if(userNameToNotification.containsKey(ownerName)){
+                userNameToNotification.get(ownerName).add(notification);
+            }
+            else{
+                List<String> notificationsList = new ArrayList<>();
+                notificationsList.add(notification);
+                userNameToNotification.put(ownerName, notificationsList);
+            }
         });
 
         return userNameToTransaction;
@@ -981,6 +1018,11 @@ public class SuperDuperMarketImpl implements SuperDuperMarket {
         }
 
         return  feedbackDTOList;
+    }
+
+    @Override
+    public int getItemsNumberInRegion() {
+        return itemIdToItem.size();
     }
 
     private double getRegionAverageOrdersItemsPrice(){

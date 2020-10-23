@@ -1,9 +1,7 @@
 package sdm.servlets;
 
-import DTO.CartDTO;
-import DTO.OfferDTO;
-import com.google.gson.Gson;
 import engine.Engine;
+import engine.notification.NotificationManager;
 import engine.users.UserManager;
 import sdm.SuperDuperMarket;
 import sdm.utils.ServletUtils;
@@ -16,9 +14,7 @@ import javax.servlet.http.HttpSession;
 import java.awt.*;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import static sdm.constants.Constants.*;
@@ -34,6 +30,7 @@ public class ApproveAddStoreServlet extends HttpServlet {
         try(PrintWriter out = response.getWriter()){
             Engine engine = ServletUtils.getEngine(getServletContext());
             UserManager userManager = ServletUtils.getUserManager(getServletContext());
+            NotificationManager notificationManager = ServletUtils.getNotificationManager(getServletContext());
             HttpSession session = request.getSession();
 
             Map<String, String[]> parameterMap = request.getParameterMap();
@@ -57,6 +54,18 @@ public class ApproveAddStoreServlet extends HttpServlet {
                 int ppk = Integer.parseInt(session.getAttribute(STORE_PPK).toString());
 
                 regionSDM.createNewStore(storeName, ppk, new Point(x,y), itemIdToPrice, userName);
+
+                //add notification to region owner notifications:
+                int itemNumberInRegion = regionSDM.getItemsNumberInRegion();
+                String ownerName = regionSDM.getRegionOwnerName();
+                String notification = String.format("A new store called \"%s\" was opened in region \"%s\" by %s.\n" +
+                        "The store's location is [%d,%d] and it sells %d/%d items",
+                        storeName, regionName, userName, x, y, itemIdToPrice.size(), itemNumberInRegion);
+
+                synchronized (getServletContext()){
+                    notificationManager.addNotification(ownerName, notification);
+                }
+
                 response.setStatus(200);
                 out.println("Store was added successfully");
             }
