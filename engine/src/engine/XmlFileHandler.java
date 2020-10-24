@@ -47,7 +47,7 @@ public class XmlFileHandler {
 //            } catch (FileNotFoundException e) {
 //                throw new XmlFileException("File not loaded successfully: file was not found");
             } catch (JAXBException e){
-                throw new XmlFileException("File not loaded successfully: A JAXB error has occurred");
+                throw new XmlFileException("File not loaded successfully: file is not a valid xml file (JAXB error)");
             }
         //}
     }

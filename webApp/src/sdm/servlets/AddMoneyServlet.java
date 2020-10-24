@@ -23,7 +23,6 @@ public class AddMoneyServlet extends HttpServlet {
 
     private final String REGIONS_URL = "../regions/regions.html";
 
-    //TODO: is that right?
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         response.sendRedirect(REGIONS_URL);

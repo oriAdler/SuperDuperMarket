@@ -7,10 +7,24 @@ const USER_TRANSACTIONS_URL = buildUrlWithContextPath("userTransactions");
 const ADD_MONEY_URL = buildUrlWithContextPath("addMoney");
 const SET_REGION_NAME_URL = buildUrlWithContextPath("setRegion");
 const NOTIFICATION_VERSION_URL = buildUrlWithContextPath("notification");
+//const GET_NOTIFICATION_VERSION_URL = buildUrlWithContextPath("getNotificationVersion");
 
 // Global Variables:
 var userType;
 var notificationVersion = 0;
+
+// $(function getNotificationVersion(){
+//     $.ajax({
+//         url: GET_NOTIFICATION_VERSION_URL,
+//         success: function(response){
+//             notificationVersion = response;
+//             console.log(notificationVersion);
+//         },
+//         error: function (error){
+//             console.log(error);
+//         }
+//     })
+// })
 
 $(function getUserTypeAndAdjustPage(){
     $.ajax({
@@ -318,7 +332,7 @@ $(function() {
     setInterval(ajaxTransactionsTable, refreshRate);
 });
 
-function appendToNotificationList(notifications, delta){
+function appendToNotificationList(notifications){
     let notificationList = $("#notificationList");
 
     $.each(notifications || [] ,function (index, notification){
@@ -348,11 +362,15 @@ function ajaxNotificationContent() {
              //,"version":4}
             console.log("Server notification version: " + data.version + ", Current notification version: " + notificationVersion);
             if (data.version !== notificationVersion) {
-                let delta = data.version - notificationVersion;
-                let badge = $('<span>' + delta + '</span>').addClass("w3-badge w3-circle w3-red");
-                $("#dropDownButton").append(badge);
+                let dropDownButton = $("#dropDownButton");
+
+               if(!dropDownButton.find("span").length){
+                    let badge = $('<span>!</span>').addClass("w3-badge w3-circle w3-red");
+                    dropDownButton.append(badge);
+               }
+
                 notificationVersion = data.version;
-                appendToNotificationList(data.notifications, delta);
+                appendToNotificationList(data.notifications);
             }
             triggerAjaxNotificationContent();
         },
@@ -364,12 +382,12 @@ function ajaxNotificationContent() {
 
 $(function (){
     $("#dropDownButton").click(function(){
-        $(this).find(".w3-badge").remove();
+        $(this).find("span").remove();
         let dropDown = document.getElementById("notificationDiv");
         if (dropDown.className.indexOf("w3-show") == -1) {
             dropDown.className += " w3-show";
         } else {
-            dropDown.className = dropDown.className.replace(" w3-show", "");
+            dropDown.className = dropDown.className.replace("w3-show", "");
         }
     })
 })

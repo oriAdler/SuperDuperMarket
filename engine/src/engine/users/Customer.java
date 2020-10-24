@@ -6,7 +6,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Customer extends UserImpl {
-    //TODO: id is not enough, must find all orders in all regions.
     final private List<Integer> ordersIdList;
     private double averageOrdersPrice;
     private double averageDeliveryPrice;

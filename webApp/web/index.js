@@ -1,4 +1,6 @@
 
+//const SET_NOTIFICATION_VERSION_URL = buildUrlWithContextPath("setNotificationVersion");
+
 $(function() {
     //add a function to the submit event
     $("#loginForm").submit(function() {
@@ -19,3 +21,17 @@ $(function() {
         return false;
     });
 });
+
+// function setNotificationVersionOnSession(){
+//     $.ajax({
+//         url: SET_NOTIFICATION_VERSION_URL,
+//         data: "notificationVersion=" + 0,
+//         dataType: 'json',
+//         error: function (){
+//             console.log("SET_NOTIFICATION_VERSION returned error")
+//         },
+//         success: function (){
+//             console.log("SET_NOTIFICATION_VERSION returned success")
+//         }
+//     })
+// }

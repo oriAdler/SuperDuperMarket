@@ -49,12 +49,14 @@ public interface SuperDuperMarket {
     boolean isLocationOccupied(Point location);
     void createNewStore(String storeName, int ppk, Point location, Map<Integer, Integer> itemIdToPrice, String storeOwner);
     boolean isItemExistById(int id);
-    void addItemToSDM(int itemId, String itemName, String purchaseMethod, Map<Integer, Integer> storeIdToItemPrice);
+    //void addItemToSDM(int itemId, String itemName, String purchaseMethod, Map<Integer, Integer> storeIdToItemPrice);
+    void addItemToSDM(String itemName, String purchaseMethod, Map<Integer, Integer> storeIdToItemPrice);
     boolean isDiscountNameExist(String discountName);
     void addDiscountToStore(int storeId, String discountName, int itemId, double itemAmount,
                             String discountType, List<OfferDTO> offerDTOList);
 
     List<StoreDTO> getAllStoreList(String userName);
+    List<StoreDTO> getOwnerStoreList(String userName);
     List<ItemDTO> getAllItemList();
     List<OrderDTO> getOrdersHistory();
     List<PrivateOrderDTO> getCustomerOrdersHistory(int customerId);

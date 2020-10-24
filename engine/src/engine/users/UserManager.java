@@ -39,36 +39,7 @@ public class UserManager {
         return usersMap.containsKey(username);
     }
 
-    //TODO: can it be a problem to get the user to the outside ? just server side
     public synchronized User getUser(String userName){
         return usersMap.get(userName);
     }
-//
-//    public synchronized UserDTO getUserInfo(String userName){
-//        if(usersMap.containsKey(userName)){
-//            User user = usersMap.get(userName);
-//            return new UserDTO(user.getId(), user.getName(), user.getType());
-//        }
-//        else{
-//            return null;
-//        }
-//    }
-//
-//    public synchronized List<TransactionDTO> getUserTransactions(String userName){
-//        if(usersMap.containsKey(userName)){
-//            return usersMap.get(userName).getAccount().getTransactionDTOList();
-//        }
-//        else{
-//            return null;
-//        }
-//    }
-//
-//    public synchronized Account getUserAccount(String userName){
-//        if(usersMap.containsKey(userName)){
-//            return usersMap.get(userName).getAccount();
-//        }
-//        else{
-//            return null;
-//        }
-//    }
 }

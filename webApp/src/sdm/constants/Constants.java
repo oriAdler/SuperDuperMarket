@@ -32,4 +32,8 @@ public class Constants {
 
     public static final int INT_PARAMETER_ERROR = Integer.MIN_VALUE;
     public static final String NOTIFICATION_VERSION_PARAMETER = "notificationVersion";
+    public static final String NOTIFICATION_VERSION_SESSION = "notificationVersionSession";
+
+    public static final String ITEM_NAME = "itemName";
+    public static final String ITEM_CATEGORY = "category";
 }

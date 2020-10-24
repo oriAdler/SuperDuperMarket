@@ -4,6 +4,7 @@ const ITEMS_TABLE_URL = buildUrlWithContextPath("itemsTable");
 const STORES_LIST_URL = buildUrlWithContextPath("storesList")
 const FEEDBACKS_LIST_URL = buildUrlWithContextPath("feedbacksList");
 const ADD_STORE_URL = buildUrlWithContextPath("addStore");
+const ADD_ITEM_URL = buildUrlWithContextPath("addItem");
 
 //Global Variables:
 var regionName;
@@ -278,6 +279,26 @@ $(function() {
             timeout: 2000,
             error: function(errorObject) {
                 console.error("Failed to add store !");
+                $("#error-placeholder").text(errorObject.responseText)
+            },
+            success: function(nextPageUrl) {
+                window.location.assign(nextPageUrl);
+            }
+        });
+
+        return false;
+    });
+});
+
+$(function() {
+    //add a function to the submit event
+    $("#addItemForm").submit(function() {
+        $.ajax({
+            data: $(this).serialize(),
+            url: ADD_ITEM_URL,
+            timeout: 2000,
+            error: function(errorObject) {
+                console.error("Failed to add item !");
                 $("#error-placeholder").text(errorObject.responseText)
             },
             success: function(nextPageUrl) {

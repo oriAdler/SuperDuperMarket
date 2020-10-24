@@ -39,7 +39,6 @@ public class FileUploadServlet extends HttpServlet {
 
         Part filePart = request.getPart("file-key");
 
-        //TODO: check if .XML file
         try{
             engine.loadDataFromFile(filePart.getInputStream(), SessionUtils.getUsername(request));
             response.setStatus(200);
@@ -50,9 +49,4 @@ public class FileUploadServlet extends HttpServlet {
             response.getOutputStream().println(exception.getMessage());
         }
     }
-
-    //TODO: understand how this function works
-//    private String readFromInputStream(InputStream inputStream) {
-//        return new Scanner(inputStream).useDelimiter("\\Z").next();
-//    }
 }

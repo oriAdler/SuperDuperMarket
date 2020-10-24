@@ -228,4 +228,49 @@
         <url-pattern>/notification</url-pattern>
     </servlet-mapping>
 
+    <servlet>
+        <servlet-name>AddItemServlet</servlet-name>
+        <servlet-class>sdm.servlets.AddItemServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>AddItemServlet</servlet-name>
+        <url-pattern>/addItem</url-pattern>
+    </servlet-mapping>
+
+    <servlet>
+        <servlet-name>OwnerStoresListServlet</servlet-name>
+        <servlet-class>sdm.servlets.OwnerStoresListServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>OwnerStoresListServlet</servlet-name>
+        <url-pattern>/ownerStoresList</url-pattern>
+    </servlet-mapping>
+
+    <servlet>
+        <servlet-name>ApproveAddItemServlet</servlet-name>
+        <servlet-class>sdm.servlets.ApproveAddItemServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>ApproveAddItemServlet</servlet-name>
+        <url-pattern>/approveAddItem</url-pattern>
+    </servlet-mapping>
+
+<!--    <servlet>-->
+<!--        <servlet-name>SetNotificationServlet</servlet-name>-->
+<!--        <servlet-class>sdm.servlets.SetNotificationVersion</servlet-class>-->
+<!--    </servlet>-->
+<!--    <servlet-mapping>-->
+<!--        <servlet-name>SetNotificationServlet</servlet-name>-->
+<!--        <url-pattern>/setNotificationVersion</url-pattern>-->
+<!--    </servlet-mapping>-->
+
+<!--    <servlet>-->
+<!--        <servlet-name>GetNotificationServlet</servlet-name>-->
+<!--        <servlet-class>sdm.servlets.SetNotificationVersion</servlet-class>-->
+<!--    </servlet>-->
+<!--    <servlet-mapping>-->
+<!--        <servlet-name>GetNotificationServlet</servlet-name>-->
+<!--        <url-pattern>/getNotificationVersion</url-pattern>-->
+<!--    </servlet-mapping>-->
+
 </web-app>

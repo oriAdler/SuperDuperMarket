@@ -1,4 +1,3 @@
-//TODO: understand how this script works..
 
 // extract the context path using the window.location data items
 function calculateContextPath() {

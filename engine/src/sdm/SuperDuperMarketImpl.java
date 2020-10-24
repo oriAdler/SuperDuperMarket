@@ -29,7 +29,6 @@ public class SuperDuperMarketImpl implements SuperDuperMarket {
     final private Map<Integer, OrderStatic> orderIdToOrder;
     final private String regionName;
     final private String ownerName;
-    //TODO: update customer order info in users
     private Map<Integer, Customer> customerIdToCustomer;
 
     public SuperDuperMarketImpl(Map<Integer, Store> storeIdToStore, Map<Integer, Item> itemIdToItem, String regionName, String ownerName) {
@@ -409,7 +408,6 @@ public class SuperDuperMarketImpl implements SuperDuperMarket {
         return userNameToTransaction;
     }
 
-    // TODO: Check after making orders that numbers make sense.
     private CartDTO cartDTOListToCartDTO(List<CartDTO> cartDTOList){
         // Generate items list:
         List<ItemExtendedDTO> itemList = new ArrayList<>();
@@ -822,8 +820,10 @@ public class SuperDuperMarketImpl implements SuperDuperMarket {
         return itemIdToItem.containsKey(id);
     }
 
-    public void addItemToSDM(int itemId, String itemName, String purchaseCategory,
-                             Map<Integer, Integer> storeIdToItemPrice){
+    @Override
+    public void addItemToSDM(String itemName, String purchaseCategory, Map<Integer, Integer> storeIdToItemPrice) {
+        int itemId = itemIdToItem.keySet().stream().max(Integer::compare).orElse(-1) + 1;
+
         // Add new item to SDM:
         itemIdToItem.put(itemId, new Item(itemId, itemName, purchaseCategory, 0.0));
 
@@ -832,6 +832,17 @@ public class SuperDuperMarketImpl implements SuperDuperMarket {
             addItemToStore(storeId, itemId, itemPrice);
         });
     }
+
+//    public void addItemToSDM(int itemId, String itemName, String purchaseCategory,
+//                             Map<Integer, Integer> storeIdToItemPrice){
+//        // Add new item to SDM:
+//        itemIdToItem.put(itemId, new Item(itemId, itemName, purchaseCategory, 0.0));
+//
+//        // Add new items to stores:
+//        storeIdToItemPrice.forEach((storeId,itemPrice)->{
+//            addItemToStore(storeId, itemId, itemPrice);
+//        });
+//    }
 
     public boolean isDiscountNameExist(String discountName) {
         for(Store store : storeIdToStore.values()){
@@ -910,6 +921,30 @@ public class SuperDuperMarketImpl implements SuperDuperMarket {
                     store.getOwnerName(),
                     orderDTOList));
                 });
+
+        return storesDTOList;
+    }
+
+    @Override
+    public List<StoreDTO> getOwnerStoreList(String userName) {
+        List<StoreDTO> storesDTOList = new ArrayList<>();
+
+        storeIdToStore.forEach((storeId, store) -> {
+            if(store.getOwnerName().equals(userName)){
+                //create a storeDTO:
+                storesDTOList.add(new StoreDTO(storeId,
+                        store.getName(),
+                        this.getItemsSoldByStore(store),
+                        this.getStoreOrdersList(storeId),
+                        store.getLocation().x,
+                        store.getLocation().y,
+                        store.getPPK(),
+                        store.getTotalDeliveryIncome(),
+                        store.getTotalItemsIncome(),
+                        store.getOwnerName(),
+                        null)); // order list is irrelevant here
+            }
+        });
 
         return storesDTOList;
     }
