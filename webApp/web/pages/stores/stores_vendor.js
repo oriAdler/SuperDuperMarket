@@ -6,8 +6,34 @@ const FEEDBACKS_LIST_URL = buildUrlWithContextPath("feedbacksList");
 const ADD_STORE_URL = buildUrlWithContextPath("addStore");
 const ADD_ITEM_URL = buildUrlWithContextPath("addItem");
 
+const NOTIFICATION_VERSION_URL = buildUrlWithContextPath("notification");
+const STORE_NOTIFICATION_URL = buildUrlWithContextPath("storeNotification");
+const GET_OLD_NOTIFICATIONS_URL = buildUrlWithContextPath("getOldNotifications");
+
 //Global Variables:
 var regionName;
+
+function saveUserNotificationVersionOnServer(){
+    $.ajax({
+        url: STORE_NOTIFICATION_URL,
+        // type: 'POST',
+        data: "notificationVersionStorage=" + notificationVersionUser,
+        dataType: 'json',
+        success: function (data){
+            console.log(data);
+        },
+        error: function (errorObject) {
+            console.log(errorObject.responseText);
+        }
+    });
+}
+
+$(function (){
+    $("#backButton").click(function (){
+        saveUserNotificationVersionOnServer()
+        window.location.assign("../regions/regions.html");
+    })
+})
 
 $(function getRegionNameAndAdjustPage(){
     $.ajax({
@@ -258,18 +284,6 @@ function ajaxFeedbacksList(){
     })
 }
 
-$(function(){
-    ajaxItemsTable();
-    // setInterval(ajaxItemsTable, refreshRate);
-
-    //TODO: consider another method as items in order's history is pop-up window
-    ajaxStoresList();
-    setInterval(ajaxStoresList, refreshRate);
-
-    ajaxFeedbacksList();
-    setInterval(ajaxFeedbacksList, refreshRate);
-})
-
 $(function() {
     //add a function to the submit event
     $("#addStoreForm").submit(function() {
@@ -309,3 +323,92 @@ $(function() {
         return false;
     });
 });
+
+function appendToNotificationList(notifications){
+    let notificationList = $("#notificationList");
+
+    $.each(notifications || [] ,function (index, notification){
+        $('<li class="w3-bar">' +
+            '<div class="w3-bar-item">' +
+            notification +
+            '</div>' +
+            '</li>').prependTo(notificationList);
+    })
+}
+
+$(function getOldNotifications(){
+    $.ajax({
+        url: GET_OLD_NOTIFICATIONS_URL,
+        success: function(response){
+            notificationVersionUser = Number.parseInt(response);
+            console.log(notificationVersionUser);
+        },
+        error: function (error){
+            console.log(error);
+        }
+    })
+})
+
+function triggerAjaxNotificationContent() {
+    setTimeout(ajaxNotificationContent, refreshRate);
+}
+
+//call the server and get the notification version
+//we also send it the current chat version so in case there was a change
+//in the notification content, we will get the new string as well
+function ajaxNotificationContent() {
+    $.ajax({
+        url: NOTIFICATION_VERSION_URL,
+        data: "notificationVersion=" + notificationVersionUser,
+        dataType: 'json',
+        success: function(data) {
+            //{"notifications":
+            //["ori has made an order in your store \"super baba\".\nThe order includes 2 items with total price of 20.00 and delivery price of 108.17",...]
+            //,"version":4}
+            console.log("Server notification version: " + data.version + ", Current notification version: " + notificationVersionUser);
+            if (data.version !== notificationVersionUser) {
+                let dropDownButton = $("#dropDownButton");
+
+                if(!dropDownButton.find("span").length){
+                    let badge = $('<span>\t&#128276</span>').addClass("w3-badge w3-circle w3-red");
+                    dropDownButton.append(badge);
+                }
+
+                notificationVersionUser = data.version;
+                appendToNotificationList(data.notifications);
+            }
+
+            triggerAjaxNotificationContent();
+        },
+        error: function(error) {
+            triggerAjaxNotificationContent();
+        }
+    });
+}
+
+$(function (){
+    $("#dropDownButton").click(function(){
+        $(this).find("span").remove();
+        let dropDown = document.getElementById("notificationDiv");
+        if (dropDown.className.indexOf("w3-show") == -1) {
+            dropDown.className += " w3-show";
+        } else {
+            dropDown.className = dropDown.className.replace("w3-show", "");
+        }
+    })
+})
+
+//set pages timeouts and intervals
+$(function(){
+    ajaxItemsTable();
+    // setInterval(ajaxItemsTable, refreshRate);
+
+    //TODO: consider another method as items in order's history is pop-up window
+    ajaxStoresList();
+    setInterval(ajaxStoresList, refreshRate);
+
+    ajaxFeedbacksList();
+    setInterval(ajaxFeedbacksList, refreshRate);
+
+    triggerAjaxNotificationContent();
+})

@@ -6,6 +6,7 @@
     <script src="../../common/jquery-2.0.3.min.js"></script>
     <script src="../../common/context-path-helper.js"></script>
     <script src="regions.js"></script>
+    <script src="chatroom.js"></script>
     <link rel="stylesheet" href="../../common/w3.css">
 </head>
 <body>
@@ -24,12 +25,27 @@
                 Notifications
             </button>
             <div style="overflow: hidden">
-                <div style="overflow-y: scroll; max-height: 300px" id="notificationDiv" class="w3-dropdown-content w3-bar-block w3-card">
+                <div style="overflow-y: scroll; max-height: 400px" id="notificationDiv" class="w3-dropdown-content w3-bar-block w3-card">
                     <ul id="notificationList" class="w3-ul w3-card-4">
                         <li class="w3-bar">
-                            <div class="w3-bar-item">Upload file and start trading!</div>
+                            <div class="w3-bar-item"></div>
                         </li>
                     </ul>
+                </div>
+            </div>
+        </div>
+
+        <div id="chatOuterDiv" class="w3-dropdown-click">
+            <button id="chatDropDownButton" class="w3-button w3-padding-large">
+                Chat
+            </button>
+            <div style="overflow: hidden">
+                <div style="overflow-y: scroll; max-height: 400px; min-width: 400px" id="chatDiv" class="w3-dropdown-content w3-bar-block w3-card">
+                    <form id="chatform" method="POST" action="sendChat">
+                        <input class="w3-input w3-border w3-margin-bottom" type="text" id="userstring" name="userstring" placeholder="Enter your message" required/>
+                        <input class="w3-button w3-block w3-green w3-section" type="submit" value="Send"/>
+                    </form>
+                    <div id="chatarea" class="w3-container w3-content w3-left-align"></div>
                 </div>
             </div>
         </div>

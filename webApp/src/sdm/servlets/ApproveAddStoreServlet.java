@@ -45,6 +45,10 @@ public class ApproveAddStoreServlet extends HttpServlet {
                 String regionName = session.getAttribute(REGION_NAME).toString();
                 SuperDuperMarket regionSDM = engine.getRegionSDM(regionName);
 
+//                synchronized (regionSDM){
+//                    notificationManager.addNotification(ownerName, notification);
+//                }
+
                 String userName = session.getAttribute(USERNAME).toString();
                 String storeName = session.getAttribute(STORE_NAME).toString();
                 //int userId = userManager.getUserInfo(userName).getId();

@@ -7,24 +7,40 @@ const USER_TRANSACTIONS_URL = buildUrlWithContextPath("userTransactions");
 const ADD_MONEY_URL = buildUrlWithContextPath("addMoney");
 const SET_REGION_NAME_URL = buildUrlWithContextPath("setRegion");
 const NOTIFICATION_VERSION_URL = buildUrlWithContextPath("notification");
-//const GET_NOTIFICATION_VERSION_URL = buildUrlWithContextPath("getNotificationVersion");
+const STORE_NOTIFICATION_URL = buildUrlWithContextPath("storeNotification");
+const GET_OLD_NOTIFICATIONS_URL = buildUrlWithContextPath("getOldNotifications");
 
 // Global Variables:
 var userType;
-var notificationVersion = 0;
+var notificationVersionUser;
 
-// $(function getNotificationVersion(){
-//     $.ajax({
-//         url: GET_NOTIFICATION_VERSION_URL,
-//         success: function(response){
-//             notificationVersion = response;
-//             console.log(notificationVersion);
-//         },
-//         error: function (error){
-//             console.log(error);
-//         }
-//     })
-// })
+$(function getOldNotifications(){
+    $.ajax({
+        url: GET_OLD_NOTIFICATIONS_URL,
+        success: function(response){
+            notificationVersionUser = Number.parseInt(response);
+            console.log(notificationVersionUser);
+        },
+        error: function (error){
+            console.log(error);
+        }
+    })
+})
+
+function saveUserNotificationVersionOnServer(){
+    $.ajax({
+        url: STORE_NOTIFICATION_URL,
+        // type: 'POST',
+        data: "notificationVersionStorage=" + notificationVersionUser,
+        dataType: 'json',
+        success: function (data){
+            console.log(data);
+        },
+        error: function (errorObject) {
+            console.log(errorObject.responseText);
+        }
+    });
+}
 
 $(function getUserTypeAndAdjustPage(){
     $.ajax({
@@ -222,7 +238,8 @@ function refreshRegionTable(regions){
                 if(userType=="Customer"){
                     window.location.assign("../stores/stores_customer.html");
                 }
-                else{
+                else{   //userType=="Vendor"
+                    saveUserNotificationVersionOnServer();
                     window.location.assign("../stores/stores_vendor.html");
                 }
             });
@@ -354,24 +371,25 @@ function triggerAjaxNotificationContent() {
 function ajaxNotificationContent() {
     $.ajax({
         url: NOTIFICATION_VERSION_URL,
-        data: "notificationVersion=" + notificationVersion,
+        data: "notificationVersion=" + notificationVersionUser,
         dataType: 'json',
         success: function(data) {
              //{"notifications":
              //["ori has made an order in your store \"super baba\".\nThe order includes 2 items with total price of 20.00 and delivery price of 108.17",...]
              //,"version":4}
-            console.log("Server notification version: " + data.version + ", Current notification version: " + notificationVersion);
-            if (data.version !== notificationVersion) {
+            console.log("Server notification version: " + data.version + ", Current notification version: " + notificationVersionUser);
+            if (data.version !== notificationVersionUser) {
                 let dropDownButton = $("#dropDownButton");
 
                if(!dropDownButton.find("span").length){
-                    let badge = $('<span>!</span>').addClass("w3-badge w3-circle w3-red");
+                    let badge = $('<span>\t&#128276</span>').addClass("w3-badge w3-circle w3-red");
                     dropDownButton.append(badge);
                }
 
-                notificationVersion = data.version;
-                appendToNotificationList(data.notifications);
+               notificationVersionUser = data.version;
+               appendToNotificationList(data.notifications);
             }
+
             triggerAjaxNotificationContent();
         },
         error: function(error) {
@@ -391,3 +409,5 @@ $(function (){
         }
     })
 })
+
+

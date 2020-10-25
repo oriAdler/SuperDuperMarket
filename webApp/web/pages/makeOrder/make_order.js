@@ -21,19 +21,6 @@ $(function getOrderTypeAndAdjustPage(){
     })
 })
 
-// $(function getRegionNameAndAdjustPage(){
-//     $.ajax({
-//         url: GET_REGION_NAME_URL,
-//         success: function(response){
-//             regionName = response;
-//             //$("#logo").text(regionName);
-//         },
-//         error: function (error){
-//             console.log(error);
-//         }
-//     })
-// })
-
 // ItemDTO object:
 //{"id":1,
 // "name":"Toilet Paper",
@@ -109,33 +96,6 @@ $(function ajaxOrderItemsList(){
         }
     })
 });
-
-// $(function getRegionNameAndAdjustPage(){
-//     // Check browser support for web storage API
-//     if (typeof(Storage) !== "undefined") {
-//         // retrieve orderType & store name:
-//         let orderType = localStorage.getItem("orderType");
-//         if(orderType==="static"){
-//             let storeName = localStorage.getItem("store");
-//             $("#logo").text(storeName);
-//         }
-//         else{   //orderType==="dynamic"
-//             // get region name via ajax request
-//             $.ajax({
-//                 url: GET_REGION_NAME_URL,
-//                 success: function(response){
-//                     regionName = response;
-//                     $("#logo").text(regionName);
-//                 },
-//                 error: function (error){
-//                     console.log(error);
-//                 }
-//             })
-//         }
-//     } else {
-//         alert("Sorry, your browser does not support Web Storage...");
-//     }
-// });
 
 function showOrderSummary(carts){
     //clear page old details - choose item form

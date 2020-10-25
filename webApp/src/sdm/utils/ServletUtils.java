@@ -3,6 +3,7 @@ package sdm.utils;
 //import engine.chat.ChatManager;
 import engine.Engine;
 import engine.EngineImpl;
+import engine.chat.ChatManager;
 import engine.notification.NotificationManager;
 import engine.users.UserManager;
 import sdm.constants.Constants;
@@ -19,6 +20,7 @@ public class ServletUtils {
 	private static final String USER_MANAGER_ATTRIBUTE_NAME = "userManager";
 	private static final String ENGINE_ATTRIBUTE_NAME = "engine";
 	public static final String NOTIFICATION_MANAGER_ATTRIBUTE_NAME = "notificationManager";
+	private static final String CHAT_MANAGER_ATTRIBUTE_NAME = "chatManager";
 
 	/*
 	Note how the synchronization is done only on the question and\or creation of the relevant managers and once they exists -
@@ -27,6 +29,7 @@ public class ServletUtils {
 	private static final Object userManagerLock = new Object();
 	private static final Object engineLock = new Object();
 	private static final Object notificationManagerLock = new Object();
+	private static final Object chatManagerLock = new Object();
 
 	public static UserManager getUserManager(ServletContext servletContext) {
 
@@ -65,5 +68,14 @@ public class ServletUtils {
 			}
 		}
 		return INT_PARAMETER_ERROR;
+	}
+
+	public static ChatManager getChatManager(ServletContext servletContext) {
+		synchronized (chatManagerLock) {
+			if (servletContext.getAttribute(CHAT_MANAGER_ATTRIBUTE_NAME) == null) {
+				servletContext.setAttribute(CHAT_MANAGER_ATTRIBUTE_NAME, new ChatManager());
+			}
+		}
+		return (ChatManager) servletContext.getAttribute(CHAT_MANAGER_ATTRIBUTE_NAME);
 	}
 }

@@ -1,5 +1,5 @@
 
-//const SET_NOTIFICATION_VERSION_URL = buildUrlWithContextPath("setNotificationVersion");
+const STORE_NOTIFICATION_URL = buildUrlWithContextPath("storeNotification");
 
 $(function() {
     //add a function to the submit event
@@ -22,16 +22,17 @@ $(function() {
     });
 });
 
-// function setNotificationVersionOnSession(){
-//     $.ajax({
-//         url: SET_NOTIFICATION_VERSION_URL,
-//         data: "notificationVersion=" + 0,
-//         dataType: 'json',
-//         error: function (){
-//             console.log("SET_NOTIFICATION_VERSION returned error")
-//         },
-//         success: function (){
-//             console.log("SET_NOTIFICATION_VERSION returned success")
-//         }
-//     })
-// }
+$(function saveUserNotificationOnServer(){
+    $.ajax({
+        url: STORE_NOTIFICATION_URL,
+        // type: 'POST',
+        data: "notificationVersionStorage=" + 0,
+        dataType: 'json',
+        success: function (data){
+            console.log(data);
+        },
+        error: function (errorObject) {
+            console.log(errorObject.responseText);
+        }
+    });
+});

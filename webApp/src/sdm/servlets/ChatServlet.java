@@ -1,7 +1,8 @@
 package sdm.servlets;
 
 import com.google.gson.Gson;
-import engine.notification.NotificationManager;
+import engine.chat.ChatManager;
+import engine.chat.SingleChatEntry;
 import sdm.constants.Constants;
 import sdm.utils.ServletUtils;
 import sdm.utils.SessionUtils;
@@ -14,43 +15,43 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.List;
 
-public class NotificationServlet extends HttpServlet {
+public class ChatServlet extends HttpServlet {
+
     private void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-
+        
         response.setContentType("application/json");
-        NotificationManager notificationManager = ServletUtils.getNotificationManager(getServletContext());
+        ChatManager chatManager = ServletUtils.getChatManager(getServletContext());
         String username = SessionUtils.getUsername(request);
         if (username == null) {
             response.sendRedirect(request.getContextPath() + "/index.html");
         }
 
         /*
-        verify notification version given from the user is a valid number. if not it is considered an error and nothing is returned back
+        verify chat version given from the user is a valid number. if not it is considered an error and nothing is returned back
         Obviously the UI should be ready for such a case and handle it properly
          */
-        int notificationVersion = ServletUtils.getIntParameter(request, Constants.NOTIFICATION_VERSION);
-        if (notificationVersion == Constants.INT_PARAMETER_ERROR) {
+        int chatVersion = ServletUtils.getIntParameter(request, Constants.CHAT_VERSION_PARAMETER);
+        if (chatVersion == Constants.INT_PARAMETER_ERROR) {
             return;
         }
 
         /*
-        Synchronizing as minimum as I can to fetch only the relevant information from the notification manager and then only processing and sending this information onward
-        Note that the synchronization here is on the ServletContext, and the one that also synchronized on it is the notification servlet when adding new chat lines.
+        Synchronizing as minimum as I can to fetch only the relevant information from the chat manager and then only processing and sending this information onward
+        Note that the synchronization here is on the ServletContext, and the one that also synchronized on it is the chat servlet when adding new chat lines.
          */
-
-        int notificationManagerVersion = 0;
-        List<String> notificationsList;
+        int chatManagerVersion = 0;
+        List<SingleChatEntry> chatEntries;
         synchronized (getServletContext()) {
-            notificationManagerVersion = notificationManager.getVersion(username);
-            notificationsList = notificationManager.getUserNotifications(username, notificationVersion);
+            chatManagerVersion = chatManager.getVersion();
+            chatEntries = chatManager.getChatEntries(chatVersion);
         }
 
         // log and create the response json string
-        NotificationAndVersion nav = new NotificationAndVersion(notificationsList, notificationManagerVersion);
+        ChatAndVersion cav = new ChatAndVersion(chatEntries, chatManagerVersion);
         Gson gson = new Gson();
-        String jsonResponse = gson.toJson(nav);
-        logServerMessage("Server Chat version: " + notificationManagerVersion + ", User '" + username + "' Chat version: " + notificationVersion);
+        String jsonResponse = gson.toJson(cav);
+        logServerMessage("Server Chat version: " + chatManagerVersion + ", User '" + username + "' Chat version: " + chatVersion);
         logServerMessage(jsonResponse);
 
         try (PrintWriter out = response.getWriter()) {
@@ -63,14 +64,14 @@ public class NotificationServlet extends HttpServlet {
     private void logServerMessage(String message){
         System.out.println(message);
     }
+    
+    private static class ChatAndVersion {
 
-    private static class NotificationAndVersion {
-
-        final private List<String> notifications;
+        final private List<SingleChatEntry> entries;
         final private int version;
 
-        public NotificationAndVersion(List<String> notifications, int version) {
-            this.notifications = notifications;
+        public ChatAndVersion(List<SingleChatEntry> entries, int version) {
+            this.entries = entries;
             this.version = version;
         }
     }

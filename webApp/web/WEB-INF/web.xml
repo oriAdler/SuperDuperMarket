@@ -255,22 +255,41 @@
         <url-pattern>/approveAddItem</url-pattern>
     </servlet-mapping>
 
-<!--    <servlet>-->
-<!--        <servlet-name>SetNotificationServlet</servlet-name>-->
-<!--        <servlet-class>sdm.servlets.SetNotificationVersion</servlet-class>-->
-<!--    </servlet>-->
-<!--    <servlet-mapping>-->
-<!--        <servlet-name>SetNotificationServlet</servlet-name>-->
-<!--        <url-pattern>/setNotificationVersion</url-pattern>-->
-<!--    </servlet-mapping>-->
 
-<!--    <servlet>-->
-<!--        <servlet-name>GetNotificationServlet</servlet-name>-->
-<!--        <servlet-class>sdm.servlets.SetNotificationVersion</servlet-class>-->
-<!--    </servlet>-->
-<!--    <servlet-mapping>-->
-<!--        <servlet-name>GetNotificationServlet</servlet-name>-->
-<!--        <url-pattern>/getNotificationVersion</url-pattern>-->
-<!--    </servlet-mapping>-->
+    <servlet>
+        <servlet-name>StoreNotificationServlet</servlet-name>
+        <servlet-class>sdm.servlets.SetNotificationVersionServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>StoreNotificationServlet</servlet-name>
+        <url-pattern>/storeNotification</url-pattern>
+    </servlet-mapping>
+
+    <servlet>
+        <servlet-name>GetOldNotificationsServlet</servlet-name>
+        <servlet-class>sdm.servlets.GetNotificationVersionServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>GetOldNotificationsServlet</servlet-name>
+        <url-pattern>/getOldNotifications</url-pattern>
+    </servlet-mapping>
+
+    <servlet>
+        <servlet-name>ChatServlet</servlet-name>
+        <servlet-class>sdm.servlets.ChatServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>ChatServlet</servlet-name>
+        <url-pattern>/chat</url-pattern>
+    </servlet-mapping>
+
+    <servlet>
+        <servlet-name>SendChatServlet</servlet-name>
+        <servlet-class>sdm.servlets.SendChatServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>SendChatServlet</servlet-name>
+        <url-pattern>/sendChat</url-pattern>
+    </servlet-mapping>
 
 </web-app>
