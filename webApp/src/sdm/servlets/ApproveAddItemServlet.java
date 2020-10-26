@@ -43,28 +43,13 @@ public class ApproveAddItemServlet extends HttpServlet {
                 String regionName = session.getAttribute(REGION_NAME).toString();
                 SuperDuperMarket regionSDM = engine.getRegionSDM(regionName);
 
-                //String userName = session.getAttribute(USERNAME).toString();
                 String itemName = session.getAttribute(ITEM_NAME).toString();
                 String itemCategory = session.getAttribute(ITEM_CATEGORY).toString();
-                //int userId = userManager.getUserInfo(userName).getId();
 
-//                int x = Integer.parseInt(session.getAttribute(X_LOCATION).toString());
-//                int y = Integer.parseInt(session.getAttribute(X_LOCATION).toString());
-//                int ppk = Integer.parseInt(session.getAttribute(STORE_PPK).toString());
-
-                regionSDM.addItemToSDM(itemName, itemCategory, storeIdToItemPrice);
-                //regionSDM.createNewStore(storeName, ppk, new Point(x,y), storeIdToItemPrice, userName);
-
-                //add notification to region owner notifications:
-//                int itemNumberInRegion = regionSDM.getItemsNumberInRegion();
-//                String ownerName = regionSDM.getRegionOwnerName();
-//                String notification = String.format("A new store called \"%s\" was opened in region \"%s\" by %s.\n" +
-//                                "The store's location is [%d,%d] and it sells %d/%d items",
-//                        storeName, regionName, userName, x, y, storeIdToItemPrice.size(), itemNumberInRegion);
-//
-//                synchronized (getServletContext()){
-//                    notificationManager.addNotification(ownerName, notification);
-//                }
+                //adding an item to region and getting a unique id - thread safe
+                synchronized (regionSDM){
+                    regionSDM.addItemToSDM(itemName, itemCategory, storeIdToItemPrice);
+                }
 
                 response.setStatus(200);
                 out.println("Item was added successfully");

@@ -45,10 +45,6 @@ public class ApproveAddStoreServlet extends HttpServlet {
                 String regionName = session.getAttribute(REGION_NAME).toString();
                 SuperDuperMarket regionSDM = engine.getRegionSDM(regionName);
 
-//                synchronized (regionSDM){
-//                    notificationManager.addNotification(ownerName, notification);
-//                }
-
                 String userName = session.getAttribute(USERNAME).toString();
                 String storeName = session.getAttribute(STORE_NAME).toString();
                 //int userId = userManager.getUserInfo(userName).getId();
@@ -57,7 +53,10 @@ public class ApproveAddStoreServlet extends HttpServlet {
                 int y = Integer.parseInt(session.getAttribute(X_LOCATION).toString());
                 int ppk = Integer.parseInt(session.getAttribute(STORE_PPK).toString());
 
-                regionSDM.createNewStore(storeName, ppk, new Point(x,y), itemIdToPrice, userName);
+                //adding a store to region and getting a unique id - thread safe:
+                synchronized (regionSDM){
+                    regionSDM.createNewStore(storeName, ppk, new Point(x,y), itemIdToPrice, userName);
+                }
 
                 //add notification to region owner notifications:
                 int itemNumberInRegion = regionSDM.getItemsNumberInRegion();

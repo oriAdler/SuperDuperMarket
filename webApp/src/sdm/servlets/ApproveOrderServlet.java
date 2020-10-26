@@ -57,13 +57,17 @@ public class ApproveOrderServlet extends HttpServlet {
                 Map<String, TransactionDTO> userNameToTransaction;
                 Map<String, List<String>> userNameToNotification = new HashMap<>();
 
-                if(session.getAttribute(ORDER_TYPE).toString().equals(DYNAMIC_ORDER)){
-                    userNameToTransaction = regionSDM.executeDynamicOrder(cartDTOList,
-                            date, customerId, new Point(x,y), userName, userNameToNotification);
-                }
-                else{
-                    userNameToTransaction = regionSDM.executeStaticOrder(cartDTOList.get(0),
-                            date, customerId, new Point(x,y), userName, userNameToNotification);
+                //TODO: too much code synchronized?
+                //one order can be added to region at once - thread safe
+                synchronized (regionSDM){
+                    if(session.getAttribute(ORDER_TYPE).toString().equals(DYNAMIC_ORDER)){
+                        userNameToTransaction = regionSDM.executeDynamicOrder(cartDTOList,
+                                date, customerId, new Point(x,y), userName, userNameToNotification);
+                    }
+                    else{
+                        userNameToTransaction = regionSDM.executeStaticOrder(cartDTOList.get(0),
+                                date, customerId, new Point(x,y), userName, userNameToNotification);
+                    }
                 }
 
                 //update transactions:

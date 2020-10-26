@@ -22,17 +22,17 @@ $(function() {
     });
 });
 
-$(function saveUserNotificationOnServer(){
-    $.ajax({
-        url: STORE_NOTIFICATION_URL,
-        // type: 'POST',
-        data: "notificationVersionStorage=" + 0,
-        dataType: 'json',
-        success: function (data){
-            console.log(data);
-        },
-        error: function (errorObject) {
-            console.log(errorObject.responseText);
-        }
-    });
-});
+// $(function saveUserNotificationOnServer(){
+//     $.ajax({
+//         url: STORE_NOTIFICATION_URL,
+//         // type: 'POST',
+//         data: "notificationVersionStorage=" + 0,
+//         dataType: 'json',
+//         success: function (data){
+//             console.log(data);
+//         },
+//         error: function (errorObject) {
+//             console.log(errorObject.responseText);
+//         }
+//     });
+// });

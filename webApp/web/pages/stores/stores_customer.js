@@ -1,4 +1,4 @@
-const refreshRate = 2000; //milli seconds
+const refreshRate = 3000; //milli seconds
 const GET_REGION_NAME_URL = buildUrlWithContextPath("getRegion");
 const ITEMS_TABLE_URL = buildUrlWithContextPath("itemsTable");
 const STORES_LIST_URL = buildUrlWithContextPath("storesList");

@@ -34,8 +34,8 @@
             </div>
         </div>
 
-        <button id="backButton" class="w3-bar-item w3-button w3-padding-large w3-right">BACK</button>
-<!--        <a href="../regions/regions.html" class="w3-bar-item w3-button w3-padding-large w3-right">BACK</a>-->
+<!--        <button id="backButton" class="w3-bar-item w3-button w3-padding-large w3-right">BACK</button>-->
+        <a href="../regions/regions.html" class="w3-bar-item w3-button w3-padding-large w3-right">BACK</a>
     </div>
 </div>
 
@@ -117,6 +117,27 @@
         </div>
     </div>
 </div>
+
+<!-- Modal - Order Items Modal-->
+<div id="orderItemsModal" class="w3-modal">
+    <div class="w3-modal-content w3-card-4">
+
+    </div>
+</div>
+
+
+<script>
+    // Get the modal
+    var modal = document.getElementById('orderItemsModal');
+
+    // When the user clicks anywhere outside of the modal, close it
+    window.onclick = function(event) {
+        if (event.target == modal) {
+            modal.style.display = "none";
+            modal.innerHTML = '';
+        }
+    }
+</script>
 
 <footer class="w3-container w3-black w3-right-align">
     <h5>&copy Super Duper Market 2020</h5>

@@ -12,35 +12,8 @@ const GET_OLD_NOTIFICATIONS_URL = buildUrlWithContextPath("getOldNotifications")
 
 // Global Variables:
 var userType;
-var notificationVersionUser;
-
-$(function getOldNotifications(){
-    $.ajax({
-        url: GET_OLD_NOTIFICATIONS_URL,
-        success: function(response){
-            notificationVersionUser = Number.parseInt(response);
-            console.log(notificationVersionUser);
-        },
-        error: function (error){
-            console.log(error);
-        }
-    })
-})
-
-function saveUserNotificationVersionOnServer(){
-    $.ajax({
-        url: STORE_NOTIFICATION_URL,
-        // type: 'POST',
-        data: "notificationVersionStorage=" + notificationVersionUser,
-        dataType: 'json',
-        success: function (data){
-            console.log(data);
-        },
-        error: function (errorObject) {
-            console.log(errorObject.responseText);
-        }
-    });
-}
+var notificationVersionUser = 0;
+var firstNotificationUpdate = true;
 
 $(function getUserTypeAndAdjustPage(){
     $.ajax({
@@ -239,7 +212,7 @@ function refreshRegionTable(regions){
                     window.location.assign("../stores/stores_customer.html");
                 }
                 else{   //userType=="Vendor"
-                    saveUserNotificationVersionOnServer();
+                    //saveUserNotificationVersionOnServer();
                     window.location.assign("../stores/stores_vendor.html");
                 }
             });
@@ -381,7 +354,10 @@ function ajaxNotificationContent() {
             if (data.version !== notificationVersionUser) {
                 let dropDownButton = $("#dropDownButton");
 
-               if(!dropDownButton.find("span").length){
+               if(firstNotificationUpdate===true){  //when routing pages don't show alert bell
+                   firstNotificationUpdate = false;
+               }
+               else if(!dropDownButton.find("span").length){
                     let badge = $('<span>\t&#128276</span>').addClass("w3-badge w3-circle w3-red");
                     dropDownButton.append(badge);
                }

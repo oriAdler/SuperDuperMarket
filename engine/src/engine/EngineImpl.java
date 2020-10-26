@@ -17,12 +17,14 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+/*
+Adding and retrieving regions is synchronized and in that manner - these actions are thread safe
+ */
 public class EngineImpl implements Engine{
 
     static public final int MIN_RANGE = 1;
     static public final int MAX_RANGE = 50;
     private final Map<String, SuperDuperMarket> regionNameToSDM;
-    //private SuperDuperMarketImpl superDuperMarketImpl;
     private boolean validFileLoaded;
 
     public EngineImpl() {
@@ -37,12 +39,15 @@ public class EngineImpl implements Engine{
 
         SuperDuperMarketImpl superDuperMarket = SDMDescriptorToSDMImpl(SDMDescriptor, ownerName);
 
-        regionNameToSDM.put(superDuperMarket.getRegionName(), superDuperMarket);
+        synchronized (this){
+            regionNameToSDM.put(superDuperMarket.getRegionName(), superDuperMarket);
+        }
+
         validFileLoaded = true;
     }
 
     @Override
-    public List<RegionDTO> getAllRegionList() {
+    public synchronized List<RegionDTO> getAllRegionList() {
         List<RegionDTO> regionDTOList = new ArrayList<>();
 
         for(SuperDuperMarket SDM : regionNameToSDM.values()){
@@ -53,12 +58,12 @@ public class EngineImpl implements Engine{
     }
 
     @Override
-    public SuperDuperMarket getRegionSDM(String regionName) {
+    public synchronized SuperDuperMarket getRegionSDM(String regionName) {
         return regionNameToSDM.getOrDefault(regionName, null);
     }
 
     @Override
-    public boolean isRegionNameExist(String regionName) {
+    public synchronized boolean isRegionNameExist(String regionName) {
         return regionNameToSDM.containsKey(regionName);
     }
 
@@ -66,96 +71,6 @@ public class EngineImpl implements Engine{
     public boolean validFileIsNotLoaded() {
         return !validFileLoaded;
     }
-
-//    @Override
-//    public SuperDuperMarket getSDM() {
-//        return superDuperMarketImpl;
-//    }
-
-//    @Override
-//    public List<StoreDTO> getAllStoreList() {
-//        List<StoreDTO> storesDTOList = new ArrayList<>();
-//        superDuperMarketImpl.getStoreIdToStore()
-//                .forEach((id, store) -> storesDTOList.add(new StoreDTO(id,
-//                        store.getName(),
-//                        getItemsSoldByStore(store),
-//                        getStoreOrdersList(id),
-//                        store.getLocation().x,
-//                        store.getLocation().y,
-//                        store.getPPK(),
-//                        store.getTotalDeliveryIncome()
-//                        )));
-//        return storesDTOList;
-//    }
-
-//    @Override
-//    public List<ItemDTO> getAllItemList() {
-//        List<ItemDTO> itemsDTOList = new ArrayList<>();
-//        superDuperMarketImpl.getItemIdToItem()
-//                .forEach((id, item) -> itemsDTOList.add(new ItemDTO(id,
-//                        item.getName(),
-//                        item.getPurchaseCategory().toString(),
-//                        superDuperMarketImpl.getNumOfSellersById(id),
-//                        superDuperMarketImpl.getAveragePriceById(id),
-//                        superDuperMarketImpl.getNumOfSalesById(id))));
-//        return itemsDTOList;
-//    }
-
-//    @Override
-//    public List<OrderDTO> getOrdersHistory() {
-//        List<OrderDTO> orderDTOList = new ArrayList<>();
-//        superDuperMarketImpl.getOrderIdToOrder()
-//                .forEach((key, value) -> orderDTOList.add(value.convertOrderToOrderDTO(key)));
-//        return orderDTOList;
-//    }
-
-//    @Override
-//    public List<CustomerDTO> getAllCustomersList() {
-//        List<CustomerDTO> customerDTOList = new ArrayList<>();
-//        superDuperMarketImpl.getCustomerIdToCustomer()
-//                .forEach((id, user) -> customerDTOList.add(new CustomerDTO(id,
-//                        user.getName(),
-//                        user.getLocation().x,
-//                        user.getLocation().y,
-//                        user.getOrdersIdList().size(),
-//                        user.getAverageItemsPrice(),
-//                        user.getAverageDeliveryPrice())));
-//        return customerDTOList;
-//    }
-
-//    //Gets a store's id and returns a list of orders from this store.
-//    private List<OrderDTO> getStoreOrdersList(int storeId){
-//        List<OrderDTO> orderDTOList = new ArrayList<>();
-//
-//        superDuperMarketImpl.getStoreIdToStore()
-//                .get(storeId)
-//                .getOrders()
-//                .forEach((orderId)-> {
-//                    OrderStatic currentOrder = superDuperMarketImpl.getOrderIdToOrder().get(orderId);
-//                    if(currentOrder instanceof OrderDynamic){
-//                        orderDTOList.add(
-//                                ((OrderDynamic)currentOrder)    //Casting to Order Dynamic
-//                                        .getStoreIdToOrder().get(storeId)   //Get store's part in order
-//                                        .convertOrderToOrderDTO(orderId));     //Convert to DTO object
-//                    }
-//                    else{
-//                        orderDTOList.add(currentOrder.convertOrderToOrderDTO(orderId)); //NOTE: exception has occurred
-//                    }
-//                });
-//        return orderDTOList;
-//    }
-
-//    private List<ItemDTO> getItemsSoldByStore(Store store){
-//        List<ItemDTO> itemsDTOList = new ArrayList<>();
-//        store.getItemIdToPrice()
-//                .forEach((id, price) -> itemsDTOList.add(new ItemDTO(id,
-//                superDuperMarketImpl.getItemIdToItem().get(id).getName(),
-//                superDuperMarketImpl.getItemIdToItem().get(id).getPurchaseCategory().toString(),
-//                0, // Inside store number of sellers is irrelevant
-//                price,
-//                store.getItemIdToNumberOfSales().get(id))));
-//        return itemsDTOList;
-//    }
 
     private SuperDuperMarketImpl SDMDescriptorToSDMImpl(SuperDuperMarketDescriptor superDuperMarketDescriptor, String ownerName)
     {
@@ -181,13 +96,6 @@ public class EngineImpl implements Engine{
             storeIdToStore.put(store.getId(), new Store(store.getId(), store.getName().trim(), storeItems,
                     new Point(store.getLocation().getX(), store.getLocation().getY()), store.getDeliveryPpk(), discountList, ownerName));
         }
-//        // Convert customers list:
-//        Map<Integer, User> customerIdToCustomer = new HashMap<>();
-//        List<SDMCustomer> SDMCustomerList = superDuperMarketDescriptor.getSDMCustomers().getSDMCustomer();
-//        for(SDMCustomer customer : SDMCustomerList){
-//            customerIdToCustomer.put(customer.getId(), new User(customer.getId(), customer.getName().trim(),
-//                    new Point(customer.getLocation().getX(), customer.getLocation().getY())));
-//        }
 
         return new SuperDuperMarketImpl(storeIdToStore, itemIdToItem, superDuperMarketDescriptor.getSDMZone().getName(), ownerName);
     }

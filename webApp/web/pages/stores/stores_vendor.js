@@ -1,4 +1,4 @@
-const refreshRate = 5000; //milli seconds
+const refreshRate = 3000; //milli seconds
 const GET_REGION_NAME_URL = buildUrlWithContextPath("getRegion");
 const ITEMS_TABLE_URL = buildUrlWithContextPath("itemsTable");
 const STORES_LIST_URL = buildUrlWithContextPath("storesList")
@@ -12,28 +12,8 @@ const GET_OLD_NOTIFICATIONS_URL = buildUrlWithContextPath("getOldNotifications")
 
 //Global Variables:
 var regionName;
-
-function saveUserNotificationVersionOnServer(){
-    $.ajax({
-        url: STORE_NOTIFICATION_URL,
-        // type: 'POST',
-        data: "notificationVersionStorage=" + notificationVersionUser,
-        dataType: 'json',
-        success: function (data){
-            console.log(data);
-        },
-        error: function (errorObject) {
-            console.log(errorObject.responseText);
-        }
-    });
-}
-
-$(function (){
-    $("#backButton").click(function (){
-        saveUserNotificationVersionOnServer()
-        window.location.assign("../regions/regions.html");
-    })
-})
+var notificationVersionUser = 0;
+var firstNotificationUpdate = true;
 
 $(function getRegionNameAndAdjustPage(){
     $.ajax({
@@ -185,7 +165,7 @@ function refreshStoresList(stores){
                 '</tr>').appendTo(ordersTable);
 
             //order's items table:
-            let itemsTable = $('<table></table>').addClass("w3-striped w3-border w3-table-all w3-small w3-light-blue").appendTo(orderRow);
+            let itemsTable = $('<table></table>').addClass("w3-striped w3-border w3-table-all w3-small w3-light-blue");
             $('<h4>Items</h4>').appendTo(itemsTable);
             $('<tr>' +
                 '<th>Serial number</th>' +
@@ -212,10 +192,12 @@ function refreshStoresList(stores){
                     '</tr>').appendTo(itemsTable);
             })
 
-            itemsTable.hide();
+            //itemsTable.hide();
 
             orderRow.click(function (){
-                itemsTable.toggle();
+                let itemsOrderModal = $("#orderItemsModal");
+                itemsOrderModal.append(itemsTable);
+                itemsOrderModal.show();
             })
         })
     })
@@ -336,18 +318,18 @@ function appendToNotificationList(notifications){
     })
 }
 
-$(function getOldNotifications(){
-    $.ajax({
-        url: GET_OLD_NOTIFICATIONS_URL,
-        success: function(response){
-            notificationVersionUser = Number.parseInt(response);
-            console.log(notificationVersionUser);
-        },
-        error: function (error){
-            console.log(error);
-        }
-    })
-})
+// $(function getOldNotifications(){
+//     $.ajax({
+//         url: GET_OLD_NOTIFICATIONS_URL,
+//         success: function(response){
+//             notificationVersionUser = Number.parseInt(response);
+//             console.log(notificationVersionUser);
+//         },
+//         error: function (error){
+//             console.log(error);
+//         }
+//     })
+// })
 
 function triggerAjaxNotificationContent() {
     setTimeout(ajaxNotificationContent, refreshRate);
@@ -369,7 +351,10 @@ function ajaxNotificationContent() {
             if (data.version !== notificationVersionUser) {
                 let dropDownButton = $("#dropDownButton");
 
-                if(!dropDownButton.find("span").length){
+                if(firstNotificationUpdate===true){  //when routing pages don't show alert bell
+                    firstNotificationUpdate = false;
+                }
+                else if(!dropDownButton.find("span").length){
                     let badge = $('<span>\t&#128276</span>').addClass("w3-badge w3-circle w3-red");
                     dropDownButton.append(badge);
                 }
