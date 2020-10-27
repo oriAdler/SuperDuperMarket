@@ -84,7 +84,7 @@ $(function chooseItemsFrom(){
                     console.log(errorObject.responseText);
                 },
                 success: function () {
-                    window.location.assign("../stores/stores_vendor.html");
+                    document.getElementById('approvalModal').style.display='block';
                 }
             });
 
@@ -96,5 +96,22 @@ $(function chooseItemsFrom(){
         return false;
     });
 });
+
+//close the upload file modal and clean message
+$(function closeApprovalModal(){
+    $("#closeApprovalModal").click(function(){
+        window.location.assign("../stores/stores_vendor.html");
+    });
+});
+
+// onload - capture the submit event on the form.
+$(function submitApprovalModal() { // onload...do
+    $("#approvalModal").submit(function() {
+        window.location.assign("../stores/stores_vendor.html");
+        // return value of the submit operation
+        // by default - we'll always return false so it doesn't redirect the user.
+        return false;
+    })
+})
 
 

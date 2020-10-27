@@ -175,7 +175,7 @@ function refreshOrdersList(carts){
     cartsList.find("#CancelButton")
         .addClass("w3-button w3-block w3-gray w3-section w3-padding")
         .click(function (){
-            window.location.href = "../stores/stores_customer.html";
+            document.getElementById('approvalModal').style.display='block';
         })
 }
 
@@ -185,5 +185,22 @@ $(function ajaxOrderSummary(){
         success: function(carts){
             refreshOrdersList(carts);
         }
+    })
+})
+
+//close the upload file modal and clean message
+$(function closeApprovalModal(){
+    $("#closeApprovalModal").click(function(){
+        window.location.href = "../stores/stores_customer.html";
+    });
+});
+
+// onload - capture the submit event on the form.
+$(function submitApprovalModal() { // onload...do
+    $("#approvalModal").submit(function() {
+        window.location.href = "../stores/stores_customer.html";
+        // return value of the submit operation
+        // by default - we'll always return false so it doesn't redirect the user.
+        return false;
     })
 })
